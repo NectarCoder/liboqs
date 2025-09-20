@@ -1,12 +1,10 @@
 #!/usr/bin/env bash
+# Setup script for building liboqs
 
 echo "MUST BE RUN FROM liboqs ROOT DIRECTORY"
 
-# Setup script for building liboqs
-sudo apt-get install build-essential cmake ninja-build libssl-dev
-
-mkdir -p build
-cd build
+mkdir -p _build
+cd _build
 cmake ..
 make -j4
 

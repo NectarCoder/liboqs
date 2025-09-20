@@ -5,6 +5,19 @@ Contributors:
 - [NectarCoder](https://github.com/NectarCoder)
 - [ryanesloven](https://github.com/ryanesloven)
 
+## Getting started
+
+General liboqs usage can be found in the general README below.  
+However this fork is for a specific purpose: to implement additional round 2 PQC signature algorithms.  
+
+From the project root directory:  
+Run `./SETUP_DEPS.sh` to download and install the dependencies. Then,  
+Run `./SETUP.sh` to build liboqs with all algorithms enabled.
+
+Go to the `test_sig` folder, run `make`.  
+Run `./test_sig <algorithm-id>` to see some test results.  
+Algorithm list can be found in `src/sig/sig.h` header.
+
 ---
 <br>  
 
