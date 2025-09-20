@@ -1,5 +1,6 @@
 # Other build files
 _build/
+*.out
 
 # Text editors and IDES
 .idea
@@ -20,7 +21,7 @@ tags
 /cmake-build*
 
 # Visual Studio Code
-.vscode
+# .vscode
 
 # Jetbrains IDEs
 .idea
