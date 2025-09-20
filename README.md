@@ -1,3 +1,13 @@
+# liboqs fork for implementing additional NIST Round 2 PQC Digital Signature Algorithms
+
+Contributors:
+
+- [NectarCoder](https://github.com/NectarCoder)
+- [ryanesloven](https://github.com/ryanesloven)
+
+---
+<br>  
+
 liboqs
 ======================
 

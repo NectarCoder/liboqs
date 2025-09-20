@@ -1,3 +1,6 @@
+# Other build files
+_build/
+
 # Text editors and IDES
 .idea
 tags
