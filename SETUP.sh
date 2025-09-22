@@ -3,9 +3,9 @@
 
 echo "MUST BE RUN FROM liboqs ROOT DIRECTORY"
 
-mkdir -p _build
-cd _build
+mkdir -p build
+cd build
 cmake ..
-make -j4
+make -j$(nproc)
 
 echo "liboqs build complete."
