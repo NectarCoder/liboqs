@@ -35,6 +35,15 @@ int main(int argc, char *argv[]) {
     uint8_t *public_key = malloc(sig->length_public_key);
     uint8_t *secret_key = malloc(sig->length_secret_key);
     uint8_t *signature = malloc(sig->length_signature);
+
+    /*size_t ten_mb = 10 * 1024 * 1024;
+    uint8_t *public_key = malloc(ten_mb);
+    uint8_t *secret_key = malloc(ten_mb);
+    uint8_t *signature = malloc(ten_mb);
+    if (public_key == NULL || secret_key == NULL || signature == NULL) {
+        fprintf(stderr, "ERROR: Memory allocation failed\n");
+        return EXIT_FAILURE;
+    }*/
     
     // Generate keypair
     OQS_STATUS rc = OQS_SIG_keypair(sig, public_key, secret_key);
@@ -70,10 +79,15 @@ int main(int argc, char *argv[]) {
 
     // Clean up
     OQS_MEM_secure_free(secret_key, sig->length_secret_key);
+    printf("Secret key securely freed from memory.\n");
     OQS_MEM_insecure_free(public_key);
+    printf("Public key freed from memory.\n");
     OQS_MEM_insecure_free(signature);
+    printf("Signature freed from memory.\n");
     OQS_SIG_free(sig);
+    printf("Signature object freed from memory.\n");
     OQS_destroy();
+    printf("OQS resources destroyed.\n");
 
     return EXIT_SUCCESS;
 }
