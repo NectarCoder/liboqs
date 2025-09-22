@@ -222,6 +222,9 @@ cmake_dependent_option(OQS_ENABLE_SIG_snova_SNOVA_37_8_4 "" ON "OQS_ENABLE_SIG_S
 cmake_dependent_option(OQS_ENABLE_SIG_snova_SNOVA_24_5_5 "" ON "OQS_ENABLE_SIG_SNOVA" OFF)
 cmake_dependent_option(OQS_ENABLE_SIG_snova_SNOVA_60_10_4 "" ON "OQS_ENABLE_SIG_SNOVA" OFF)
 cmake_dependent_option(OQS_ENABLE_SIG_snova_SNOVA_29_6_5 "" ON "OQS_ENABLE_SIG_SNOVA" OFF)
+
+option(OQS_ENABLE_SIG_PERK "Enable perk algorithm family" ON)
+cmake_dependent_option(OQS_ENABLE_SIG_perk_128_fast_3 "" ON "OQS_ENABLE_SIG_PERK" OFF)
 ##### OQS_COPY_FROM_UPSTREAM_FRAGMENT_ADD_ENABLE_BY_ALG_END
 
 ##### OQS_COPY_FROM_LIBJADE_FRAGMENT_ADD_ENABLE_BY_ALG_START
