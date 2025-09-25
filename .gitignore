@@ -1,6 +1,7 @@
 # Other build files
 _build/
 *.out
+test_sig/test_sig
 
 # Text editors and IDES
 .idea

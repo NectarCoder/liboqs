@@ -1,0 +1,28 @@
+name: PERK
+type: signature
+principal-submitters:
+- TODO
+crypto-assumption: TODO
+website: TODO
+nist-round: TODO
+spec-version: TODO
+primary-upstream:
+  source: TODO
+  spdx-license-identifier: TODO
+parameter-sets:
+- name: PERK-128-fast-3
+  claimed-nist-level: 1
+  claimed-security: EUF-CMA
+  length-public-key: 148
+  length-secret-key: 164
+  length-signature: 16384 # TODO: tighten once upstream signature size is confirmed
+  implementations-switch-on-runtime-cpu-features: false
+  implementations:
+  - upstream: primary-upstream
+    upstream-id: ref
+    supported-platforms: TODO
+    common-crypto:
+    - TODO
+    no-secret-dependent-branching-claimed: TODO
+    no-secret-dependent-branching-checked-by-valgrind: TODO
+    large-stack-usage: TODO
