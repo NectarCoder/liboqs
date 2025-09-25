@@ -31,6 +31,8 @@ OQS_SIG *OQS_SIG_perk_128_fast_3_new(void) {
 	sig->keypair = (OQS_STATUS (*)(uint8_t *, uint8_t *)) OQS_SIG_perk_128_fast_3_keypair;
 	sig->sign = (OQS_STATUS (*)(uint8_t *, size_t *, const uint8_t *, size_t, const uint8_t *)) OQS_SIG_perk_128_fast_3_sign;
 	sig->verify = (OQS_STATUS (*)(const uint8_t *, size_t, const uint8_t *, size_t, const uint8_t *)) OQS_SIG_perk_128_fast_3_verify;
+	sig->sign_with_ctx_str = (OQS_STATUS (*)(uint8_t *, size_t *, const uint8_t *, size_t, const uint8_t *, size_t, const uint8_t *)) OQS_SIG_perk_128_fast_3_sign_with_ctx_str;
+	sig->verify_with_ctx_str = (OQS_STATUS (*)(const uint8_t *, size_t, const uint8_t *, size_t, const uint8_t *, size_t, const uint8_t *)) OQS_SIG_perk_128_fast_3_verify_with_ctx_str;
 
 	return sig;
 }
@@ -44,64 +46,65 @@ OQS_API OQS_STATUS OQS_SIG_perk_128_fast_3_keypair(uint8_t *public_key, uint8_t 
 }
 
 OQS_API OQS_STATUS OQS_SIG_perk_128_fast_3_sign(uint8_t *signature, size_t *signature_len, const uint8_t *message, size_t message_len, const uint8_t *secret_key) {
+	// Use large buffer for the signed message
+	uint8_t signed_msg[message_len + 8345];
 	unsigned long long signed_msg_len;
-	uint8_t *signed_msg = NULL;
-	OQS_STATUS result = OQS_ERROR;
-	
-	// Allocate buffer for the full signed message (signature + message)
-	signed_msg = malloc(message_len + OQS_SIG_perk_128_fast_3_length_signature);
-	if (signed_msg == NULL) {
-		goto cleanup;
-	}
 	
 	int ret = crypto_sign(signed_msg, &signed_msg_len, message, message_len, secret_key);
 	
-	if (ret == 0) {
-		// Extract only the signature part (first CRYPTO_BYTES)
-		memcpy(signature, signed_msg, OQS_SIG_perk_128_fast_3_length_signature);
-		*signature_len = OQS_SIG_perk_128_fast_3_length_signature;
-		result = OQS_SUCCESS;
+	if (ret != 0) {
+		return OQS_ERROR;
 	}
-
-cleanup:
-	if (signed_msg != NULL) {
-		free(signed_msg);
-	}
-	return result;
+	
+	// Store the complete signed message as the "signature"
+	memcpy(signature, signed_msg, signed_msg_len);
+	*signature_len = signed_msg_len;
+	
+	return OQS_SUCCESS;
 }
 
 OQS_API OQS_STATUS OQS_SIG_perk_128_fast_3_verify(const uint8_t *message, size_t message_len, const uint8_t *signature, size_t signature_len, const uint8_t *public_key) {
 	unsigned long long recovered_msg_len;
-	uint8_t *signed_msg = NULL;
 	uint8_t *recovered_msg = NULL;
 	OQS_STATUS result = OQS_ERROR;
 	
-	// Allocate buffers for the signed message reconstruction and recovery
-	signed_msg = malloc(signature_len + message_len);
+	// Allocate buffer for the recovered message
 	recovered_msg = malloc(message_len);
 	
-	if (signed_msg == NULL || recovered_msg == NULL) {
+	if (recovered_msg == NULL) {
 		goto cleanup;
 	}
 	
-	// Reconstruct the signed message format: [SIGNATURE][MESSAGE]
-	memcpy(signed_msg, signature, signature_len);
-	memcpy(signed_msg + signature_len, message, message_len);
-	
-	int ret = crypto_sign_open(recovered_msg, &recovered_msg_len, signed_msg, signature_len + message_len, public_key);
+	// The signature is actually the complete signed message from crypto_sign
+	int ret = crypto_sign_open(recovered_msg, &recovered_msg_len, signature, signature_len, public_key);
 	
 	if (ret == 0 && recovered_msg_len == message_len && memcmp(recovered_msg, message, message_len) == 0) {
 		result = OQS_SUCCESS;
 	}
 
 cleanup:
-	if (signed_msg != NULL) {
-		free(signed_msg);
-	}
 	if (recovered_msg != NULL) {
 		free(recovered_msg);
 	}
 	return result;
+}
+
+OQS_API OQS_STATUS OQS_SIG_perk_128_fast_3_sign_with_ctx_str(uint8_t *signature, size_t *signature_len, const uint8_t *message, size_t message_len, const uint8_t *ctx_str, size_t ctx_str_len, const uint8_t *secret_key) {
+	// PERK doesn't support context strings, fail if a non-empty context is provided
+	if (ctx_str != NULL && ctx_str_len > 0) {
+		return OQS_ERROR;
+	}
+	// Otherwise use regular signing
+	return OQS_SIG_perk_128_fast_3_sign(signature, signature_len, message, message_len, secret_key);
+}
+
+OQS_API OQS_STATUS OQS_SIG_perk_128_fast_3_verify_with_ctx_str(const uint8_t *message, size_t message_len, const uint8_t *signature, size_t signature_len, const uint8_t *ctx_str, size_t ctx_str_len, const uint8_t *public_key) {
+	// PERK doesn't support context strings, fail if a non-empty context is provided
+	if (ctx_str != NULL && ctx_str_len > 0) {
+		return OQS_ERROR;
+	}
+	// Otherwise use regular verification
+	return OQS_SIG_perk_128_fast_3_verify(message, message_len, signature, signature_len, public_key);
 }
 
 #endif

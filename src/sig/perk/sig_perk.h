@@ -23,13 +23,13 @@ extern "C" {
 #define OQS_SIG_alg_perk_128_fast_3 "PERK-128-fast-3"
 
 /** PERK-128-fast-3 public key length, in bytes */
-#define OQS_SIG_perk_128_fast_3_length_public_key 64
+#define OQS_SIG_perk_128_fast_3_length_public_key 148
 
 /** PERK-128-fast-3 secret key length, in bytes */
-#define OQS_SIG_perk_128_fast_3_length_secret_key 80
+#define OQS_SIG_perk_128_fast_3_length_secret_key 164
 
-/** PERK-128-fast-3 signature length, in bytes */
-#define OQS_SIG_perk_128_fast_3_length_signature 5444
+/** PERK-128-fast-3 signature length, in bytes (maximum size for signed message) */
+#define OQS_SIG_perk_128_fast_3_length_signature 16384
 
 /**
  * \brief Process a PERK-128-fast-3 key pair.
@@ -64,6 +64,34 @@ OQS_API OQS_STATUS OQS_SIG_perk_128_fast_3_sign(uint8_t *signature, size_t *sign
  * \return OQS_SUCCESS or OQS_ERROR
  */
 OQS_API OQS_STATUS OQS_SIG_perk_128_fast_3_verify(const uint8_t *message, size_t message_len, const uint8_t *signature, size_t signature_len, const uint8_t *public_key);
+
+/**
+ * \brief PERK-128-fast-3 signature generation with context string.
+ *
+ * \param[out] signature         Pointer to the output signature buffer.
+ * \param[out] signature_len     Pointer to the length of the signature.
+ * \param[in]  message           Pointer to the message to be signed.
+ * \param[in]  message_len       Length of the message.
+ * \param[in]  ctx_str           Pointer to the context string.
+ * \param[in]  ctx_str_len       Length of the context string.
+ * \param[in]  secret_key        Pointer to the secret key.
+ * \return OQS_SUCCESS or OQS_ERROR
+ */
+OQS_API OQS_STATUS OQS_SIG_perk_128_fast_3_sign_with_ctx_str(uint8_t *signature, size_t *signature_len, const uint8_t *message, size_t message_len, const uint8_t *ctx_str, size_t ctx_str_len, const uint8_t *secret_key);
+
+/**
+ * \brief PERK-128-fast-3 signature verification with context string.
+ *
+ * \param[in]  message           Pointer to the message.
+ * \param[in]  message_len       Length of the message.
+ * \param[in]  signature         Pointer to the signature.
+ * \param[in]  signature_len     Length of the signature.
+ * \param[in]  ctx_str           Pointer to the context string.
+ * \param[in]  ctx_str_len       Length of the context string.
+ * \param[in]  public_key        Pointer to the public key.
+ * \return OQS_SUCCESS or OQS_ERROR
+ */
+OQS_API OQS_STATUS OQS_SIG_perk_128_fast_3_verify_with_ctx_str(const uint8_t *message, size_t message_len, const uint8_t *signature, size_t signature_len, const uint8_t *ctx_str, size_t ctx_str_len, const uint8_t *public_key);
 
 #if defined(OQS_ENABLE_SIG_perk_128_fast_3)
 /**
