@@ -8,6 +8,8 @@
 #if defined(OQS_ENABLE_SIG_perk_128_fast_3)
 
 #include "perk_128_fast_3/api.h"
+#include <stddef.h>
+#include <stdlib.h>
 #include <string.h>
 
 OQS_SIG *OQS_SIG_perk_128_fast_3_new(void) {
@@ -46,47 +48,63 @@ OQS_API OQS_STATUS OQS_SIG_perk_128_fast_3_keypair(uint8_t *public_key, uint8_t 
 }
 
 OQS_API OQS_STATUS OQS_SIG_perk_128_fast_3_sign(uint8_t *signature, size_t *signature_len, const uint8_t *message, size_t message_len, const uint8_t *secret_key) {
-	// Use large buffer for the signed message
-	uint8_t signed_msg[message_len + 8345];
-	unsigned long long signed_msg_len;
-	
-	int ret = crypto_sign(signed_msg, &signed_msg_len, message, message_len, secret_key);
-	
-	if (ret != 0) {
+	if (message_len > SIZE_MAX - CRYPTO_BYTES) {
 		return OQS_ERROR;
 	}
-	
-	// Store the complete signed message as the "signature"
-	memcpy(signature, signed_msg, signed_msg_len);
-	*signature_len = signed_msg_len;
-	
+
+	size_t signed_message_len = CRYPTO_BYTES + message_len;
+	uint8_t *signed_message = malloc(signed_message_len);
+	if (signed_message == NULL) {
+		return OQS_ERROR;
+	}
+
+	unsigned long long smlen = 0;
+	int ret = crypto_sign(signed_message, &smlen, message, message_len, secret_key);
+	if (ret != 0 || smlen != (unsigned long long)signed_message_len) {
+		free(signed_message);
+		return OQS_ERROR;
+	}
+
+	memcpy(signature, signed_message, CRYPTO_BYTES);
+	*signature_len = CRYPTO_BYTES;
+
+	free(signed_message);
 	return OQS_SUCCESS;
 }
 
 OQS_API OQS_STATUS OQS_SIG_perk_128_fast_3_verify(const uint8_t *message, size_t message_len, const uint8_t *signature, size_t signature_len, const uint8_t *public_key) {
-	unsigned long long recovered_msg_len;
-	uint8_t *recovered_msg = NULL;
-	OQS_STATUS result = OQS_ERROR;
-	
-	// Allocate buffer for the recovered message
-	recovered_msg = malloc(message_len);
-	
-	if (recovered_msg == NULL) {
-		goto cleanup;
+	if (signature_len != CRYPTO_BYTES) {
+		return OQS_ERROR;
 	}
-	
-	// The signature is actually the complete signed message from crypto_sign
-	int ret = crypto_sign_open(recovered_msg, &recovered_msg_len, signature, signature_len, public_key);
-	
-	if (ret == 0 && recovered_msg_len == message_len && memcmp(recovered_msg, message, message_len) == 0) {
-		result = OQS_SUCCESS;
+	if (message_len > SIZE_MAX - signature_len) {
+		return OQS_ERROR;
 	}
 
-cleanup:
-	if (recovered_msg != NULL) {
-		free(recovered_msg);
+	size_t signed_message_len = signature_len + message_len;
+	uint8_t *signed_message = malloc(signed_message_len);
+	uint8_t *recovered_message = malloc(message_len > 0 ? message_len : 1);
+	if (signed_message == NULL || recovered_message == NULL) {
+		free(signed_message);
+		free(recovered_message);
+		return OQS_ERROR;
 	}
-	return result;
+
+	memcpy(signed_message, signature, signature_len);
+	memcpy(signed_message + signature_len, message, message_len);
+
+	unsigned long long recovered_len = 0;
+	int ret = crypto_sign_open(recovered_message, &recovered_len, signed_message,
+	                          (unsigned long long)signed_message_len, public_key);
+	if (ret != 0 || recovered_len != (unsigned long long)message_len ||
+	    (message_len > 0 && memcmp(recovered_message, message, message_len) != 0)) {
+		free(signed_message);
+		free(recovered_message);
+		return OQS_ERROR;
+	}
+
+	free(signed_message);
+	free(recovered_message);
+	return OQS_SUCCESS;
 }
 
 OQS_API OQS_STATUS OQS_SIG_perk_128_fast_3_sign_with_ctx_str(uint8_t *signature, size_t *signature_len, const uint8_t *message, size_t message_len, const uint8_t *ctx_str, size_t ctx_str_len, const uint8_t *secret_key) {

@@ -28,15 +28,15 @@ extern "C" {
 /** PERK-128-fast-3 secret key length, in bytes */
 #define OQS_SIG_perk_128_fast_3_length_secret_key 164
 
-/** PERK-128-fast-3 signature length, in bytes (maximum size for signed message) */
-#define OQS_SIG_perk_128_fast_3_length_signature 16384
+/** PERK-128-fast-3 signature length, in bytes */
+#define OQS_SIG_perk_128_fast_3_length_signature 8345
 
 /**
  * \brief Process a PERK-128-fast-3 key pair.
  * \warning The secret key contains the public key as a suffix.
  *
- * \param[out] public_key    Pointer to the buffer for the public key (64 bytes).
- * \param[out] secret_key    Pointer to the buffer for the secret key (80 bytes).
+ * \param[out] public_key    Pointer to the buffer for the public key (148 bytes).
+ * \param[out] secret_key    Pointer to the buffer for the secret key (164 bytes).
  * \return OQS_SUCCESS or OQS_ERROR
  */
 OQS_API OQS_STATUS OQS_SIG_perk_128_fast_3_keypair(uint8_t *public_key, uint8_t *secret_key);
@@ -44,11 +44,11 @@ OQS_API OQS_STATUS OQS_SIG_perk_128_fast_3_keypair(uint8_t *public_key, uint8_t 
 /**
  * \brief Signing function for PERK-128-fast-3.
  *
- * \param[out] signature       Pointer to the buffer for the signature (5444 bytes).
- * \param[out] signature_len   Pointer to the length of the signature (always 5444).
+ * \param[out] signature       Pointer to the buffer for the signature (8345 bytes).
+ * \param[out] signature_len   Pointer to the length of the signature (always 8345).
  * \param[in]  message         Pointer to the message to be signed.
  * \param[in]  message_len     Length of the message to be signed.
- * \param[in]  secret_key      Pointer to the secret key (80 bytes).
+ * \param[in]  secret_key      Pointer to the secret key (164 bytes).
  * \return OQS_SUCCESS or OQS_ERROR
  */
 OQS_API OQS_STATUS OQS_SIG_perk_128_fast_3_sign(uint8_t *signature, size_t *signature_len, const uint8_t *message, size_t message_len, const uint8_t *secret_key);
@@ -58,9 +58,9 @@ OQS_API OQS_STATUS OQS_SIG_perk_128_fast_3_sign(uint8_t *signature, size_t *sign
  *
  * \param[in]  message          Pointer to the message.
  * \param[in]  message_len      Length of the message.
- * \param[in]  signature        Pointer to the signature (5444 bytes).
+ * \param[in]  signature        Pointer to the signature (8345 bytes).
  * \param[in]  signature_len    Length of the signature.
- * \param[in]  public_key       Pointer to the public key (64 bytes).
+ * \param[in]  public_key       Pointer to the public key (148 bytes).
  * \return OQS_SUCCESS or OQS_ERROR
  */
 OQS_API OQS_STATUS OQS_SIG_perk_128_fast_3_verify(const uint8_t *message, size_t message_len, const uint8_t *signature, size_t signature_len, const uint8_t *public_key);
