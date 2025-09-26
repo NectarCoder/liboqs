@@ -170,12 +170,14 @@ extern "C" {
 #define OQS_SIG_alg_snova_SNOVA_29_6_5 "SNOVA_29_6_5"
 /** Algorithm identifier for PERK-128-fast-3 */
 #define OQS_SIG_alg_perk_128_fast_3 "PERK-128-fast-3"
+/** Algorithm identifier for Hawk-512 */
+#define OQS_SIG_alg_hawk_512 "Hawk-512"
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALG_IDENTIFIER_END
 // EDIT-WHEN-ADDING-SIG
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALGS_LENGTH_START
 
 /** Number of algorithm identifiers above. */
-#define OQS_SIG_algs_length 69
+#define OQS_SIG_algs_length 70
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALGS_LENGTH_END
 
 /**
@@ -450,6 +452,9 @@ OQS_API bool OQS_SIG_supports_ctx_str(const char *alg_name);
 #ifdef OQS_ENABLE_SIG_PERK
 #include <oqs/sig_perk.h>
 #endif /* OQS_ENABLE_SIG_PERK */
+#ifdef OQS_ENABLE_SIG_HAWK
+#include <oqs/sig_hawk.h>
+#endif /* OQS_ENABLE_SIG_HAWK */
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_INCLUDE_END
 // EDIT-WHEN-ADDING-SIG
 
