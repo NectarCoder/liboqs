@@ -26,7 +26,6 @@ if(OQS_ENABLE_SIG_hawk_512)
     add_library(hawk_512_glue OBJECT sig_hawk512.c)
     target_include_directories(hawk_512_glue PRIVATE ${CMAKE_CURRENT_LIST_DIR})
     target_include_directories(hawk_512_glue PRIVATE ${CMAKE_CURRENT_LIST_DIR}/hawk512)
-    target_include_directories(hawk_512_glue PRIVATE ${PROJECT_SOURCE_DIR}/src/common/pqclean_shims)
     
     set(_HAWK_OBJS ${_HAWK_OBJS} $<TARGET_OBJECTS:hawk_512> $<TARGET_OBJECTS:hawk_512_glue>)
 endif()

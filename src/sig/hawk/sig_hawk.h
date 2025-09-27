@@ -29,7 +29,7 @@ extern "C" {
 #define OQS_SIG_hawk_512_length_secret_key 184
 
 /** Hawk-512 signature length, in bytes (maximum size for signed message) */
-#define OQS_SIG_hawk_512_length_signature 8192
+#define OQS_SIG_hawk_512_length_signature 8365
 
 /**
  * \brief Process a Hawk-512 key pair.

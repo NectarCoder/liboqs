@@ -47,7 +47,7 @@ OQS_API OQS_STATUS OQS_SIG_hawk_512_keypair(uint8_t *public_key, uint8_t *secret
 
 OQS_API OQS_STATUS OQS_SIG_hawk_512_sign(uint8_t *signature, size_t *signature_len, const uint8_t *message, size_t message_len, const uint8_t *secret_key) {
 	// Use large buffer for the signed message
-	uint8_t signed_msg[message_len + 555];
+	uint8_t signed_msg[message_len + OQS_SIG_hawk_512_length_signature];
 	unsigned long long signed_msg_len;
 	
 	int ret = crypto_sign(signed_msg, &signed_msg_len, message, message_len, secret_key);
