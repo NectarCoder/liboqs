@@ -5,9 +5,9 @@
 
 #include <oqs/sig_hawk.h>
 
-#if defined(OQS_ENABLE_SIG_perk_128_fast_3)
-
-#include "hawk512/api.h"
+#if defined(OQS_ENABLE_SIG_hawk_512)
+#include <stdlib.h>
+#include "hawk_512/api.h"
 #include <string.h>
 
 OQS_SIG *OQS_SIG_hawk_512_new(void) {
@@ -47,7 +47,7 @@ OQS_API OQS_STATUS OQS_SIG_hawk_512_keypair(uint8_t *public_key, uint8_t *secret
 
 OQS_API OQS_STATUS OQS_SIG_hawk_512_sign(uint8_t *signature, size_t *signature_len, const uint8_t *message, size_t message_len, const uint8_t *secret_key) {
 	// Use large buffer for the signed message
-	uint8_t signed_msg[message_len + 8345];
+	uint8_t signed_msg[message_len + 555];
 	unsigned long long signed_msg_len;
 	
 	int ret = crypto_sign(signed_msg, &signed_msg_len, message, message_len, secret_key);
