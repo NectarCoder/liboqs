@@ -79,6 +79,10 @@ if(OQS_ENABLE_SIG_HAWK)
     add_subdirectory(sig/hawk)
     set(SIG_OBJS ${SIG_OBJS} ${HAWK_OBJS})
 endif()
+if(OQS_ENABLE_SIG_RYDE)
+    add_subdirectory(sig/ryde)
+    set(SIG_OBJS ${SIG_OBJS} ${RYDE_OBJS})
+endif()
 ##### OQS_COPY_FROM_UPSTREAM_FRAGMENT_ADD_ALG_OBJECTS_END
 
 if(OQS_ENABLE_SIG_STFL_XMSS)
