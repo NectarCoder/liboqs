@@ -230,6 +230,10 @@ option(OQS_ENABLE_SIG_HAWK "Enable hawk algorithm family" ON)
 cmake_dependent_option(OQS_ENABLE_SIG_hawk_512 "" ON "OQS_ENABLE_SIG_HAWK" OFF)
 cmake_dependent_option(OQS_ENABLE_SIG_hawk_1024 "" ON "OQS_ENABLE_SIG_HAWK" OFF)
 
+option(OQS_ENABLE_SIG_RYDE "Enable ryde algorithm family" ON)
+cmake_dependent_option(OQS_ENABLE_SIG_ryde_1f "" ON "OQS_ENABLE_SIG_RYDE" OFF)
+
+
 option(OQS_ENABLE_SIG_MIRATH "Enable mirath algorithm family" ON)
 cmake_dependent_option(OQS_ENABLE_SIG_mirath_tcith_1a_fast "" ON "OQS_ENABLE_SIG_MIRATH" OFF)
 ##### OQS_COPY_FROM_UPSTREAM_FRAGMENT_ADD_ENABLE_BY_ALG_END
