@@ -172,12 +172,17 @@ extern "C" {
 #define OQS_SIG_alg_perk_128_fast_3 "PERK-128-fast-3"
 /** Algorithm identifier for Hawk-512 */
 #define OQS_SIG_alg_hawk_512 "Hawk-512"
+/** Algorithm identifier for Hawk-1024 */
+#define OQS_SIG_alg_hawk_1024 "Hawk-1024"
+/** Algorithm identifier for MIRATH-tcith-1a-fast */
+#define OQS_SIG_alg_mirath_tcith_1a_fast "Mirath-1a-fast"
+
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALG_IDENTIFIER_END
 // EDIT-WHEN-ADDING-SIG
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALGS_LENGTH_START
 
 /** Number of algorithm identifiers above. */
-#define OQS_SIG_algs_length 70
+#define OQS_SIG_algs_length 73
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALGS_LENGTH_END
 
 /**
@@ -455,6 +460,9 @@ OQS_API bool OQS_SIG_supports_ctx_str(const char *alg_name);
 #ifdef OQS_ENABLE_SIG_HAWK
 #include <oqs/sig_hawk.h>
 #endif /* OQS_ENABLE_SIG_HAWK */
+#ifdef OQS_ENABLE_SIG_MIRATH
+#include <oqs/sig_mirath.h>
+#endif /* OQS_ENABLE_SIG_MIRATH */
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_INCLUDE_END
 // EDIT-WHEN-ADDING-SIG
 
