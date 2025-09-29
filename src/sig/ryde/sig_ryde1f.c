@@ -5,9 +5,12 @@
 
 #include <oqs/sig_ryde.h>
 
-#if defined(OQS_ENABLE_SIG_ryde1f)
+#if defined(OQS_ENABLE_SIG_ryde_1f)
 
 #include "ryde1f/api.h"
+#include "ryde1f/ryde.h"
+#include <stddef.h>
+#include <stdlib.h>
 #include <string.h>
 
 OQS_SIG *OQS_SIG_ryde1f_new(void) {
@@ -23,6 +26,7 @@ OQS_SIG *OQS_SIG_ryde1f_new(void) {
 
 	sig->claimed_nist_level = 1;
 	sig->euf_cma = true;
+	sig->sig_with_ctx_support = false;
 
 	sig->length_public_key = OQS_SIG_ryde1f_length_public_key;
 	sig->length_secret_key = OQS_SIG_ryde1f_length_secret_key;
@@ -38,59 +42,51 @@ OQS_SIG *OQS_SIG_ryde1f_new(void) {
 }
 
 OQS_API OQS_STATUS OQS_SIG_ryde1f_keypair(uint8_t *public_key, uint8_t *secret_key) {
-	if (crypto_sign_keypair(public_key, secret_key) == 0) {
-		return OQS_SUCCESS;
-	} else {
+	if (public_key == NULL || secret_key == NULL) {
 		return OQS_ERROR;
 	}
+
+	if (crypto_sign_keypair(public_key, secret_key) != 0) {
+		memset(public_key, 0, OQS_SIG_ryde1f_length_public_key);
+		memset(secret_key, 0, OQS_SIG_ryde1f_length_secret_key);
+		return OQS_ERROR;
+	}
+
+	return OQS_SUCCESS;
 }
 
 OQS_API OQS_STATUS OQS_SIG_ryde1f_sign(uint8_t *signature, size_t *signature_len, const uint8_t *message, size_t message_len, const uint8_t *secret_key) {
-	// Use large buffer for the signed message
-	uint8_t signed_msg[message_len + 8345];
-	unsigned long long signed_msg_len;
-	
-	int ret = crypto_sign(signed_msg, &signed_msg_len, message, message_len, secret_key);
-	
-	if (ret != 0) {
+	if (signature == NULL || signature_len == NULL || message == NULL || secret_key == NULL) {
 		return OQS_ERROR;
 	}
-	
-	// Store the complete signed message as the "signature"
-	memcpy(signature, signed_msg, signed_msg_len);
-	*signature_len = signed_msg_len;
-	
+
+	if (ryde_sign(signature, message, message_len, secret_key) != EXIT_SUCCESS) {
+		memset(signature, 0, OQS_SIG_ryde1f_length_signature);
+		return OQS_ERROR;
+	}
+
+	*signature_len = OQS_SIG_ryde1f_length_signature;
 	return OQS_SUCCESS;
 }
 
 OQS_API OQS_STATUS OQS_SIG_ryde1f_verify(const uint8_t *message, size_t message_len, const uint8_t *signature, size_t signature_len, const uint8_t *public_key) {
-	unsigned long long recovered_msg_len;
-	uint8_t *recovered_msg = NULL;
-	OQS_STATUS result = OQS_ERROR;
-	
-	// Allocate buffer for the recovered message
-	recovered_msg = malloc(message_len);
-	
-	if (recovered_msg == NULL) {
-		goto cleanup;
-	}
-	
-	// The signature is actually the complete signed message from crypto_sign
-	int ret = crypto_sign_open(recovered_msg, &recovered_msg_len, signature, signature_len, public_key);
-	
-	if (ret == 0 && recovered_msg_len == message_len && memcmp(recovered_msg, message, message_len) == 0) {
-		result = OQS_SUCCESS;
+	if (message == NULL || signature == NULL || public_key == NULL) {
+		return OQS_ERROR;
 	}
 
-cleanup:
-	if (recovered_msg != NULL) {
-		free(recovered_msg);
+	if (signature_len != OQS_SIG_ryde1f_length_signature) {
+		return OQS_ERROR;
 	}
-	return result;
+
+	if (ryde_verify(signature, signature_len, message, message_len, public_key) != EXIT_SUCCESS) {
+		return OQS_ERROR;
+	}
+
+	return OQS_SUCCESS;
 }
 
 OQS_API OQS_STATUS OQS_SIG_ryde1f_sign_with_ctx_str(uint8_t *signature, size_t *signature_len, const uint8_t *message, size_t message_len, const uint8_t *ctx_str, size_t ctx_str_len, const uint8_t *secret_key) {
-	// PERK doesn't support context strings, fail if a non-empty context is provided
+	// RYDE-1F doesn't support context strings, fail if a non-empty context is provided
 	if (ctx_str != NULL && ctx_str_len > 0) {
 		return OQS_ERROR;
 	}
@@ -99,7 +95,7 @@ OQS_API OQS_STATUS OQS_SIG_ryde1f_sign_with_ctx_str(uint8_t *signature, size_t *
 }
 
 OQS_API OQS_STATUS OQS_SIG_ryde1f_verify_with_ctx_str(const uint8_t *message, size_t message_len, const uint8_t *signature, size_t signature_len, const uint8_t *ctx_str, size_t ctx_str_len, const uint8_t *public_key) {
-	// PERK doesn't support context strings, fail if a non-empty context is provided
+	// RYDE-1F doesn't support context strings, fail if a non-empty context is provided
 	if (ctx_str != NULL && ctx_str_len > 0) {
 		return OQS_ERROR;
 	}
