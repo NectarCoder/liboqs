@@ -5,6 +5,7 @@ set(_HAWK_OBJS "")
 if(OQS_ENABLE_SIG_hawk_512)
     # Main HAWK algorithm sources (without lib dependencies)
     set(HAWK_512_SOURCES
+        hawk_512/api.c
         hawk_512/hawk_kgen.c
         hawk_512/hawk_sign.c
         hawk_512/hawk_vrfy.c
@@ -12,20 +13,29 @@ if(OQS_ENABLE_SIG_hawk_512)
         hawk_512/ng_hawk.c
         hawk_512/ng_mp31.c
         hawk_512/ng_ntru.c
-        hawk_512/ng_poly.c
-        hawk_512/ng_zint31.c
+    hawk_512/ng_poly.c
+    hawk_512/ng_zint31.c
+    hawk_512/rng.c
+    hawk_512/sha3.c
     )
 
     add_library(hawk_512 OBJECT ${HAWK_512_SOURCES})
+
+    set(HAWK_512_API_DEFINES
+        crypto_sign=hawk_512_crypto_sign
+        crypto_sign_keypair=hawk_512_crypto_sign_keypair
+        crypto_sign_open=hawk_512_crypto_sign_open
+    )
+    set_source_files_properties(hawk_512/api.c PROPERTIES COMPILE_DEFINITIONS "${HAWK_512_API_DEFINES}")
     
     target_include_directories(hawk_512 PRIVATE ${CMAKE_CURRENT_LIST_DIR}/hawk_512)
     target_include_directories(hawk_512 PRIVATE ${PROJECT_SOURCE_DIR}/src/common/pqclean_shims)
-    
     
     # Add the glue code as a separate object for the Hawk-512 variant
     add_library(hawk_512_glue OBJECT sig_hawk512.c)
     target_include_directories(hawk_512_glue PRIVATE ${CMAKE_CURRENT_LIST_DIR})
     target_include_directories(hawk_512_glue PRIVATE ${CMAKE_CURRENT_LIST_DIR}/hawk_512)
+    target_compile_definitions(hawk_512_glue PRIVATE ${HAWK_512_API_DEFINES})
     
     set(_HAWK_OBJS ${_HAWK_OBJS} $<TARGET_OBJECTS:hawk_512> $<TARGET_OBJECTS:hawk_512_glue>)
 endif()
@@ -33,6 +43,7 @@ endif()
 if(OQS_ENABLE_SIG_hawk_1024)
     # Main HAWK algorithm sources (without lib dependencies)
     set(HAWK_1024_SOURCES
+        hawk_1024/api.c
         hawk_1024/hawk_kgen.c
         hawk_1024/hawk_sign.c
         hawk_1024/hawk_vrfy.c
@@ -40,20 +51,29 @@ if(OQS_ENABLE_SIG_hawk_1024)
         hawk_1024/ng_hawk.c
         hawk_1024/ng_mp31.c
         hawk_1024/ng_ntru.c
-        hawk_1024/ng_poly.c
-        hawk_1024/ng_zint31.c
+    hawk_1024/ng_poly.c
+    hawk_1024/ng_zint31.c
+    hawk_1024/rng.c
+    hawk_1024/sha3.c
     )
 
     add_library(hawk_1024 OBJECT ${HAWK_1024_SOURCES})
+
+    set(HAWK_1024_API_DEFINES
+        crypto_sign=hawk_1024_crypto_sign
+        crypto_sign_keypair=hawk_1024_crypto_sign_keypair
+        crypto_sign_open=hawk_1024_crypto_sign_open
+    )
+    set_source_files_properties(hawk_1024/api.c PROPERTIES COMPILE_DEFINITIONS "${HAWK_1024_API_DEFINES}")
     
     target_include_directories(hawk_1024 PRIVATE ${CMAKE_CURRENT_LIST_DIR}/hawk_1024)
     target_include_directories(hawk_1024 PRIVATE ${PROJECT_SOURCE_DIR}/src/common/pqclean_shims)
-    
     
     # Add the glue code as a separate object for the Hawk-1024 variant
     add_library(hawk_1024_glue OBJECT sig_hawk1024.c)
     target_include_directories(hawk_1024_glue PRIVATE ${CMAKE_CURRENT_LIST_DIR})
     target_include_directories(hawk_1024_glue PRIVATE ${CMAKE_CURRENT_LIST_DIR}/hawk_1024)
+    target_compile_definitions(hawk_1024_glue PRIVATE ${HAWK_1024_API_DEFINES})
     
     set(_HAWK_OBJS ${_HAWK_OBJS} $<TARGET_OBJECTS:hawk_1024> $<TARGET_OBJECTS:hawk_1024_glue>)
 endif()

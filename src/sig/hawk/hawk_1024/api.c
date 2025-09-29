@@ -3,6 +3,7 @@
 
 #include "api.h"
 #include "hawk.h"
+#include "randombytes.h"
 
 #define LOGN   10
 
@@ -12,9 +13,6 @@
 	|| HAWK_SIG_SIZE(LOGN) != CRYPTO_BYTES
 #error Invalid scheme sizes
 #endif
-
-/* Provided externally. */
-void randombytes(unsigned char *x, unsigned long long xlen);
 
 /*
  * Wrapper for randombytes() that follows the hawk_rng type.

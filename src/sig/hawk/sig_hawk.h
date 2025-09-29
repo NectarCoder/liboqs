@@ -28,8 +28,8 @@ extern "C" {
 /** Hawk-512 secret key length, in bytes */
 #define OQS_SIG_hawk_512_length_secret_key 184
 
-/** Hawk-512 signature length, in bytes (maximum size for signed message) */
-#define OQS_SIG_hawk_512_length_signature 8365
+/** Hawk-512 signature length, in bytes */
+#define OQS_SIG_hawk_512_length_signature 555
 
 /**
  * \brief Process a Hawk-512 key pair.
@@ -44,8 +44,8 @@ OQS_API OQS_STATUS OQS_SIG_hawk_512_keypair(uint8_t *public_key, uint8_t *secret
 /**
  * \brief Signing function for Hawk-512.
  *
- * \param[out] signature       Pointer to the buffer for the signature (5444 bytes).
- * \param[out] signature_len   Pointer to the length of the signature (always 5444).
+ * \param[out] signature       Pointer to the buffer for the signature (555 bytes).
+ * \param[out] signature_len   Pointer to the length of the signature (always 555).
  * \param[in]  message         Pointer to the message to be signed.
  * \param[in]  message_len     Length of the message to be signed.
  * \param[in]  secret_key      Pointer to the secret key (80 bytes).
@@ -58,7 +58,7 @@ OQS_API OQS_STATUS OQS_SIG_hawk_512_sign(uint8_t *signature, size_t *signature_l
  *
  * \param[in]  message          Pointer to the message.
  * \param[in]  message_len      Length of the message.
- * \param[in]  signature        Pointer to the signature (5444 bytes).
+ * \param[in]  signature        Pointer to the signature (555 bytes).
  * \param[in]  signature_len    Length of the signature.
  * \param[in]  public_key       Pointer to the public key (64 bytes).
  * \return OQS_SUCCESS or OQS_ERROR
@@ -109,8 +109,8 @@ OQS_SIG *OQS_SIG_hawk_512_new(void);
 /** Hawk-1024 secret key length, in bytes */
 #define OQS_SIG_hawk_1024_length_secret_key 360
 
-/** Hawk-1024 signature length, in bytes (maximum size for signed message) */
-#define OQS_SIG_hawk_1024_length_signature 8365
+/** Hawk-1024 signature length, in bytes */
+#define OQS_SIG_hawk_1024_length_signature 1221
 
 /**
  * \brief Process a Hawk-1024 key pair.
@@ -125,8 +125,8 @@ OQS_API OQS_STATUS OQS_SIG_hawk_1024_keypair(uint8_t *public_key, uint8_t *secre
 /**
  * \brief Signing function for Hawk-1024.
  *
- * \param[out] signature       Pointer to the buffer for the signature (5444 bytes).
- * \param[out] signature_len   Pointer to the length of the signature (always 5444).
+ * \param[out] signature       Pointer to the buffer for the signature (1221 bytes).
+ * \param[out] signature_len   Pointer to the length of the signature (always 1221).
  * \param[in]  message         Pointer to the message to be signed.
  * \param[in]  message_len     Length of the message to be signed.
  * \param[in]  secret_key      Pointer to the secret key (80 bytes).
@@ -139,7 +139,7 @@ OQS_API OQS_STATUS OQS_SIG_hawk_1024_sign(uint8_t *signature, size_t *signature_
  *
  * \param[in]  message          Pointer to the message.
  * \param[in]  message_len      Length of the message.
- * \param[in]  signature        Pointer to the signature (5444 bytes).
+ * \param[in]  signature        Pointer to the signature (1221 bytes).
  * \param[in]  signature_len    Length of the signature.
  * \param[in]  public_key       Pointer to the public key (64 bytes).
  * \return OQS_SUCCESS or OQS_ERROR
