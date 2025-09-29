@@ -15,7 +15,23 @@ parameter-sets:
   claimed-security: EUF-CMA
   length-public-key: 148
   length-secret-key: 164
-  length-signature: 16384 # TODO: tighten once upstream signature size is confirmed
+  length-signature: 8345
+  implementations-switch-on-runtime-cpu-features: false
+  implementations:
+  - upstream: primary-upstream
+    upstream-id: ref
+    supported-platforms: TODO
+    common-crypto:
+    - TODO
+    no-secret-dependent-branching-claimed: TODO
+    no-secret-dependent-branching-checked-by-valgrind: TODO
+    large-stack-usage: TODO
+- name: PERK-128-short-3
+  claimed-nist-level: 1
+  claimed-security: EUF-CMA
+  length-public-key: 148
+  length-secret-key: 164
+  length-signature: 6251
   implementations-switch-on-runtime-cpu-features: false
   implementations:
   - upstream: primary-upstream

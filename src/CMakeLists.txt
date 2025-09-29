@@ -110,6 +110,11 @@ add_library(oqs kem/kem.c
 # Internal library to be used only by test programs
 add_library(oqs-internal STATIC ${INTERNAL_OBJS})
 
+if(PERK_LIBS)
+    target_link_libraries(oqs PUBLIC ${PERK_LIBS})
+    target_link_libraries(oqs-internal PUBLIC ${PERK_LIBS})
+endif()
+
 if(DEFINED SANITIZER_LD_FLAGS)
     target_link_libraries(oqs PUBLIC ${SANITIZER_LD_FLAGS})
     target_link_libraries(oqs-internal PUBLIC ${SANITIZER_LD_FLAGS})

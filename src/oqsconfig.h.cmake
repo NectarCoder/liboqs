@@ -333,6 +333,7 @@
 
 #cmakedefine OQS_ENABLE_SIG_PERK 1
 #cmakedefine OQS_ENABLE_SIG_perk_128_fast_3 1
+#cmakedefine OQS_ENABLE_SIG_perk_128_short_3 1
 
 #cmakedefine OQS_ENABLE_SIG_HAWK 1
 #cmakedefine OQS_ENABLE_SIG_hawk_512 1

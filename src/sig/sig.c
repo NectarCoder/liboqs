@@ -84,6 +84,7 @@ OQS_API const char *OQS_SIG_alg_identifier(size_t i) {
 		OQS_SIG_alg_snova_SNOVA_60_10_4,
 		OQS_SIG_alg_snova_SNOVA_29_6_5,
 		OQS_SIG_alg_perk_128_fast_3,
+		OQS_SIG_alg_perk_128_short_3,
 		OQS_SIG_alg_hawk_512,
 		OQS_SIG_alg_hawk_1024,
 		OQS_SIG_alg_mirath_tcith_1a_fast,
@@ -590,7 +591,14 @@ OQS_API int OQS_SIG_alg_is_enabled(const char *method_name) {
 		return 0;
 #endif
 
-} else if (0 == strcasecmp(method_name, OQS_SIG_alg_hawk_512)) {
+	} else if (0 == strcasecmp(method_name, OQS_SIG_alg_perk_128_short_3)) {
+#ifdef OQS_ENABLE_SIG_perk_128_short_3
+		return 1;
+#else
+		return 0;
+#endif
+
+	} else if (0 == strcasecmp(method_name, OQS_SIG_alg_hawk_512)) {
 #ifdef OQS_ENABLE_SIG_hawk_512
 		return 1;
 #else
@@ -1107,6 +1115,13 @@ OQS_API OQS_SIG *OQS_SIG_new(const char *method_name) {
 	} else if (0 == strcasecmp(method_name, OQS_SIG_alg_perk_128_fast_3)) {
 #ifdef OQS_ENABLE_SIG_perk_128_fast_3
 		return OQS_SIG_perk_128_fast_3_new();
+#else
+		return NULL;
+#endif
+
+	} else if (0 == strcasecmp(method_name, OQS_SIG_alg_perk_128_short_3)) {
+#ifdef OQS_ENABLE_SIG_perk_128_short_3
+		return OQS_SIG_perk_128_short_3_new();
 #else
 		return NULL;
 #endif

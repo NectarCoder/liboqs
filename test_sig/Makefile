@@ -1,6 +1,6 @@
 CC=gcc
 CFLAGS=-I../src -I../build/include
-LDFLAGS=-L../build/lib -loqs -loqs-internal -lcrypto -lssl
+LDFLAGS=-L../build/lib -loqs -loqs-internal -lcrypto -lssl -lgmp
 
  .PHONY: all clean test_sig
 all: test_sig

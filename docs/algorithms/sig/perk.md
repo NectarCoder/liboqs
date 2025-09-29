@@ -13,11 +13,18 @@
 
 |  Parameter set  | Parameter set alias   | Security model   |   Claimed NIST Level |   Public key size (bytes) |   Secret key size (bytes) |   Signature size (bytes) |
 |:---------------:|:----------------------|:-----------------|---------------------:|--------------------------:|--------------------------:|-------------------------:|
-| PERK-128-fast-3 | NA                    | EUF-CMA          |                    1 |                       148 |                       164 |                   16384* |
-
-\*The current liboqs integration allocates a buffer large enough to hold the complete signed message; tighten once the upstream signature size is confirmed.
+| PERK-128-fast-3 | NA                    | EUF-CMA          |                    1 |                       148 |                       164 |                    8345 |
+| PERK-128-short-3 | NA                   | EUF-CMA          |                    1 |                       148 |                       164 |                    6251 |
 
 ## PERK-128-fast-3 implementation characteristics
+
+|       Implementation source       | Identifier in upstream   | Supported architecture(s)   | Supported operating system(s)   | CPU extension(s) used   | No branching-on-secrets claimed?   | No branching-on-secrets checked by valgrind?   | Large stack usage?   |
+|:---------------------------------:|:-------------------------|:----------------------------|:--------------------------------|:------------------------|:-----------------------------------|:-----------------------------------------------|:---------------------|
+| [Primary Source](#primary-source) | ref                      | TODO                        | TODO                            | TODO                    | TODO                               | TODO                                           | TODO                 |
+
+Are implementations chosen based on runtime CPU feature detection? **No**.
+
+## PERK-128-short-3 implementation characteristics
 
 |       Implementation source       | Identifier in upstream   | Supported architecture(s)   | Supported operating system(s)   | CPU extension(s) used   | No branching-on-secrets claimed?   | No branching-on-secrets checked by valgrind?   | Large stack usage?   |
 |:---------------------------------:|:-------------------------|:----------------------------|:--------------------------------|:------------------------|:-----------------------------------|:-----------------------------------------------|:---------------------|
