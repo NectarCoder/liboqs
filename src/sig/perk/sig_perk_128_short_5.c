@@ -1,18 +1,18 @@
 /**
- * \file sig_perk_128_short_3.c
- * \brief Implementation of OQS_SIG wrapper for PERK-128-short-3
+ * \file sig_perk_128_short_5.c
+ * \brief Implementation of OQS_SIG wrapper for PERK-128-short-5
  */
 
 #include <oqs/sig_perk.h>
 
-#if defined(OQS_ENABLE_SIG_perk_128_short_3)
+#if defined(OQS_ENABLE_SIG_perk_128_short_5)
 
-#include "perk_128_short_3/api.h"
+#include "perk_128_short_5/api.h"
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 
-OQS_SIG *OQS_SIG_perk_128_short_3_new(void) {
+OQS_SIG *OQS_SIG_perk_128_short_5_new(void) {
 
 	OQS_SIG *sig = malloc(sizeof(OQS_SIG));
 	if (sig == NULL) {
@@ -20,26 +20,26 @@ OQS_SIG *OQS_SIG_perk_128_short_3_new(void) {
 	}
 	memset(sig, 0, sizeof(OQS_SIG));
 
-	sig->method_name = OQS_SIG_alg_perk_128_short_3;
+	sig->method_name = OQS_SIG_alg_perk_128_short_5;
 	sig->alg_version = "1.0";
 
 	sig->claimed_nist_level = 1;
 	sig->euf_cma = true;
 
-	sig->length_public_key = OQS_SIG_perk_128_short_3_length_public_key;
-	sig->length_secret_key = OQS_SIG_perk_128_short_3_length_secret_key;
-	sig->length_signature = OQS_SIG_perk_128_short_3_length_signature;
+	sig->length_public_key = OQS_SIG_perk_128_short_5_length_public_key;
+	sig->length_secret_key = OQS_SIG_perk_128_short_5_length_secret_key;
+	sig->length_signature = OQS_SIG_perk_128_short_5_length_signature;
 
-	sig->keypair = (OQS_STATUS (*)(uint8_t *, uint8_t *)) OQS_SIG_perk_128_short_3_keypair;
-	sig->sign = (OQS_STATUS (*)(uint8_t *, size_t *, const uint8_t *, size_t, const uint8_t *)) OQS_SIG_perk_128_short_3_sign;
-	sig->verify = (OQS_STATUS (*)(const uint8_t *, size_t, const uint8_t *, size_t, const uint8_t *)) OQS_SIG_perk_128_short_3_verify;
-	sig->sign_with_ctx_str = (OQS_STATUS (*)(uint8_t *, size_t *, const uint8_t *, size_t, const uint8_t *, size_t, const uint8_t *)) OQS_SIG_perk_128_short_3_sign_with_ctx_str;
-	sig->verify_with_ctx_str = (OQS_STATUS (*)(const uint8_t *, size_t, const uint8_t *, size_t, const uint8_t *, size_t, const uint8_t *)) OQS_SIG_perk_128_short_3_verify_with_ctx_str;
+	sig->keypair = (OQS_STATUS (*)(uint8_t *, uint8_t *)) OQS_SIG_perk_128_short_5_keypair;
+	sig->sign = (OQS_STATUS (*)(uint8_t *, size_t *, const uint8_t *, size_t, const uint8_t *)) OQS_SIG_perk_128_short_5_sign;
+	sig->verify = (OQS_STATUS (*)(const uint8_t *, size_t, const uint8_t *, size_t, const uint8_t *)) OQS_SIG_perk_128_short_5_verify;
+	sig->sign_with_ctx_str = (OQS_STATUS (*)(uint8_t *, size_t *, const uint8_t *, size_t, const uint8_t *, size_t, const uint8_t *)) OQS_SIG_perk_128_short_5_sign_with_ctx_str;
+	sig->verify_with_ctx_str = (OQS_STATUS (*)(const uint8_t *, size_t, const uint8_t *, size_t, const uint8_t *, size_t, const uint8_t *)) OQS_SIG_perk_128_short_5_verify_with_ctx_str;
 
 	return sig;
 }
 
-OQS_API OQS_STATUS OQS_SIG_perk_128_short_3_keypair(uint8_t *public_key, uint8_t *secret_key) {
+OQS_API OQS_STATUS OQS_SIG_perk_128_short_5_keypair(uint8_t *public_key, uint8_t *secret_key) {
 	if (crypto_sign_keypair(public_key, secret_key) == 0) {
 		return OQS_SUCCESS;
 	} else {
@@ -47,7 +47,7 @@ OQS_API OQS_STATUS OQS_SIG_perk_128_short_3_keypair(uint8_t *public_key, uint8_t
 	}
 }
 
-OQS_API OQS_STATUS OQS_SIG_perk_128_short_3_sign(uint8_t *signature, size_t *signature_len, const uint8_t *message, size_t message_len, const uint8_t *secret_key) {
+OQS_API OQS_STATUS OQS_SIG_perk_128_short_5_sign(uint8_t *signature, size_t *signature_len, const uint8_t *message, size_t message_len, const uint8_t *secret_key) {
 	if (message_len > SIZE_MAX - CRYPTO_BYTES) {
 		return OQS_ERROR;
 	}
@@ -72,7 +72,7 @@ OQS_API OQS_STATUS OQS_SIG_perk_128_short_3_sign(uint8_t *signature, size_t *sig
 	return OQS_SUCCESS;
 }
 
-OQS_API OQS_STATUS OQS_SIG_perk_128_short_3_verify(const uint8_t *message, size_t message_len, const uint8_t *signature, size_t signature_len, const uint8_t *public_key) {
+OQS_API OQS_STATUS OQS_SIG_perk_128_short_5_verify(const uint8_t *message, size_t message_len, const uint8_t *signature, size_t signature_len, const uint8_t *public_key) {
 	if (signature_len != CRYPTO_BYTES) {
 		return OQS_ERROR;
 	}
@@ -107,18 +107,18 @@ OQS_API OQS_STATUS OQS_SIG_perk_128_short_3_verify(const uint8_t *message, size_
 	return OQS_SUCCESS;
 }
 
-OQS_API OQS_STATUS OQS_SIG_perk_128_short_3_sign_with_ctx_str(uint8_t *signature, size_t *signature_len, const uint8_t *message, size_t message_len, const uint8_t *ctx_str, size_t ctx_str_len, const uint8_t *secret_key) {
+OQS_API OQS_STATUS OQS_SIG_perk_128_short_5_sign_with_ctx_str(uint8_t *signature, size_t *signature_len, const uint8_t *message, size_t message_len, const uint8_t *ctx_str, size_t ctx_str_len, const uint8_t *secret_key) {
 	if (ctx_str != NULL && ctx_str_len > 0) {
 		return OQS_ERROR;
 	}
-	return OQS_SIG_perk_128_short_3_sign(signature, signature_len, message, message_len, secret_key);
+	return OQS_SIG_perk_128_short_5_sign(signature, signature_len, message, message_len, secret_key);
 }
 
-OQS_API OQS_STATUS OQS_SIG_perk_128_short_3_verify_with_ctx_str(const uint8_t *message, size_t message_len, const uint8_t *signature, size_t signature_len, const uint8_t *ctx_str, size_t ctx_str_len, const uint8_t *public_key) {
+OQS_API OQS_STATUS OQS_SIG_perk_128_short_5_verify_with_ctx_str(const uint8_t *message, size_t message_len, const uint8_t *signature, size_t signature_len, const uint8_t *ctx_str, size_t ctx_str_len, const uint8_t *public_key) {
 	if (ctx_str != NULL && ctx_str_len > 0) {
 		return OQS_ERROR;
 	}
-	return OQS_SIG_perk_128_short_3_verify(message, message_len, signature, signature_len, public_key);
+	return OQS_SIG_perk_128_short_5_verify(message, message_len, signature, signature_len, public_key);
 }
 
 #endif
