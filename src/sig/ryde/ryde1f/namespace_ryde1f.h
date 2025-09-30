@@ -34,6 +34,9 @@
 #define KeccakP1600_Initialize OQS_RYDE1F_KeccakP1600_Initialize
 #include <stdint.h>
 
+void OQS_RYDE1F_KeccakP1600times4_StaticInitialize(void);
+void OQS_RYDE1F_KeccakP1600times4_AddByte(void *states, unsigned int instanceIndex, unsigned char byte, unsigned int offset);
+
 static inline void OQS_RYDE1F_KeccakP1600_AddByte(void *state, unsigned char byte, unsigned int offset) {
 	uint64_t lane = (uint64_t)byte << ((offset % 8U) * 8U);
 	((uint64_t *)state)[offset / 8U] ^= lane;
