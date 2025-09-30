@@ -1,7 +1,7 @@
 #include <string.h>
-#include "prng.h"
+#include "common/prng.h"
 #include "mirath_parameters.h"
-#include "hash.h"
+#include "common/hash.h"
 #include "mirath_matrix_ff.h"
 #include "mirath_tcith.h"
 

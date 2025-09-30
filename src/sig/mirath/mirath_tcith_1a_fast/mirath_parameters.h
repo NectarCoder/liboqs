@@ -5,8 +5,7 @@
 
 #ifndef MIRATH_PARAMETER_H
 #define MIRATH_PARAMETER_H
-
-#include "mirath_param_128a.h"
+#include "parameters/mirath_param_128a.h"
 
 #define DOMAIN_SEPARATOR_MESSAGE 0
 #define DOMAIN_SEPARATOR_HASH1 1

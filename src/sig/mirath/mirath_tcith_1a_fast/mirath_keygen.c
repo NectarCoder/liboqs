@@ -1,7 +1,7 @@
 #include <stdint.h>
 
-#include "prng.h"
-#include "random.h"
+#include "common/prng.h"
+#include "common/random.h"
 #include "mirath_matrix_ff.h"
 #include "mirath_parsing.h"
 #include "mirath_tcith.h"

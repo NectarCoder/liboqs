@@ -29,7 +29,7 @@ extern "C" {
 #define OQS_SIG_mirath_tcith_1a_fast_length_secret_key 32
 
 /** Hawk-512 signature length, in bytes (maximum size for signed message) */
-#define OQS_SIG_mirath_tcith_1a_fast_length_signature 3728
+#define OQS_SIG_mirath_tcith_1a_fast_length_signature 8366
 
 /**
  * \brief Process a Hawk-512 key pair.
