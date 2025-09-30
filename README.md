@@ -4,6 +4,7 @@ Contributors:
 
 - [NectarCoder](https://github.com/NectarCoder)
 - [ryanesloven](https://github.com/ryanesloven)
+- [DoNotDisturbs](https://github.com/DoNotDisturbs)
 
 ## Getting started
 
@@ -14,9 +15,20 @@ From the project root directory:
 Run `./SETUP_DEPS.sh` to download and install the dependencies. Then,  
 Run `./SETUP.sh` to build liboqs with all algorithms enabled.
 
+> **NOTE:** Currently, Mirath integration is still in progress, and liboqs does not build.  
+Use this command to build instead:  
+`CMAKE_PARAMS='-DOQS_ENABLE_SIG_MIRATH=OFF -DOQS_ENABLE_SIG_mirath_tcith_1a_fast=OFF' ./SETUP.sh`
+
 Go to the `test_sig` folder, run `make`.  
 Run `./test_sig <algorithm-id>` to see some test results.  
-Algorithm list can be found in `src/sig/sig.h` header.
+Algorithm ID list can be found in the `src/sig/sig.h` header.  
+
+Example usage (for HAWK512):  
+```bash
+cd test_sig
+make clean; make
+./test_sig hawk-512
+```
 
 ---
 <br>  
