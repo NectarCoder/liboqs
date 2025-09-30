@@ -618,7 +618,7 @@ OQS_API int OQS_SIG_alg_is_enabled(const char *method_name) {
 #endif
 
 } else if (0 == strcasecmp(method_name, OQS_SIG_alg_ryde1f)) {
-#ifdef OQS_ENABLE_SIG_ryde1f
+#ifdef OQS_ENABLE_SIG_ryde_1f
 		return 1;
 #else
 		return 0;
@@ -1146,7 +1146,7 @@ OQS_API OQS_SIG *OQS_SIG_new(const char *method_name) {
 #endif
 
 } else if (0 == strcasecmp(method_name, OQS_SIG_alg_ryde1f)) {
-#ifdef OQS_ENABLE_SIG_ryde1f
+#ifdef OQS_ENABLE_SIG_ryde_1f
 		return OQS_SIG_ryde1f_new();
 #else
 		return NULL;

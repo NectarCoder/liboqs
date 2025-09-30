@@ -1,0 +1,44 @@
+name: HAWK
+type: signature
+principal-submitters:
+- TODO
+crypto-assumption: TODO
+website: TODO
+nist-round: TODO
+spec-version: TODO
+primary-upstream:
+  source: TODO
+  spdx-license-identifier: TODO
+parameter-sets:
+- name: Hawk-512
+  claimed-nist-level: 1
+  claimed-security: EUF-CMA
+  length-public-key: 1024
+  length-secret-key: 184
+  length-signature: 555
+  implementations-switch-on-runtime-cpu-features: false
+  implementations:
+  - upstream: primary-upstream
+    upstream-id: ref
+    supported-platforms: TODO
+    common-crypto:
+    - TODO
+    no-secret-dependent-branching-claimed: TODO
+    no-secret-dependent-branching-checked-by-valgrind: TODO
+    large-stack-usage: TODO
+- name: Hawk-1024
+  claimed-nist-level: 5
+  claimed-security: EUF-CMA
+  length-public-key: 2440
+  length-secret-key: 360
+  length-signature: 1221
+  implementations-switch-on-runtime-cpu-features: false
+  implementations:
+  - upstream: primary-upstream
+    upstream-id: ref
+    supported-platforms: TODO
+    common-crypto:
+    - TODO
+    no-secret-dependent-branching-claimed: TODO
+    no-secret-dependent-branching-checked-by-valgrind: TODO
+    large-stack-usage: TODO
