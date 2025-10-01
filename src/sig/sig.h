@@ -172,6 +172,16 @@ extern "C" {
 #define OQS_SIG_alg_perk_128_fast_3 "PERK-128-fast-3"
 /** Algorithm identifier for PERK-128-short-3 */
 #define OQS_SIG_alg_perk_128_short_3 "PERK-128-short-3"
+/** Algorithm identifier for PERK-128-short-5 */
+#define OQS_SIG_alg_perk_128_short_5 "PERK-128-short-5"
+/** Algorithm identifier for PERK-192-short-3 */
+#define OQS_SIG_alg_perk_192_short_3 "PERK-192-short-3"
+/** Algorithm identifier for PERK-192-short-5 */
+#define OQS_SIG_alg_perk_192_short_5 "PERK-192-short-5"
+/** Algorithm identifier for PERK-256-short-3 */
+#define OQS_SIG_alg_perk_256_short_3 "PERK-256-short-3"
+/** Algorithm identifier for PERK-256-short-5 */
+#define OQS_SIG_alg_perk_256_short_5 "PERK-256-short-5"
 /** Algorithm identifier for Hawk-512 */
 #define OQS_SIG_alg_hawk_512 "Hawk-512"
 /** Algorithm identifier for Hawk-1024 */
@@ -185,7 +195,7 @@ extern "C" {
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALGS_LENGTH_START
 
 /** Number of algorithm identifiers above. */
-#define OQS_SIG_algs_length 74
+#define OQS_SIG_algs_length 79
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALGS_LENGTH_END
 
 /**
