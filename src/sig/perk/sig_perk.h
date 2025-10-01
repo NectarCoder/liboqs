@@ -189,13 +189,13 @@ OQS_SIG *OQS_SIG_perk_128_short_3_new(void);
 #define OQS_SIG_alg_perk_128_short_5 "PERK-128-short-5"
 
 /** PERK-128-short-5 public key length, in bytes */
-#define OQS_SIG_perk_128_short_5_length_public_key 148
+#define OQS_SIG_perk_128_short_5_length_public_key 241
 
 /** PERK-128-short-5 secret key length, in bytes */
-#define OQS_SIG_perk_128_short_5_length_secret_key 164
+#define OQS_SIG_perk_128_short_5_length_secret_key 257
 
 /** PERK-128-short-5 signature length, in bytes */
-#define OQS_SIG_perk_128_short_5_length_signature 6251
+#define OQS_SIG_perk_128_short_5_length_signature 5780
 
 /**
  * \brief Process a PERK-128-short-5 key pair.
@@ -275,13 +275,13 @@ OQS_SIG *OQS_SIG_perk_128_short_5_new(void);
 #define OQS_SIG_alg_perk_192_short_3 "PERK-192-short-3"
 
 /** PERK-192-short-3 public key length, in bytes */
-#define OQS_SIG_perk_192_short_3_length_public_key 192
+#define OQS_SIG_perk_192_short_3_length_public_key 227
 
 /** PERK-192-short-3 secret key length, in bytes */
-#define OQS_SIG_perk_192_short_3_length_secret_key 164
+#define OQS_SIG_perk_192_short_3_length_secret_key 251
 
 /** PERK-192-short-3 signature length, in bytes */
-#define OQS_SIG_perk_192_short_3_length_signature 6251
+#define OQS_SIG_perk_192_short_3_length_signature 14280
 
 /**
  * \brief Process a PERK-192-short-3 key pair.
@@ -361,13 +361,13 @@ OQS_SIG *OQS_SIG_perk_192_short_3_new(void);
 #define OQS_SIG_alg_perk_192_short_5 "PERK-192-short-5"
 
 /** PERK-192-short-5 public key length, in bytes */
-#define OQS_SIG_perk_192_short_5_length_public_key 192
+#define OQS_SIG_perk_192_short_5_length_public_key 386
 
 /** PERK-192-short-5 secret key length, in bytes */
-#define OQS_SIG_perk_192_short_5_length_secret_key 164
+#define OQS_SIG_perk_192_short_5_length_secret_key 392
 
 /** PERK-192-short-5 signature length, in bytes */
-#define OQS_SIG_perk_192_short_5_length_signature 6251
+#define OQS_SIG_perk_192_short_5_length_signature 13164
 
 /**
  * \brief Process a PERK-192-short-5 key pair.
@@ -446,13 +446,13 @@ OQS_SIG *OQS_SIG_perk_192_short_5_new(void);
 #define OQS_SIG_alg_perk_256_short_3 "PERK-256-short-3"
 
 /** PERK-256-short-3 public key length, in bytes */
-#define OQS_SIG_perk_256_short_3_length_public_key 192
+#define OQS_SIG_perk_256_short_3_length_public_key 594
 
 /** PERK-256-short-3 secret key length, in bytes */
-#define OQS_SIG_perk_256_short_3_length_secret_key 164
+#define OQS_SIG_perk_256_short_3_length_secret_key 626
 
 /** PERK-256-short-3 signature length, in bytes */
-#define OQS_SIG_perk_256_short_3_length_signature 6251
+#define OQS_SIG_perk_256_short_3_length_signature 30317
 
 /**
  * \brief Process a PERK-256-short-3 key pair.
@@ -530,13 +530,13 @@ OQS_SIG *OQS_SIG_perk_256_short_3_new(void);
 #define OQS_SIG_alg_perk_256_short_5 "PERK-256-short-5"
 
 /** PERK-256-short-5 public key length, in bytes */
-#define OQS_SIG_perk_256_short_5_length_public_key 192
+#define OQS_SIG_perk_256_short_5_length_public_key 507
 
 /** PERK-256-short-3 secret key length, in bytes */
-#define OQS_SIG_perk_256_short_5_length_secret_key 164
+#define OQS_SIG_perk_256_short_5_length_secret_key 539
 
 /** PERK-256-short-3 signature length, in bytes */
-#define OQS_SIG_perk_256_short_5_length_signature 6251
+#define OQS_SIG_perk_256_short_5_length_signature 23040
 
 /**
  * \brief Process a PERK-256-short-5 key pair.
