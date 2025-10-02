@@ -11,10 +11,15 @@
 
 ## Parameter set summary
 
-|  Parameter set  | Parameter set alias   | Security model   |   Claimed NIST Level |   Public key size (bytes) |   Secret key size (bytes) |   Signature size (bytes) |
-|:---------------:|:----------------------|:-----------------|---------------------:|--------------------------:|--------------------------:|-------------------------:|
-| PERK-128-fast-3 | NA                    | EUF-CMA          |                    1 |                       148 |                       164 |                    8345 |
-| PERK-128-short-3 | NA                   | EUF-CMA          |                    1 |                       148 |                       164 |                    6251 |
+| Parameter set       | Parameter set alias | Security model | Claimed NIST Level | Public key size (bytes) | Secret key size (bytes) | Signature size (bytes) |
+|:--------------------|:--------------------|:---------------|--------------------:|------------------------:|------------------------:|-----------------------:|
+| PERK-128-fast-3     | NA                  | EUF-CMA        |                   1 |                     148 |                     164 |                   8345 |
+| PERK-128-short-3    | NA                  | EUF-CMA        |                   1 |                     148 |                     164 |                   6251 |
+| PERK-128-short-5    | NA                  | EUF-CMA        |                   1 |                     241 |                     257 |                   5780 |
+| PERK-192-short-3    | NA                  | EUF-CMA        |                   1 |                     227 |                     251 |                  14280 |
+| PERK-192-short-5    | NA                  | EUF-CMA        |                   1 |                     368 |                     392 |                  13164 |
+| PERK-256-short-3    | NA                  | EUF-CMA        |                   1 |                     314 |                     346 |                  25141 |
+| PERK-256-short-5    | NA                  | EUF-CMA        |                   1 |                     507 |                     539 |                  23040 |
 
 ## PERK-128-fast-3 implementation characteristics
 

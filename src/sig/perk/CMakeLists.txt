@@ -116,7 +116,7 @@ if(OQS_ENABLE_SIG_perk_128_short_3)
     set(_PERK_OBJS ${_PERK_OBJS} $<TARGET_OBJECTS:perk_128_short_3_ref> $<TARGET_OBJECTS:perk_128_short_3_glue>)
 endif()
 
-//////////////////////////////////////////////////////////////////
+#///////////////////////////////////////////////////////////////////
 # PERK 128-short-5 bundled dependencies (namespaced to avoid conflicts)
 set(PERK_128_SHORT_5_LIB_SOURCES
     perk_128_short_5/lib/cryptocode/crypto_memset.c
@@ -165,7 +165,7 @@ if(OQS_ENABLE_SIG_perk_128_short_5)
         ${CMAKE_CURRENT_LIST_DIR}/perk_128_short_5/lib/randombytes
         ${CMAKE_CURRENT_LIST_DIR}/perk_128_short_5/lib/XKCP)
 
-    set(perk_128_short_5_NAMESPACE_HEADER ${CMAKE_CURRENT_LIST_DIR}/perk_128_short_5/namespace_perk_128_short_5.h)
+    set(PERK_128_SHORT_5_NAMESPACE_HEADER ${CMAKE_CURRENT_LIST_DIR}/perk_128_short_5/namespace_perk_128_short_5.h)
     target_compile_options(perk_128_short_5_ref PRIVATE "-include" ${PERK_128_SHORT_5_NAMESPACE_HEADER})
 
     add_library(perk_128_short_5_glue OBJECT sig_perk_128_short_5.c)
@@ -177,7 +177,7 @@ if(OQS_ENABLE_SIG_perk_128_short_5)
     set(_PERK_OBJS ${_PERK_OBJS} $<TARGET_OBJECTS:perk_128_short_5_ref> $<TARGET_OBJECTS:perk_128_short_5_glue>)
 endif()
 
-//////////////////////////////////////////////////////////////////
+#//////////////////////////////////////////////////////////////////
 
 # PERK 192-short-3 bundled dependencies (namespaced to avoid conflicts)
 set(PERK_192_SHORT_3_LIB_SOURCES
@@ -227,7 +227,7 @@ if(OQS_ENABLE_SIG_perk_192_short_3)
         ${CMAKE_CURRENT_LIST_DIR}/perk_192_short_3/lib/randombytes
         ${CMAKE_CURRENT_LIST_DIR}/perk_192_short_3/lib/XKCP)
 
-    set(perk_192_short_3_NAMESPACE_HEADER ${CMAKE_CURRENT_LIST_DIR}/perk_192_short_3/namespace_perk_192_short_3.h)
+    set(PERK_192_SHORT_3_NAMESPACE_HEADER ${CMAKE_CURRENT_LIST_DIR}/perk_192_short_3/namespace_perk_192_short_3.h)
     target_compile_options(perk_192_short_3_ref PRIVATE "-include" ${PERK_192_SHORT_3_NAMESPACE_HEADER})
 
     add_library(perk_192_short_3_glue OBJECT sig_perk_192_short_3.c)
@@ -239,7 +239,7 @@ if(OQS_ENABLE_SIG_perk_192_short_3)
     set(_PERK_OBJS ${_PERK_OBJS} $<TARGET_OBJECTS:perk_192_short_3_ref> $<TARGET_OBJECTS:perk_192_short_3_glue>)
 endif()
 
-///////////////////////////////////////////////////////////////////
+#///////////////////////////////////////////////////////////////////
 
 # PERK 192-short-5 bundled dependencies (namespaced to avoid conflicts)
 set(PERK_192_SHORT_5_LIB_SOURCES
@@ -289,7 +289,7 @@ if(OQS_ENABLE_SIG_perk_192_short_5)
         ${CMAKE_CURRENT_LIST_DIR}/perk_192_short_5/lib/randombytes
         ${CMAKE_CURRENT_LIST_DIR}/perk_192_short_5/lib/XKCP)
 
-    set(perk_192_short_5_NAMESPACE_HEADER ${CMAKE_CURRENT_LIST_DIR}/perk_192_short_5/namespace_perk_192_short_5.h)
+    set(PERK_192_SHORT_5_NAMESPACE_HEADER ${CMAKE_CURRENT_LIST_DIR}/perk_192_short_5/namespace_perk_192_short_5.h)
     target_compile_options(perk_192_short_5_ref PRIVATE "-include" ${PERK_192_SHORT_5_NAMESPACE_HEADER})
 
     add_library(perk_192_short_5_glue OBJECT sig_perk_192_short_5.c)
@@ -302,7 +302,7 @@ if(OQS_ENABLE_SIG_perk_192_short_5)
 endif()
 
 
-///////////////////////////////////////////////////////////////////
+#///////////////////////////////////////////////////////////////////
 
 # PERK 256-short-3 bundled dependencies (namespaced to avoid conflicts)
 set(PERK_256_SHORT_3_LIB_SOURCES
@@ -352,7 +352,7 @@ if(OQS_ENABLE_SIG_perk_256_short_3)
         ${CMAKE_CURRENT_LIST_DIR}/perk_256_short_3/lib/randombytes
         ${CMAKE_CURRENT_LIST_DIR}/perk_256_short_3/lib/XKCP)
 
-    set(perk_256_short_3_NAMESPACE_HEADER ${CMAKE_CURRENT_LIST_DIR}/perk_256_short_3/namespace_perk_256_short_3.h)
+    set(PERK_256_SHORT_3_NAMESPACE_HEADER ${CMAKE_CURRENT_LIST_DIR}/perk_256_short_3/namespace_perk_256_short_3.h)
     target_compile_options(perk_256_short_3_ref PRIVATE "-include" ${PERK_256_SHORT_3_NAMESPACE_HEADER})
 
     add_library(perk_256_short_3_glue OBJECT sig_perk_256_short_3.c)
@@ -364,7 +364,7 @@ if(OQS_ENABLE_SIG_perk_256_short_3)
     set(_PERK_OBJS ${_PERK_OBJS} $<TARGET_OBJECTS:perk_256_short_3_ref> $<TARGET_OBJECTS:perk_256_short_3_glue>)
 endif()
 
-///////////////////////////////////////////////////////////////////
+#///////////////////////////////////////////////////////////////////
 
 # PERK 256-short-5 bundled dependencies (namespaced to avoid conflicts)
 set(PERK_256_SHORT_5_LIB_SOURCES
@@ -414,7 +414,7 @@ if(OQS_ENABLE_SIG_perk_256_short_5)
         ${CMAKE_CURRENT_LIST_DIR}/perk_256_short_5/lib/randombytes
         ${CMAKE_CURRENT_LIST_DIR}/perk_256_short_5/lib/XKCP)
 
-    set(perk_256_short_5_NAMESPACE_HEADER ${CMAKE_CURRENT_LIST_DIR}/perk_256_short_5/namespace_perk_256_short_5.h)
+    set(PERK_256_SHORT_5_NAMESPACE_HEADER ${CMAKE_CURRENT_LIST_DIR}/perk_256_short_5/namespace_perk_256_short_5.h)
     target_compile_options(perk_256_short_5_ref PRIVATE "-include" ${PERK_256_SHORT_5_NAMESPACE_HEADER})
 
     add_library(perk_256_short_5_glue OBJECT sig_perk_256_short_5.c)
@@ -426,7 +426,7 @@ if(OQS_ENABLE_SIG_perk_256_short_5)
     set(_PERK_OBJS ${_PERK_OBJS} $<TARGET_OBJECTS:perk_256_short_5_ref> $<TARGET_OBJECTS:perk_256_short_5_glue>)
 endif()
 
-////////////////////////////////////////////////////////////////////
+#////////////////////////////////////////////////////////////////////
 
 list(REMOVE_DUPLICATES _PERK_LIBS)
 

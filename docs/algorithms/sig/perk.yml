@@ -42,3 +42,83 @@ parameter-sets:
     no-secret-dependent-branching-claimed: TODO
     no-secret-dependent-branching-checked-by-valgrind: TODO
     large-stack-usage: TODO
+- name: PERK-128-short-5
+  claimed-nist-level: 1
+  claimed-security: EUF-CMA
+  length-public-key: 241
+  length-secret-key: 257
+  length-signature: 5780
+  implementations-switch-on-runtime-cpu-features: false
+  implementations:
+  - upstream: primary-upstream
+    upstream-id: ref
+    supported-platforms: TODO
+    common-crypto:
+    - TODO
+    no-secret-dependent-branching-claimed: TODO
+    no-secret-dependent-branching-checked-by-valgrind: TODO
+    large-stack-usage: TODO
+- name: PERK-192-short-3
+  claimed-nist-level: 1
+  claimed-security: EUF-CMA
+  length-public-key: 227
+  length-secret-key: 251
+  length-signature: 14280
+  implementations-switch-on-runtime-cpu-features: false
+  implementations:
+  - upstream: primary-upstream
+    upstream-id: ref
+    supported-platforms: TODO
+    common-crypto:
+    - TODO
+    no-secret-dependent-branching-claimed: TODO
+    no-secret-dependent-branching-checked-by-valgrind: TODO
+    large-stack-usage: TODO
+- name: PERK-192-short-5
+  claimed-nist-level: 1
+  claimed-security: EUF-CMA
+  length-public-key: 368
+  length-secret-key: 392
+  length-signature: 13164
+  implementations-switch-on-runtime-cpu-features: false
+  implementations:
+  - upstream: primary-upstream
+    upstream-id: ref
+    supported-platforms: TODO
+    common-crypto:
+    - TODO
+    no-secret-dependent-branching-claimed: TODO
+    no-secret-dependent-branching-checked-by-valgrind: TODO
+    large-stack-usage: TODO
+- name: PERK-256-short-3
+  claimed-nist-level: 1
+  claimed-security: EUF-CMA
+  length-public-key: 314
+  length-secret-key: 346
+  length-signature: 25141
+  implementations-switch-on-runtime-cpu-features: false
+  implementations:
+  - upstream: primary-upstream
+    upstream-id: ref
+    supported-platforms: TODO
+    common-crypto:
+    - TODO
+    no-secret-dependent-branching-claimed: TODO
+    no-secret-dependent-branching-checked-by-valgrind: TODO
+    large-stack-usage: TODO
+- name: PERK-256-short-5
+  claimed-nist-level: 1
+  claimed-security: EUF-CMA
+  length-public-key: 507
+  length-secret-key: 539
+  length-signature: 23040
+  implementations-switch-on-runtime-cpu-features: false
+  implementations:
+  - upstream: primary-upstream
+    upstream-id: ref
+    supported-platforms: TODO
+    common-crypto:
+    - TODO
+    no-secret-dependent-branching-claimed: TODO
+    no-secret-dependent-branching-checked-by-valgrind: TODO
+    large-stack-usage: TODO
