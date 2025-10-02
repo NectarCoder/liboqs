@@ -1,0 +1,28 @@
+name: RYDE
+type: signature
+principal-submitters:
+- TODO
+crypto-assumption: TODO
+website: TODO
+nist-round: TODO
+spec-version: TODO
+primary-upstream:
+  source: TODO
+  spdx-license-identifier: TODO
+parameter-sets:
+- name: RYDE-1F
+  claimed-nist-level: 1
+  claimed-security: EUF-CMA
+  length-public-key: 69
+  length-secret-key: 32
+  length-signature: 3597
+  implementations-switch-on-runtime-cpu-features: false
+  implementations:
+  - upstream: primary-upstream
+    upstream-id: ref
+    supported-platforms: TODO
+    common-crypto:
+    - TODO
+    no-secret-dependent-branching-claimed: TODO
+    no-secret-dependent-branching-checked-by-valgrind: TODO
+    large-stack-usage: TODO
