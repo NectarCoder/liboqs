@@ -192,12 +192,14 @@ extern "C" {
 #define OQS_SIG_alg_ryde_1f "RYDE-1F"
 /** Algorithm identifier for RYDE-1S */
 #define OQS_SIG_alg_ryde_1s "RYDE-1S"
+/** Algorithm identifier for RYDE-3S */
+#define OQS_SIG_alg_ryde_3s "RYDE-3S"
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALG_IDENTIFIER_END
 // EDIT-WHEN-ADDING-SIG
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALGS_LENGTH_START
 
 /** Number of algorithm identifiers above. */
-#define OQS_SIG_algs_length 80
+#define OQS_SIG_algs_length 81
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALGS_LENGTH_END
 
 /**
