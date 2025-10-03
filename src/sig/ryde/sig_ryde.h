@@ -20,30 +20,30 @@ extern "C" {
 
 /* ryde1f */
 
-/** Algorithm identifier for ryde1f */
-#define OQS_SIG_alg_ryde1f "RYDE-1F"
+/** Algorithm identifier for ryde_1f */
+#define OQS_SIG_alg_ryde_1f "RYDE-1F"
 
-/** ryde1f public key length, in bytes */
-#define OQS_SIG_ryde1f_length_public_key 69
+/** ryde_1f public key length, in bytes */
+#define OQS_SIG_ryde_1f_length_public_key 69
 
-/** ryde1f secret key length, in bytes */
-#define OQS_SIG_ryde1f_length_secret_key 32
+/** ryde_1f secret key length, in bytes */
+#define OQS_SIG_ryde_1f_length_secret_key 32
 
-/** ryde1f signature length, in bytes (maximum size for signed message) */
-#define OQS_SIG_ryde1f_length_signature 3597
+/** ryde_1f signature length, in bytes (maximum size for signed message) */
+#define OQS_SIG_ryde_1f_length_signature 3597
 
 /**
- * \brief Process a ryde1f key pair.
+ * \brief Process a ryde_1f key pair.
  * \warning The secret key contains the public key as a suffix.
  *
  * \param[out] public_key    Pointer to the buffer for the public key (69 bytes).
  * \param[out] secret_key    Pointer to the buffer for the secret key (32 bytes).
  * \return OQS_SUCCESS or OQS_ERROR
  */
-OQS_API OQS_STATUS OQS_SIG_ryde1f_keypair(uint8_t *public_key, uint8_t *secret_key);
+OQS_API OQS_STATUS OQS_SIG_ryde_1f_keypair(uint8_t *public_key, uint8_t *secret_key);
 
 /**
- * \brief Signing function for ryde1f.
+ * \brief Signing function for ryde_1f.
  *
  * \param[out] signature       Pointer to the buffer for the signature (3597 bytes).
  * \param[out] signature_len   Pointer to the length of the signature (always 3597).
@@ -52,10 +52,10 @@ OQS_API OQS_STATUS OQS_SIG_ryde1f_keypair(uint8_t *public_key, uint8_t *secret_k
  * \param[in]  secret_key      Pointer to the secret key (80 bytes).
  * \return OQS_SUCCESS or OQS_ERROR
  */
-OQS_API OQS_STATUS OQS_SIG_ryde1f_sign(uint8_t *signature, size_t *signature_len, const uint8_t *message, size_t message_len, const uint8_t *secret_key);
+OQS_API OQS_STATUS OQS_SIG_ryde_1f_sign(uint8_t *signature, size_t *signature_len, const uint8_t *message, size_t message_len, const uint8_t *secret_key);
 
 /**
- * \brief Verification function for ryde1f.
+ * \brief Verification function for ryde_1f.
  *
  * \param[in]  message          Pointer to the message.
  * \param[in]  message_len      Length of the message.
@@ -64,10 +64,10 @@ OQS_API OQS_STATUS OQS_SIG_ryde1f_sign(uint8_t *signature, size_t *signature_len
  * \param[in]  public_key       Pointer to the public key (64 bytes).
  * \return OQS_SUCCESS or OQS_ERROR
  */
-OQS_API OQS_STATUS OQS_SIG_ryde1f_verify(const uint8_t *message, size_t message_len, const uint8_t *signature, size_t signature_len, const uint8_t *public_key);
+OQS_API OQS_STATUS OQS_SIG_ryde_1f_verify(const uint8_t *message, size_t message_len, const uint8_t *signature, size_t signature_len, const uint8_t *public_key);
 
 /**
- * \brief ryde1f signature generation with context string.
+ * \brief ryde_1f signature generation with context string.
  *
  * \param[out] signature         Pointer to the output signature buffer.
  * \param[out] signature_len     Pointer to the length of the signature.
@@ -78,10 +78,10 @@ OQS_API OQS_STATUS OQS_SIG_ryde1f_verify(const uint8_t *message, size_t message_
  * \param[in]  secret_key        Pointer to the secret key.
  * \return OQS_SUCCESS or OQS_ERROR
  */
-OQS_API OQS_STATUS OQS_SIG_ryde1f_sign_with_ctx_str(uint8_t *signature, size_t *signature_len, const uint8_t *message, size_t message_len, const uint8_t *ctx_str, size_t ctx_str_len, const uint8_t *secret_key);
+OQS_API OQS_STATUS OQS_SIG_ryde_1f_sign_with_ctx_str(uint8_t *signature, size_t *signature_len, const uint8_t *message, size_t message_len, const uint8_t *ctx_str, size_t ctx_str_len, const uint8_t *secret_key);
 
 /**
- * \brief ryde1f signature verification with context string.
+ * \brief ryde_1f signature verification with context string.
  *
  * \param[in]  message           Pointer to the message.
  * \param[in]  message_len       Length of the message.
@@ -92,13 +92,13 @@ OQS_API OQS_STATUS OQS_SIG_ryde1f_sign_with_ctx_str(uint8_t *signature, size_t *
  * \param[in]  public_key        Pointer to the public key.
  * \return OQS_SUCCESS or OQS_ERROR
  */
-OQS_API OQS_STATUS OQS_SIG_ryde1f_verify_with_ctx_str(const uint8_t *message, size_t message_len, const uint8_t *signature, size_t signature_len, const uint8_t *ctx_str, size_t ctx_str_len, const uint8_t *public_key);
+OQS_API OQS_STATUS OQS_SIG_ryde_1f_verify_with_ctx_str(const uint8_t *message, size_t message_len, const uint8_t *signature, size_t signature_len, const uint8_t *ctx_str, size_t ctx_str_len, const uint8_t *public_key);
 
 #if defined(OQS_ENABLE_SIG_ryde_1f)
 /**
- * \brief OQS_SIG object for ryde1f.
+ * \brief OQS_SIG object for ryde_1f.
  */
-OQS_SIG *OQS_SIG_ryde1f_new(void);
+OQS_SIG *OQS_SIG_ryde_1f_new(void);
 #endif
 
 #ifdef __cplusplus

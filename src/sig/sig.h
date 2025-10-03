@@ -189,7 +189,7 @@ extern "C" {
 /** Algorithm identifier for MIRATH-tcith-1a-fast */
 #define OQS_SIG_alg_mirath_tcith_1a_fast "Mirath-1a-fast"
 /** Algorithm identifier for RYDE-1F */
-#define OQS_SIG_alg_ryde1f "RYDE-1F"
+#define OQS_SIG_alg_ryde_1f "RYDE-1F"
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALG_IDENTIFIER_END
 // EDIT-WHEN-ADDING-SIG
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALGS_LENGTH_START
