@@ -161,4 +161,57 @@ if(OQS_ENABLE_SIG_ryde_3s)
     set(_RYDE_OBJS ${_RYDE_OBJS} $<TARGET_OBJECTS:ryde3s_ref> $<TARGET_OBJECTS:ryde3s_glue>)
 endif()
 
+if(OQS_ENABLE_SIG_ryde_5s)
+    set(RYDE5S_NAMESPACE_HEADER ${CMAKE_CURRENT_LIST_DIR}/ryde5s/namespace_ryde5s.h)
+
+    # RYDE-5S library dependencies with XKCP (namespaced to avoid conflicts)
+    set(RYDE5S_LIB_SOURCES
+        ryde5s/lib/rng/rng.c
+        ryde5s/lib/xkcp/KeccakHash.c
+        ryde5s/lib/xkcp/KeccakHashtimes4.c
+        ryde5s/lib/xkcp/KeccakSponge.c
+        ryde5s/lib/xkcp/KeccakSpongetimes4.c
+        ryde5s/lib/xkcp/SimpleFIPS202.c
+        ryde5s/lib/xkcp/opt64/KeccakP-1600-opt64.c
+        ryde5s/lib/xkcp/opt64/KeccakP-1600-times4-on1.c
+    )
+
+    # Main RYDE5S algorithm sources (without glue code)
+    set(RYDE5S_SOURCES
+        ${RYDE5S_LIB_SOURCES}
+        ryde5s/binary_matrix.c
+        ryde5s/field_61.c
+        ryde5s/field_matrix.c
+        ryde5s/field_vector.c
+        ryde5s/ggm_tree.c
+        ryde5s/hash_sha3_512.c
+        ryde5s/hash_sha3_x4_512.c
+        ryde5s/keygen.c
+        ryde5s/parsing.c
+        ryde5s/sign.c
+        ryde5s/tcith_sign.c
+        ryde5s/tcith_verify.c
+        ryde5s/tcith.c
+    )
+
+    add_library(ryde5s_ref OBJECT ${RYDE5S_SOURCES})
+    target_include_directories(ryde5s_ref PRIVATE
+        ${CMAKE_CURRENT_LIST_DIR}/ryde5s
+        ${CMAKE_CURRENT_LIST_DIR}/ryde5s/lib
+        ${CMAKE_CURRENT_LIST_DIR}/ryde5s/lib/rng
+        ${CMAKE_CURRENT_LIST_DIR}/ryde5s/lib/xkcp
+        ${CMAKE_CURRENT_LIST_DIR}/ryde5s/lib/xkcp/avx2
+        ${CMAKE_CURRENT_LIST_DIR}/ryde5s/lib/xkcp/opt64)
+    target_compile_options(ryde5s_ref PRIVATE "-include" ${RYDE5S_NAMESPACE_HEADER})
+
+    # Add the glue code as a separate object for the ryde5s variant
+    add_library(ryde5s_glue OBJECT sig_ryde5s.c)
+    target_include_directories(ryde5s_glue PRIVATE
+        ${CMAKE_CURRENT_LIST_DIR}
+        ${CMAKE_CURRENT_LIST_DIR}/ryde5s)
+    target_compile_options(ryde5s_glue PRIVATE "-include" ${RYDE5S_NAMESPACE_HEADER})
+
+    set(_RYDE_OBJS ${_RYDE_OBJS} $<TARGET_OBJECTS:ryde5s_ref> $<TARGET_OBJECTS:ryde5s_glue>)
+endif()
+
 set(RYDE_OBJS ${_RYDE_OBJS} PARENT_SCOPE)

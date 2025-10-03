@@ -267,6 +267,89 @@ OQS_API OQS_STATUS OQS_SIG_ryde_3s_verify_with_ctx_str(const uint8_t *message, s
 OQS_SIG *OQS_SIG_ryde_3s_new(void);
 #endif
 
+/* ryde5s */
+
+/** Algorithm identifier for ryde_5s */
+#define OQS_SIG_alg_ryde_5s "RYDE-5S"
+
+/** ryde_5s public key length, in bytes */
+#define OQS_SIG_ryde_5s_length_public_key 132
+
+/** ryde_5s secret key length, in bytes */
+#define OQS_SIG_ryde_5s_length_secret_key 64
+
+/** ryde_5s signature length, in bytes (maximum size for signed message) */
+#define OQS_SIG_ryde_5s_length_signature 12607
+
+/**
+ * \brief Process a ryde_5s key pair.
+ * \warning The secret key contains the public key as a suffix.
+ *
+ * \param[out] public_key    Pointer to the buffer for the public key (132 bytes).
+ * \param[out] secret_key    Pointer to the buffer for the secret key (64 bytes).
+ * \return OQS_SUCCESS or OQS_ERROR
+ */
+OQS_API OQS_STATUS OQS_SIG_ryde_5s_keypair(uint8_t *public_key, uint8_t *secret_key);
+
+/**
+ * \brief Signing function for ryde_5s.
+ *
+ * \param[out] signature       Pointer to the buffer for the signature (12607 bytes).
+ * \param[out] signature_len   Pointer to the length of the signature (always 12607).
+ * \param[in]  message         Pointer to the message to be signed.
+ * \param[in]  message_len     Length of the message to be signed.
+ * \param[in]  secret_key      Pointer to the secret key (64 bytes).
+ * \return OQS_SUCCESS or OQS_ERROR
+ */
+OQS_API OQS_STATUS OQS_SIG_ryde_5s_sign(uint8_t *signature, size_t *signature_len, const uint8_t *message, size_t message_len, const uint8_t *secret_key);
+
+/**
+ * \brief Verification function for ryde_5s.
+ *
+ * \param[in]  message          Pointer to the message.
+ * \param[in]  message_len      Length of the message.
+ * \param[in]  signature        Pointer to the signature (12607 bytes).
+ * \param[in]  signature_len    Length of the signature.
+ * \param[in]  public_key       Pointer to the public key (132 bytes).
+ * \return OQS_SUCCESS or OQS_ERROR
+ */
+OQS_API OQS_STATUS OQS_SIG_ryde_5s_verify(const uint8_t *message, size_t message_len, const uint8_t *signature, size_t signature_len, const uint8_t *public_key);
+
+/**
+ * \brief ryde_5s signature generation with context string.
+ *
+ * \param[out] signature         Pointer to the output signature buffer.
+ * \param[out] signature_len     Pointer to the length of the signature.
+ * \param[in]  message           Pointer to the message to be signed.
+ * \param[in]  message_len       Length of the message.
+ * \param[in]  ctx_str           Pointer to the context string.
+ * \param[in]  ctx_str_len       Length of the context string.
+ * \param[in]  secret_key        Pointer to the secret key.
+ * \return OQS_SUCCESS or OQS_ERROR
+ */
+OQS_API OQS_STATUS OQS_SIG_ryde_5s_sign_with_ctx_str(uint8_t *signature, size_t *signature_len, const uint8_t *message, size_t message_len, const uint8_t *ctx_str, size_t ctx_str_len, const uint8_t *secret_key);
+
+/**
+ * \brief ryde_5s signature verification with context string.
+ *
+ * \param[in]  message           Pointer to the message.
+ * \param[in]  message_len       Length of the message.
+ * \param[in]  signature         Pointer to the signature.
+ * \param[in]  signature_len     Length of the signature.
+ * \param[in]  ctx_str           Pointer to the context string.
+ * \param[in]  ctx_str_len       Length of the context string.
+ * \param[in]  public_key        Pointer to the public key.
+ * \return OQS_SUCCESS or OQS_ERROR
+ */
+OQS_API OQS_STATUS OQS_SIG_ryde_5s_verify_with_ctx_str(const uint8_t *message, size_t message_len, const uint8_t *signature, size_t signature_len, const uint8_t *ctx_str, size_t ctx_str_len, const uint8_t *public_key);
+
+#if defined(OQS_ENABLE_SIG_ryde_5s)
+/**
+ * \brief OQS_SIG object for ryde_5s.
+ */
+OQS_SIG *OQS_SIG_ryde_5s_new(void);
+#endif
+
 #ifdef __cplusplus
 }
 #endif

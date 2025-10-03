@@ -240,6 +240,7 @@ option(OQS_ENABLE_SIG_RYDE "Enable ryde algorithm family" ON)
 cmake_dependent_option(OQS_ENABLE_SIG_ryde_1f "" ON "OQS_ENABLE_SIG_RYDE" OFF)
 cmake_dependent_option(OQS_ENABLE_SIG_ryde_1s "" ON "OQS_ENABLE_SIG_RYDE" OFF)
 cmake_dependent_option(OQS_ENABLE_SIG_ryde_3s "" ON "OQS_ENABLE_SIG_RYDE" OFF)
+cmake_dependent_option(OQS_ENABLE_SIG_ryde_5s "" ON "OQS_ENABLE_SIG_RYDE" OFF)
 
 
 option(OQS_ENABLE_SIG_MIRATH "Enable mirath algorithm family" ON)
