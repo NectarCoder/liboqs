@@ -741,9 +741,11 @@ OQS_STATUS combine_message_signature(uint8_t **signed_msg, size_t *signed_msg_le
 	           0 == strcmp(sig->method_name, "PERK-256-short-3") ||
 	           0 == strcmp(sig->method_name, "PERK-256-short-5") ||
 	           0 == strcmp(sig->method_name, "Hawk-512") ||
-	           0 == strcmp(sig->method_name, "Hawk-1024")) {
+	           0 == strcmp(sig->method_name, "Hawk-1024") ||
+	           0 == strcmp(sig->method_name, "RYDE-1F") ||
+	           0 == strcmp(sig->method_name, "RYDE-1S")) {
 		// signed_msg = msg || signature
-		*signed_msg_len = msg_len + signature_len;
+		*signed_msg_len = signature_len + msg_len;
 		*signed_msg = OQS_MEM_malloc(*signed_msg_len);
 		if (*signed_msg == NULL) {
 			return OQS_ERROR;

@@ -26,3 +26,19 @@ parameter-sets:
     no-secret-dependent-branching-claimed: TODO
     no-secret-dependent-branching-checked-by-valgrind: TODO
     large-stack-usage: TODO
+- name: RYDE-1S
+  claimed-nist-level: 1
+  claimed-security: EUF-CMA
+  length-public-key: 69
+  length-secret-key: 32
+  length-signature: 3115
+  implementations-switch-on-runtime-cpu-features: false
+  implementations:
+  - upstream: primary-upstream
+    upstream-id: ref
+    supported-platforms: TODO
+    common-crypto:
+    - TODO
+    no-secret-dependent-branching-claimed: TODO
+    no-secret-dependent-branching-checked-by-valgrind: TODO
+    large-stack-usage: TODO
