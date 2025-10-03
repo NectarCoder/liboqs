@@ -30,10 +30,14 @@ Please refer to PlSnP-documentation.h for more details.
 
 #include <stddef.h>
 
+#ifndef KeccakP1600times4_StaticInitialize
 #define KeccakP1600times4_StaticInitialize()
+#endif
 void KeccakP1600times4_InitializeAll(void *states);
+#ifndef KeccakP1600times4_AddByte
 #define KeccakP1600times4_AddByte(states, instanceIndex, byte, offset) \
     ((unsigned char*)(states))[(instanceIndex)*8 + ((offset)/8)*4*8 + (offset)%8] ^= (byte)
+#endif
 void KeccakP1600times4_AddBytes(void *states, unsigned int instanceIndex, const unsigned char *data, unsigned int offset, unsigned int length);
 void KeccakP1600times4_AddLanesAll(void *states, const unsigned char *data, unsigned int laneCount, unsigned int laneOffset);
 void KeccakP1600times4_OverwriteBytes(void *states, unsigned int instanceIndex, const unsigned char *data, unsigned int offset, unsigned int length);

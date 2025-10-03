@@ -32,7 +32,9 @@ Please refer to SnP-documentation.h for more details.
 
 #include <stddef.h>
 
+#ifndef KeccakP1600_StaticInitialize
 #define KeccakP1600_StaticInitialize()
+#endif
 void KeccakP1600_Initialize(void *state);
 #if (PLATFORM_BYTE_ORDER == IS_LITTLE_ENDIAN)
 #ifndef KeccakP1600_AddByte
@@ -40,7 +42,9 @@ void KeccakP1600_Initialize(void *state);
     ((unsigned char*)(state))[(offset)] ^= (byte)
 #endif
 #else
+#ifndef KeccakP1600_AddByte
 void KeccakP1600_AddByte(void *state, unsigned char data, unsigned int offset);
+#endif
 #endif
 void KeccakP1600_AddBytes(void *state, const unsigned char *data, unsigned int offset, unsigned int length);
 void KeccakP1600_OverwriteBytes(void *state, const unsigned char *data, unsigned int offset, unsigned int length);

@@ -35,7 +35,9 @@ Please refer to SnP-documentation.h for more details.
 #define KeccakF1600_FastLoop_supported
 #define KeccakP1600_12rounds_FastLoop_supported
 
+#ifndef KeccakP1600_StaticInitialize
 #define KeccakP1600_StaticInitialize()
+#endif
 FORCE_SYSV void KeccakP1600_Initialize(void *state);
 FORCE_SYSV void KeccakP1600_AddByte(void *state, unsigned char data, unsigned int offset);
 FORCE_SYSV void KeccakP1600_AddBytes(void *state, const unsigned char *data, unsigned int offset, unsigned int length);
