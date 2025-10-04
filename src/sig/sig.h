@@ -186,6 +186,8 @@ extern "C" {
 #define OQS_SIG_alg_perk_256_short_3 "PERK-256-short-3"
 /** Algorithm identifier for PERK-256-short-5 */
 #define OQS_SIG_alg_perk_256_short_5 "PERK-256-short-5"
+/** Algorithm identifier for FAEST-128s */
+#define OQS_SIG_alg_faest_128s "FAEST-128s"
 /** Algorithm identifier for Hawk-512 */
 #define OQS_SIG_alg_hawk_512 "Hawk-512"
 /** Algorithm identifier for Hawk-1024 */
@@ -205,7 +207,7 @@ extern "C" {
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALGS_LENGTH_START
 
 /** Number of algorithm identifiers above. */
-#define OQS_SIG_algs_length 84
+#define OQS_SIG_algs_length 85
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALGS_LENGTH_END
 
 /**
@@ -480,6 +482,9 @@ OQS_API bool OQS_SIG_supports_ctx_str(const char *alg_name);
 #ifdef OQS_ENABLE_SIG_PERK
 #include <oqs/sig_perk.h>
 #endif /* OQS_ENABLE_SIG_PERK */
+#ifdef OQS_ENABLE_SIG_FAEST
+#include <oqs/sig_faest.h>
+#endif /* OQS_ENABLE_SIG_FAEST */
 #ifdef OQS_ENABLE_SIG_HAWK
 #include <oqs/sig_hawk.h>
 #endif /* OQS_ENABLE_SIG_HAWK */

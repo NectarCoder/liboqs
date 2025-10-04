@@ -234,6 +234,9 @@ cmake_dependent_option(OQS_ENABLE_SIG_perk_192_short_5 "" ON "OQS_ENABLE_SIG_PER
 cmake_dependent_option(OQS_ENABLE_SIG_perk_256_short_3 "" ON "OQS_ENABLE_SIG_PERK" OFF)
 cmake_dependent_option(OQS_ENABLE_SIG_perk_256_short_5 "" ON "OQS_ENABLE_SIG_PERK" OFF)
 
+option(OQS_ENABLE_SIG_FAEST "Enable faest algorithm family" ON)
+cmake_dependent_option(OQS_ENABLE_SIG_faest_128s "" ON "OQS_ENABLE_SIG_FAEST" OFF)
+
 option(OQS_ENABLE_SIG_HAWK "Enable hawk algorithm family" ON)
 cmake_dependent_option(OQS_ENABLE_SIG_hawk_512 "" ON "OQS_ENABLE_SIG_HAWK" OFF)
 cmake_dependent_option(OQS_ENABLE_SIG_hawk_1024 "" ON "OQS_ENABLE_SIG_HAWK" OFF)

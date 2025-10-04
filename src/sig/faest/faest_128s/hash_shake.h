@@ -194,8 +194,8 @@ static inline void hash_clear_x4(hash_context_x4* ctx) {
 #if defined(__cplusplus)
 extern "C" {
 #endif
-/* use SHAKE implementation in sha3/ */
-#include "sha3/KeccakHash.h"
+/* use SHAKE implementation bundled with FAEST */
+#include "KeccakHash.h"
 #if defined(__cplusplus)
 }
 #endif
