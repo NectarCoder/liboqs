@@ -82,6 +82,7 @@ OQS_API const char *OQS_SIG_alg_identifier(size_t i) {
 		OQS_SIG_alg_snova_SNOVA_37_8_4,
 		OQS_SIG_alg_snova_SNOVA_24_5_5,
 		OQS_SIG_alg_snova_SNOVA_60_10_4,
+		OQS_SIG_alg_snova_SNOVA_66_15_3,
 		OQS_SIG_alg_snova_SNOVA_29_6_5,
 		OQS_SIG_alg_perk_128_fast_3,
 		OQS_SIG_alg_perk_128_short_3,
@@ -580,6 +581,13 @@ OQS_API int OQS_SIG_alg_is_enabled(const char *method_name) {
 
 	} else if (0 == strcasecmp(method_name, OQS_SIG_alg_snova_SNOVA_60_10_4)) {
 #ifdef OQS_ENABLE_SIG_snova_SNOVA_60_10_4
+		return 1;
+#else
+		return 0;
+#endif
+
+	} else if (0 == strcasecmp(method_name, OQS_SIG_alg_snova_SNOVA_66_15_3)) {
+#ifdef OQS_ENABLE_SIG_snova_SNOVA_66_15_3
 		return 1;
 #else
 		return 0;
@@ -1165,6 +1173,13 @@ OQS_API OQS_SIG *OQS_SIG_new(const char *method_name) {
 	} else if (0 == strcasecmp(method_name, OQS_SIG_alg_snova_SNOVA_60_10_4)) {
 #ifdef OQS_ENABLE_SIG_snova_SNOVA_60_10_4
 		return OQS_SIG_snova_SNOVA_60_10_4_new();
+#else
+		return NULL;
+#endif
+
+	} else if (0 == strcasecmp(method_name, OQS_SIG_alg_snova_SNOVA_66_15_3)) {
+#ifdef OQS_ENABLE_SIG_snova_SNOVA_66_15_3
+		return OQS_SIG_snova_SNOVA_66_15_3_new();
 #else
 		return NULL;
 #endif

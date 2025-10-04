@@ -221,6 +221,7 @@ cmake_dependent_option(OQS_ENABLE_SIG_snova_SNOVA_49_11_3 "" ON "OQS_ENABLE_SIG_
 cmake_dependent_option(OQS_ENABLE_SIG_snova_SNOVA_37_8_4 "" ON "OQS_ENABLE_SIG_SNOVA" OFF)
 cmake_dependent_option(OQS_ENABLE_SIG_snova_SNOVA_24_5_5 "" ON "OQS_ENABLE_SIG_SNOVA" OFF)
 cmake_dependent_option(OQS_ENABLE_SIG_snova_SNOVA_60_10_4 "" ON "OQS_ENABLE_SIG_SNOVA" OFF)
+cmake_dependent_option(OQS_ENABLE_SIG_snova_SNOVA_66_15_3 "" ON "OQS_ENABLE_SIG_SNOVA" OFF)
 cmake_dependent_option(OQS_ENABLE_SIG_snova_SNOVA_29_6_5 "" ON "OQS_ENABLE_SIG_SNOVA" OFF)
 
 option(OQS_ENABLE_SIG_PERK "Enable perk algorithm family" ON)

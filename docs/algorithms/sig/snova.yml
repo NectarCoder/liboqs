@@ -243,6 +243,24 @@ parameter-sets:
     no-secret-dependent-branching-claimed: true
     no-secret-dependent-branching-checked-by-valgrind: true
     large-stack-usage: true
+- name: SNOVA_66_15_3
+  oqs_alg: OQS_SIG_alg_SNOVA_66_15_3
+  claimed-nist-level: 5
+  claimed-security: EUF-CMA
+  length-public-key: 15204
+  length-secret-key: 48
+  length-signature: 381
+  implementations-switch-on-runtime-cpu-features: false
+  implementations:
+  - upstream: primary-upstream
+    upstream-id: opt
+    supported-platforms: all
+    common-crypto:
+    - SHA3: liboqs
+    - AES: liboqs
+    no-secret-dependent-branching-claimed: true
+    no-secret-dependent-branching-checked-by-valgrind: true
+    large-stack-usage: true
 - name: SNOVA_25_8_3
   oqs_alg: OQS_SIG_alg_SNOVA_25_8_3
   claimed-nist-level: 1
