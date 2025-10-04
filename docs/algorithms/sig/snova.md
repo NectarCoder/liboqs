@@ -26,6 +26,7 @@
 |       SNOVA\_24\_5\_5       | NA                    | EUF-CMA          |                    3 |                      1579 |                        48 |                      379 |
 |      SNOVA\_60\_10\_4       | NA                    | EUF-CMA          |                    5 |                      8016 |                        48 |                      576 |
 |      SNOVA\_66\_15\_3       | NA                    | EUF-CMA          |                    5 |                     15204 |                        48 |                      381 |
+|      SNOVA\_75\_33\_2       | NA                    | EUF-CMA          |                    5 |                     71890 |                        48 |                      232 |
 |       SNOVA\_29\_6\_5       | NA                    | EUF-CMA          |                    5 |                      2716 |                        48 |                      454 |
 
 ## SNOVA\_24\_5\_4 implementation characteristics
@@ -141,6 +142,14 @@ Are implementations chosen based on runtime CPU feature detection? **Yes**.
 Are implementations chosen based on runtime CPU feature detection? **Yes**.
 
 ## SNOVA\_66\_15\_3 implementation characteristics
+
+|       Implementation source       | Identifier in upstream   | Supported architecture(s)   | Supported operating system(s)   | CPU extension(s) used   | No branching-on-secrets claimed?   | No branching-on-secrets checked by valgrind?   | Large stack usage?   |
+|:---------------------------------:|:-------------------------|:----------------------------|:--------------------------------|:------------------------|:-----------------------------------|:-----------------------------------------------|:---------------------|
+| [Primary Source](#primary-source) | opt                      | All                         | All                             | None                    | True                               | True                                           | True                 |
+
+Are implementations chosen based on runtime CPU feature detection? **No**.
+
+## SNOVA\_75\_33\_2 implementation characteristics
 
 |       Implementation source       | Identifier in upstream   | Supported architecture(s)   | Supported operating system(s)   | CPU extension(s) used   | No branching-on-secrets claimed?   | No branching-on-secrets checked by valgrind?   | Large stack usage?   |
 |:---------------------------------:|:-------------------------|:----------------------------|:--------------------------------|:------------------------|:-----------------------------------|:-----------------------------------------------|:---------------------|

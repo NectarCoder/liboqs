@@ -168,6 +168,8 @@ extern "C" {
 #define OQS_SIG_alg_snova_SNOVA_60_10_4 "SNOVA_60_10_4"
 /** Algorithm identifier for SNOVA_66_15_3 */
 #define OQS_SIG_alg_snova_SNOVA_66_15_3 "SNOVA_66_15_3"
+/** Algorithm identifier for SNOVA_75_33_2 */
+#define OQS_SIG_alg_snova_SNOVA_75_33_2 "SNOVA_75_33_2"
 /** Algorithm identifier for SNOVA_29_6_5 */
 #define OQS_SIG_alg_snova_SNOVA_29_6_5 "SNOVA_29_6_5"
 /** Algorithm identifier for PERK-128-fast-3 */
@@ -203,7 +205,7 @@ extern "C" {
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALGS_LENGTH_START
 
 /** Number of algorithm identifiers above. */
-#define OQS_SIG_algs_length 83
+#define OQS_SIG_algs_length 84
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALGS_LENGTH_END
 
 /**
