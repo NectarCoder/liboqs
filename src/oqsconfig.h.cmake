@@ -342,21 +342,22 @@
 #cmakedefine OQS_ENABLE_SIG_perk_256_short_3 1
 #cmakedefine OQS_ENABLE_SIG_perk_256_short_5 1
 
-#cmakedefine OQS_ENABLE_SIG_FAEST 1
-#cmakedefine OQS_ENABLE_SIG_faest_128s 1
-
 #cmakedefine OQS_ENABLE_SIG_HAWK 1
 #cmakedefine OQS_ENABLE_SIG_hawk_512 1
 #cmakedefine OQS_ENABLE_SIG_hawk_1024 1
-
-#cmakedefine OQS_ENABLE_SIG_MIRATH 1
-#cmakedefine OQS_ENABLE_SIG_mirath_tcith_1a_fast 1
 
 #cmakedefine OQS_ENABLE_SIG_RYDE 1
 #cmakedefine OQS_ENABLE_SIG_ryde_1f 1
 #cmakedefine OQS_ENABLE_SIG_ryde_1s 1
 #cmakedefine OQS_ENABLE_SIG_ryde_3s 1
 #cmakedefine OQS_ENABLE_SIG_ryde_5s 1
+
+#cmakedefine OQS_ENABLE_SIG_FAEST 1
+#cmakedefine OQS_ENABLE_SIG_faest_128s 1
+
+#cmakedefine OQS_ENABLE_SIG_MIRATH 1
+#cmakedefine OQS_ENABLE_SIG_mirath_tcith_1a_fast 1
+
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ADD_ALG_ENABLE_DEFINES_END
 
 ///// OQS_COPY_FROM_LIBJADE_FRAGMENT_ADD_ALG_ENABLE_DEFINES_START
