@@ -203,6 +203,13 @@
 #define ATTR_VECTOR_SIZE(s)
 #endif
 
+#if defined(OQS_FAEST_DISABLE_VECTOR_ATTR)
+#undef HAVE_ATTR_VECTOR_SIZE
+#ifdef ATTR_VECTOR_SIZE
+#undef ATTR_VECTOR_SIZE
+#endif
+#endif
+
 /* malloc attribute */
 #if GNUC_CHECK(11, 0)
 #define ATTR_MALLOC(arg) __attribute__((malloc, malloc(arg)))

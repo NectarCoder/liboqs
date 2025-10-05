@@ -33,6 +33,9 @@
 #define KeccakP1600_Initialize OQS_FAEST_256S_KeccakP1600_Initialize
 #include <stdint.h>
 
+#ifdef KeccakP1600_AddByte
+#undef KeccakP1600_AddByte
+#endif
 static inline void OQS_FAEST_256S_KeccakP1600_AddByte(void *state, unsigned char byte, unsigned int offset) {
 	((unsigned char *) state)[offset] ^= byte;
 }
@@ -86,5 +89,6 @@ static inline void OQS_FAEST_256S_KeccakP1600_AddByte(void *state, unsigned char
 #define randombytes OQS_FAEST_256S_randombytes
 #define randombytes_init OQS_FAEST_256S_randombytes_init
 #define seedexpander OQS_FAEST_256S_seedexpander
+#define randombytes_init OQS_FAEST_256S_randombytes_init
+#define seedexpander OQS_FAEST_256S_seedexpander
 #define seedexpander_init OQS_FAEST_256S_seedexpander_init
-#define uint32_sort OQS_FAEST_256S_uint32_sort

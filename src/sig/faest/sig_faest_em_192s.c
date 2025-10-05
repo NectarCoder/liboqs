@@ -108,7 +108,7 @@ OQS_API OQS_STATUS OQS_SIG_faest_em_192s_verify(const uint8_t *message, size_t m
 }
 
 OQS_API OQS_STATUS OQS_SIG_faest_em_192s_sign_with_ctx_str(uint8_t *signature, size_t *signature_len, const uint8_t *message, size_t message_len, const uint8_t *ctx_str, size_t ctx_str_len, const uint8_t *secret_key) {
-	// PERK doesn't support context strings, fail if a non-empty context is provided
+	// FAEST doesn't support context strings, fail if a non-empty context is provided
 	if (ctx_str != NULL && ctx_str_len > 0) {
 		return OQS_ERROR;
 	}
@@ -117,7 +117,7 @@ OQS_API OQS_STATUS OQS_SIG_faest_em_192s_sign_with_ctx_str(uint8_t *signature, s
 }
 
 OQS_API OQS_STATUS OQS_SIG_faest_em_192s_verify_with_ctx_str(const uint8_t *message, size_t message_len, const uint8_t *signature, size_t signature_len, const uint8_t *ctx_str, size_t ctx_str_len, const uint8_t *public_key) {
-	// PERK doesn't support context strings, fail if a non-empty context is provided
+	// FAEST doesn't support context strings, fail if a non-empty context is provided
 	if (ctx_str != NULL && ctx_str_len > 0) {
 		return OQS_ERROR;
 	}

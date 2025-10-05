@@ -68,6 +68,7 @@ if(OQS_ENABLE_SIG_faest_128s)
         ${CMAKE_CURRENT_LIST_DIR}/faest_128s
         ${CMAKE_CURRENT_LIST_DIR}/faest_128s/lib)
     target_compile_options(faest_128s_ref PRIVATE "-include" ${FAEST_128S_NAMESPACE_HEADER})
+    target_compile_definitions(faest_128s_ref PRIVATE OQS_FAEST_DISABLE_VECTOR_ATTR)
 
     add_library(faest_128s_glue OBJECT sig_faest_128s.c)
     target_include_directories(faest_128s_glue PRIVATE
@@ -106,6 +107,7 @@ if(OQS_ENABLE_SIG_faest_192s)
         ${CMAKE_CURRENT_LIST_DIR}/faest_192s
         ${CMAKE_CURRENT_LIST_DIR}/faest_192s/lib)
     target_compile_options(faest_192s_ref PRIVATE "-include" ${FAEST_192S_NAMESPACE_HEADER})
+    target_compile_definitions(faest_192s_ref PRIVATE OQS_FAEST_DISABLE_VECTOR_ATTR)
 
     add_library(faest_192s_glue OBJECT sig_faest_192s.c)
     target_include_directories(faest_192s_glue PRIVATE
@@ -144,6 +146,7 @@ if(OQS_ENABLE_SIG_faest_256s)
         ${CMAKE_CURRENT_LIST_DIR}/faest_256s
         ${CMAKE_CURRENT_LIST_DIR}/faest_256s/lib)
     target_compile_options(faest_256s_ref PRIVATE "-include" ${FAEST_256S_NAMESPACE_HEADER})
+    target_compile_definitions(faest_256s_ref PRIVATE OQS_FAEST_DISABLE_VECTOR_ATTR)
 
     add_library(faest_256s_glue OBJECT sig_faest_256s.c)
     target_include_directories(faest_256s_glue PRIVATE
@@ -182,6 +185,7 @@ if(OQS_ENABLE_SIG_faest_em_128s)
         ${CMAKE_CURRENT_LIST_DIR}/faest_em_128s
         ${CMAKE_CURRENT_LIST_DIR}/faest_em_128s/lib)
     target_compile_options(faest_em_128s_ref PRIVATE "-include" ${FAEST_EM_128S_NAMESPACE_HEADER})
+    target_compile_definitions(faest_em_128s_ref PRIVATE OQS_FAEST_DISABLE_VECTOR_ATTR)
 
     add_library(faest_em_128s_glue OBJECT sig_faest_em_128s.c)
     target_include_directories(faest_em_128s_glue PRIVATE
