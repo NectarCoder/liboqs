@@ -32,10 +32,6 @@
 #define KeccakP1600_Initialize OQS_MIRATH_TCITH_1A_FAST_KeccakP1600_Initialize
 #include <stdint.h>
 
-void OQS_MIRATH_TCITH_1A_FAST_KeccakP1600_AddByte(void *state, unsigned char byte, unsigned int offset) {
-	((unsigned char *) state)[offset] ^= byte;
-}
-
 #define KeccakP1600_AddByte OQS_MIRATH_TCITH_1A_FAST_KeccakP1600_AddByte
 #define KeccakP1600_AddBytes OQS_MIRATH_TCITH_1A_FAST_KeccakP1600_AddBytes
 #define KeccakP1600_AddBytesInLane OQS_MIRATH_TCITH_1A_FAST_KeccakP1600_AddBytesInLane

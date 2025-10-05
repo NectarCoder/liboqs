@@ -31,9 +31,7 @@ if(OQS_ENABLE_SIG_mirath_tcith_1a_fast)
         ${CMAKE_CURRENT_LIST_DIR}/mirath_tcith_1a_fast
         ${CMAKE_CURRENT_LIST_DIR}/mirath_tcith_1a_fast/common
         ${CMAKE_CURRENT_LIST_DIR}/mirath_tcith_1a_fast/rijndael
-        ${CMAKE_CURRENT_LIST_DIR}/mirath_tcith_1a_fast/arith
-        ${CMAKE_CURRENT_LIST_DIR}/mirath_tcith_1a_fast/q_16
-        ${CMAKE_CURRENT_LIST_DIR}/mirath_tcith_1a_fast/q_16/mu_fast)
+        ${CMAKE_CURRENT_LIST_DIR}/mirath_tcith_1a_fast/arith)
     target_compile_options(mirath_tcith_1a_fast_ref PRIVATE "-include" ${MIRATH_TCITH_1A_FAST_NAMESPACE_HEADER})
     
     
@@ -43,9 +41,7 @@ if(OQS_ENABLE_SIG_mirath_tcith_1a_fast)
         ${CMAKE_CURRENT_LIST_DIR}/mirath_tcith_1a_fast
         ${CMAKE_CURRENT_LIST_DIR}/mirath_tcith_1a_fast/common
         ${CMAKE_CURRENT_LIST_DIR}/mirath_tcith_1a_fast/rijndael
-        ${CMAKE_CURRENT_LIST_DIR}/mirath_tcith_1a_fast/arith
-        ${CMAKE_CURRENT_LIST_DIR}/mirath_tcith_1a_fast/q_16
-        ${CMAKE_CURRENT_LIST_DIR}/mirath_tcith_1a_fast/q_16/mu_fast)
+        ${CMAKE_CURRENT_LIST_DIR}/mirath_tcith_1a_fast/arith)
     target_compile_options(mirath_tcith_1a_fast_glue PRIVATE "-include" ${MIRATH_TCITH_1A_FAST_NAMESPACE_HEADER})
     set(_MIRATH_OBJS ${_MIRATH_OBJS} $<TARGET_OBJECTS:mirath_tcith_1a_fast_ref> $<TARGET_OBJECTS:mirath_tcith_1a_fast_glue>)
 endif()
