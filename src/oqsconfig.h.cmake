@@ -356,6 +356,7 @@
 #cmakedefine OQS_ENABLE_SIG_faest_128s 1
 #cmakedefine OQS_ENABLE_SIG_faest_192s 1
 #cmakedefine OQS_ENABLE_SIG_faest_256s 1
+#cmakedefine OQS_ENABLE_SIG_faest_em_128s 1
 
 #cmakedefine OQS_ENABLE_SIG_MIRATH 1
 #cmakedefine OQS_ENABLE_SIG_mirath_tcith_1a_fast 1

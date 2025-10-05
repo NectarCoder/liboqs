@@ -14,6 +14,7 @@
 |  Parameter set  | Parameter set alias   | Security model   |   Claimed NIST Level |   Public key size (bytes) |   Secret key size (bytes) |   Signature size (bytes) |
 |:---------------:|:----------------------|:-----------------|---------------------:|--------------------------:|--------------------------:|-------------------------:|
 | FAEST-128s | NA | EUF-CMA | 1 | 32 | 32 | 4506 |
+| FAEST-EM-128s | NA | EUF-CMA | 1 | 32 | 32 | 3906 |
 | FAEST-192s | NA | EUF-CMA | 3 | 48 | 40 | 11260 |
 | FAEST-256s | NA | EUF-CMA | 5 | 48 | 48 | 20696 |
 

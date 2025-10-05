@@ -58,3 +58,19 @@ parameter-sets:
     no-secret-dependent-branching-claimed: TODO
     no-secret-dependent-branching-checked-by-valgrind: TODO
     large-stack-usage: TODO
+- name: FAEST-EM-128s
+  claimed-nist-level: 1
+  claimed-security: EUF-CMA
+  length-public-key: 32
+  length-secret-key: 32
+  length-signature: 3906
+  implementations-switch-on-runtime-cpu-features: false
+  implementations:
+  - upstream: primary-upstream
+    upstream-id: ref
+    supported-platforms: TODO
+    common-crypto:
+    - TODO
+    no-secret-dependent-branching-claimed: TODO
+    no-secret-dependent-branching-checked-by-valgrind: TODO
+    large-stack-usage: TODO

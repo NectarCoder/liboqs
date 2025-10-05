@@ -65,7 +65,7 @@ OQS_API OQS_STATUS OQS_SIG_faest_em_128s_sign(uint8_t *signature, size_t *signat
 		return OQS_ERROR;
 	}
 
-	memcpy(signature, signed_message, CRYPTO_BYTES);
+	memcpy(signature, signed_message + message_len, CRYPTO_BYTES);
 	*signature_len = CRYPTO_BYTES;
 
 	free(signed_message);
@@ -89,8 +89,8 @@ OQS_API OQS_STATUS OQS_SIG_faest_em_128s_verify(const uint8_t *message, size_t m
 		return OQS_ERROR;
 	}
 
-	memcpy(signed_message, signature, signature_len);
-	memcpy(signed_message + signature_len, message, message_len);
+	memcpy(signed_message, message, message_len);
+	memcpy(signed_message + message_len, signature, signature_len);
 
 	unsigned long long recovered_len = 0;
 	int ret = crypto_sign_open(recovered_message, &recovered_len, signed_message,
@@ -108,7 +108,7 @@ OQS_API OQS_STATUS OQS_SIG_faest_em_128s_verify(const uint8_t *message, size_t m
 }
 
 OQS_API OQS_STATUS OQS_SIG_faest_em_128s_sign_with_ctx_str(uint8_t *signature, size_t *signature_len, const uint8_t *message, size_t message_len, const uint8_t *ctx_str, size_t ctx_str_len, const uint8_t *secret_key) {
-	// PERK doesn't support context strings, fail if a non-empty context is provided
+	// FAEST-EM doesn't support context strings, fail if a non-empty context is provided
 	if (ctx_str != NULL && ctx_str_len > 0) {
 		return OQS_ERROR;
 	}
@@ -117,7 +117,7 @@ OQS_API OQS_STATUS OQS_SIG_faest_em_128s_sign_with_ctx_str(uint8_t *signature, s
 }
 
 OQS_API OQS_STATUS OQS_SIG_faest_em_128s_verify_with_ctx_str(const uint8_t *message, size_t message_len, const uint8_t *signature, size_t signature_len, const uint8_t *ctx_str, size_t ctx_str_len, const uint8_t *public_key) {
-	// PERK doesn't support context strings, fail if a non-empty context is provided
+	// FAEST-EM doesn't support context strings, fail if a non-empty context is provided
 	if (ctx_str != NULL && ctx_str_len > 0) {
 		return OQS_ERROR;
 	}
