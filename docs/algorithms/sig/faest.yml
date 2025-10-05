@@ -1,0 +1,44 @@
+name: FAEST
+type: signature
+principal-submitters:
+- TODO
+crypto-assumption: TODO
+website: TODO
+nist-round: 2
+spec-version: "1.0"
+primary-upstream:
+  source: TODO
+  spdx-license-identifier: TODO
+parameter-sets:
+- name: FAEST-128s
+  claimed-nist-level: 1
+  claimed-security: EUF-CMA
+  length-public-key: 32
+  length-secret-key: 32
+  length-signature: 4506
+  implementations-switch-on-runtime-cpu-features: false
+  implementations:
+  - upstream: primary-upstream
+    upstream-id: ref
+    supported-platforms: TODO
+    common-crypto:
+    - TODO
+    no-secret-dependent-branching-claimed: TODO
+    no-secret-dependent-branching-checked-by-valgrind: TODO
+    large-stack-usage: TODO
+- name: FAEST-192s
+  claimed-nist-level: 3
+  claimed-security: EUF-CMA
+  length-public-key: 48
+  length-secret-key: 40
+  length-signature: 11260
+  implementations-switch-on-runtime-cpu-features: false
+  implementations:
+  - upstream: primary-upstream
+    upstream-id: ref
+    supported-platforms: TODO
+    common-crypto:
+    - TODO
+    no-secret-dependent-branching-claimed: TODO
+    no-secret-dependent-branching-checked-by-valgrind: TODO
+    large-stack-usage: TODO
