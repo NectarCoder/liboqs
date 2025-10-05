@@ -2,9 +2,9 @@
 #define MIRATH_MATRIX_FF_H
 
 #include <stdint.h>
-#include "common/prng.h"
+#include "prng.h"
 #include "arith/mirath_arith.h"
-#include "common/hash.h"
+#include "hash.h"
 
 /* Return the number of bytes of a 'n_rows x n_cols' matrix. */
 //int matrix_bytes_size(int n_rows, int n_cols);

@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-#include "../../../common/prng.h"
+#include "prng.h"
 #include "ff_mu.h"
 #include "../matrix_ff_arith.h"
 #include "vector_ff_mu.h"

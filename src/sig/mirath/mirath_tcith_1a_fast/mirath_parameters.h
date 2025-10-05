@@ -5,6 +5,7 @@
 
 #ifndef MIRATH_PARAMETER_H
 #define MIRATH_PARAMETER_H
+
 #include "parameters/mirath_param_128a.h"
 
 #define DOMAIN_SEPARATOR_MESSAGE 0

@@ -2,8 +2,8 @@
 #include <string.h>
 #include <printf.h>
 
-#include "common/prng.h"
-#include "common/random.h"
+#include "prng.h"
+#include "random.h"
 #include "mirath_matrix_ff.h"
 #include "mirath_parsing.h"
 #include "mirath_ggm_tree.h"

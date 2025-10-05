@@ -20,7 +20,7 @@ http://creativecommons.org/publicdomain/zero/1.0/
  */
 
 #include "KeccakP-SIMD256-config.h"
-#include "./fips202x4.h"
+#include "./fips202.h"
 
 #define KeccakP1600times4_implementation        "256-bit SIMD implementation (" KeccakP1600times4_implementation_config ")"
 #define KeccakP1600times4_statesSizeInBytes     800

@@ -2,7 +2,7 @@
 #define VECTOR_FF_MU_H
 
 #include <stdint.h>
-#include "../../common/prng.h"
+#include "prng.h"
 #include "matrix_ff_arith.h"
 #include "vector_ff_arith.h"
 

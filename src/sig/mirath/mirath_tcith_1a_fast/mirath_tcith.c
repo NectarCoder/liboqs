@@ -3,15 +3,15 @@
  * @brief Implementation of TCitH related functions
  */
 
-#include "common/prng.h"
-#include "common/random.h"
+#include "prng.h"
+#include "random.h"
 #include "arith/mirath_arith.h"
 #include "mirath_matrix_ff.h"
 #include "mirath_ggm_tree.h"
 #include "mirath_tcith.h"
 #include "mirath_parsing.h"
 
-#include "common/rijndael/seed_expand_functions_avx.h"
+#include "rijndael/seed_expand_functions_avx.h"
 
 #ifndef _SHA3_
 static inline void mirath_commit(uint8_t pair_node[2][MIRATH_SECURITY_BYTES],
