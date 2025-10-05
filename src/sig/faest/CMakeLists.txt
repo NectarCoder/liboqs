@@ -22,6 +22,15 @@ set(FAEST_192S_LIB_SOURCES
     faest_192s/lib/KeccakSpongetimes4.c
 )
 
+set(FAEST_256S_LIB_SOURCES
+    faest_256s/lib/KeccakHash.c
+    faest_256s/lib/KeccakHashtimes4.c
+    faest_256s/lib/KeccakP-1600-opt64.c
+    faest_256s/lib/KeccakP-1600-times4-on1.c
+    faest_256s/lib/KeccakSponge.c
+    faest_256s/lib/KeccakSpongetimes4.c
+)
+
 if(OQS_ENABLE_SIG_faest_128s)
     set(FAEST_128S_NAMESPACE_HEADER ${CMAKE_CURRENT_LIST_DIR}/faest_128s/namespace_faest_128s.h)
 
@@ -96,6 +105,44 @@ if(OQS_ENABLE_SIG_faest_192s)
     target_compile_options(faest_192s_glue PRIVATE "-include" ${FAEST_192S_NAMESPACE_HEADER})
 
     set(_FAEST_OBJS ${_FAEST_OBJS} $<TARGET_OBJECTS:faest_192s_ref> $<TARGET_OBJECTS:faest_192s_glue>)
+endif()
+
+if(OQS_ENABLE_SIG_faest_256s)
+    set(FAEST_256S_NAMESPACE_HEADER ${CMAKE_CURRENT_LIST_DIR}/faest_256s/namespace_faest_256s.h)
+
+    set(FAEST_256S_SOURCES
+        ${FAEST_256S_LIB_SOURCES}
+        faest_256s/aes.c
+        faest_256s/bavc.c
+        faest_256s/compat.c
+        faest_256s/crypto_sign.c
+        faest_256s/faest.c
+        faest_256s/faest_256s.c
+        faest_256s/faest_aes.c
+        faest_256s/fields.c
+        faest_256s/instances.c
+        faest_256s/owf.c
+        faest_256s/random_oracle.c
+        faest_256s/randomness.c
+        faest_256s/rng.c
+        faest_256s/universal_hashing.c
+        faest_256s/utils.c
+        faest_256s/vole.c
+    )
+
+    add_library(faest_256s_ref OBJECT ${FAEST_256S_SOURCES})
+    target_include_directories(faest_256s_ref PRIVATE
+        ${CMAKE_CURRENT_LIST_DIR}/faest_256s
+        ${CMAKE_CURRENT_LIST_DIR}/faest_256s/lib)
+    target_compile_options(faest_256s_ref PRIVATE "-include" ${FAEST_256S_NAMESPACE_HEADER})
+
+    add_library(faest_256s_glue OBJECT sig_faest_256s.c)
+    target_include_directories(faest_256s_glue PRIVATE
+        ${CMAKE_CURRENT_LIST_DIR}
+        ${CMAKE_CURRENT_LIST_DIR}/faest_256s)
+    target_compile_options(faest_256s_glue PRIVATE "-include" ${FAEST_256S_NAMESPACE_HEADER})
+
+    set(_FAEST_OBJS ${_FAEST_OBJS} $<TARGET_OBJECTS:faest_256s_ref> $<TARGET_OBJECTS:faest_256s_glue>)
 endif()
 
 set(FAEST_OBJS ${_FAEST_OBJS} PARENT_SCOPE)

@@ -190,6 +190,8 @@ extern "C" {
 #define OQS_SIG_alg_faest_128s "FAEST-128s"
 /** Algorithm identifier for FAEST-192s */
 #define OQS_SIG_alg_faest_192s "FAEST-192s"
+/** Algorithm identifier for FAEST-256s */
+#define OQS_SIG_alg_faest_256s "FAEST-256s"
 /** Algorithm identifier for Hawk-512 */
 #define OQS_SIG_alg_hawk_512 "Hawk-512"
 /** Algorithm identifier for Hawk-1024 */
@@ -209,7 +211,7 @@ extern "C" {
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALGS_LENGTH_START
 
 /** Number of algorithm identifiers above. */
-#define OQS_SIG_algs_length 87
+#define OQS_SIG_algs_length 88
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALGS_LENGTH_END
 
 /**

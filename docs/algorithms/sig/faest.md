@@ -15,6 +15,7 @@
 |:---------------:|:----------------------|:-----------------|---------------------:|--------------------------:|--------------------------:|-------------------------:|
 | FAEST-128s | NA | EUF-CMA | 1 | 32 | 32 | 4506 |
 | FAEST-192s | NA | EUF-CMA | 3 | 48 | 40 | 11260 |
+| FAEST-256s | NA | EUF-CMA | 5 | 48 | 48 | 20696 |
 
 ## FAEST-128s implementation characteristics
 
@@ -25,6 +26,14 @@
 Are implementations chosen based on runtime CPU feature detection? **No**.
 
 ## FAEST-192s implementation characteristics
+
+|       Implementation source       | Identifier in upstream   | Supported architecture(s)   | Supported operating system(s)   | CPU extension(s) used   | No branching-on-secrets claimed?   | No branching-on-secrets checked by valgrind?   | Large stack usage?   |
+|:---------------------------------:|:-------------------------|:----------------------------|:--------------------------------|:------------------------|:-----------------------------------|:-----------------------------------------------|:---------------------|
+| [Primary Source](#primary-source) | ref                      | TODO                        | TODO                            | TODO                    | TODO                               | TODO                                           | TODO                 |
+
+Are implementations chosen based on runtime CPU feature detection? **No**.
+
+## FAEST-256s implementation characteristics
 
 |       Implementation source       | Identifier in upstream   | Supported architecture(s)   | Supported operating system(s)   | CPU extension(s) used   | No branching-on-secrets claimed?   | No branching-on-secrets checked by valgrind?   | Large stack usage?   |
 |:---------------------------------:|:-------------------------|:----------------------------|:--------------------------------|:------------------------|:-----------------------------------|:-----------------------------------------------|:---------------------|
