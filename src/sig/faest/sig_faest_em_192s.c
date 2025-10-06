@@ -23,7 +23,7 @@ OQS_SIG *OQS_SIG_faest_em_192s_new(void) {
 	sig->method_name = OQS_SIG_alg_faest_em_192s;
 	sig->alg_version = "1.0";
 
-	sig->claimed_nist_level = 1;
+	sig->claimed_nist_level = 3;
 	sig->euf_cma = true;
 
 	sig->length_public_key = OQS_SIG_faest_em_192s_length_public_key;
@@ -65,7 +65,7 @@ OQS_API OQS_STATUS OQS_SIG_faest_em_192s_sign(uint8_t *signature, size_t *signat
 		return OQS_ERROR;
 	}
 
-	memcpy(signature, signed_message, CRYPTO_BYTES);
+	memcpy(signature, signed_message + message_len, CRYPTO_BYTES);
 	*signature_len = CRYPTO_BYTES;
 
 	free(signed_message);
@@ -89,8 +89,8 @@ OQS_API OQS_STATUS OQS_SIG_faest_em_192s_verify(const uint8_t *message, size_t m
 		return OQS_ERROR;
 	}
 
-	memcpy(signed_message, signature, signature_len);
-	memcpy(signed_message + signature_len, message, message_len);
+	memcpy(signed_message, message, message_len);
+	memcpy(signed_message + message_len, signature, signature_len);
 
 	unsigned long long recovered_len = 0;
 	int ret = crypto_sign_open(recovered_message, &recovered_len, signed_message,

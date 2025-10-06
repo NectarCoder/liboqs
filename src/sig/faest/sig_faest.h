@@ -64,6 +64,30 @@ extern "C" {
 /** faest_em_128s signature length, in bytes */
 #define OQS_SIG_faest_em_128s_length_signature 3906
 
+/** Algorithm identifier for FAEST-EM-192s */
+#define OQS_SIG_alg_faest_em_192s "FAEST-EM-192s"
+
+/** faest_em_192s public key length, in bytes */
+#define OQS_SIG_faest_em_192s_length_public_key 48
+
+/** faest_em_192s secret key length, in bytes */
+#define OQS_SIG_faest_em_192s_length_secret_key 48
+
+/** faest_em_192s signature length, in bytes */
+#define OQS_SIG_faest_em_192s_length_signature 9340
+
+/** Algorithm identifier for FAEST-EM-256s */
+#define OQS_SIG_alg_faest_em_256s "FAEST-EM-256s"
+
+/** faest_em_256s public key length, in bytes */
+#define OQS_SIG_faest_em_256s_length_public_key 64
+
+/** faest_em_256s secret key length, in bytes */
+#define OQS_SIG_faest_em_256s_length_secret_key 64
+
+/** faest_em_256s signature length, in bytes */
+#define OQS_SIG_faest_em_256s_length_signature 17984
+
 /**
  * \brief Generates a FAEST-128s public/secret key pair.
  *
@@ -260,6 +284,104 @@ OQS_API OQS_STATUS OQS_SIG_faest_em_128s_sign_with_ctx_str(uint8_t *signature, s
  */
 OQS_API OQS_STATUS OQS_SIG_faest_em_128s_verify_with_ctx_str(const uint8_t *message, size_t message_len, const uint8_t *signature, size_t signature_len, const uint8_t *ctx_str, size_t ctx_str_len, const uint8_t *public_key);
 
+/**
+ * \brief Generates a FAEST-EM-192s public/secret key pair.
+ *
+ * \param[out] public_key Pointer to the buffer for the 48-byte public key.
+ * \param[out] secret_key Pointer to the buffer for the 48-byte secret key.
+ * \return OQS_SUCCESS on success, otherwise OQS_ERROR.
+ */
+OQS_API OQS_STATUS OQS_SIG_faest_em_192s_keypair(uint8_t *public_key, uint8_t *secret_key);
+
+/**
+ * \brief Produces a FAEST-EM-192s signature for the supplied message.
+ *
+ * \param[out] signature       Pointer to the buffer for the signature (9340 bytes).
+ * \param[out] signature_len   On success, set to 9340.
+ * \param[in]  message         Pointer to the message to sign.
+ * \param[in]  message_len     Length of the message in bytes.
+ * \param[in]  secret_key      Pointer to the 48-byte secret key.
+ * \return OQS_SUCCESS on success, otherwise OQS_ERROR.
+ */
+OQS_API OQS_STATUS OQS_SIG_faest_em_192s_sign(uint8_t *signature, size_t *signature_len, const uint8_t *message, size_t message_len, const uint8_t *secret_key);
+
+/**
+ * \brief Verifies a FAEST-EM-192s signature for the supplied message.
+ *
+ * \param[in] message        Pointer to the message to verify.
+ * \param[in] message_len    Length of the message in bytes.
+ * \param[in] signature      Pointer to the 9340-byte signature to verify.
+ * \param[in] signature_len  Length of the signature (must be 9340).
+ * \param[in] public_key     Pointer to the 48-byte public key.
+ * \return OQS_SUCCESS if the signature is valid, otherwise OQS_ERROR.
+ */
+OQS_API OQS_STATUS OQS_SIG_faest_em_192s_verify(const uint8_t *message, size_t message_len, const uint8_t *signature, size_t signature_len, const uint8_t *public_key);
+
+/**
+ * \brief Context-string signing helper for FAEST-EM-192s.
+ *
+ * FAEST-EM does not define a context-string variant. This helper succeeds only
+ * when called with an empty context string and otherwise returns OQS_ERROR.
+ */
+OQS_API OQS_STATUS OQS_SIG_faest_em_192s_sign_with_ctx_str(uint8_t *signature, size_t *signature_len, const uint8_t *message, size_t message_len, const uint8_t *ctx_str, size_t ctx_str_len, const uint8_t *secret_key);
+
+/**
+ * \brief Context-string verification helper for FAEST-EM-192s.
+ *
+ * FAEST-EM does not define a context-string variant. This helper succeeds only
+ * when called with an empty context string and otherwise returns OQS_ERROR.
+ */
+OQS_API OQS_STATUS OQS_SIG_faest_em_192s_verify_with_ctx_str(const uint8_t *message, size_t message_len, const uint8_t *signature, size_t signature_len, const uint8_t *ctx_str, size_t ctx_str_len, const uint8_t *public_key);
+
+/**
+ * \brief Generates a FAEST-EM-256s public/secret key pair.
+ *
+ * \param[out] public_key Pointer to the buffer for the 64-byte public key.
+ * \param[out] secret_key Pointer to the buffer for the 64-byte secret key.
+ * \return OQS_SUCCESS on success, otherwise OQS_ERROR.
+ */
+OQS_API OQS_STATUS OQS_SIG_faest_em_256s_keypair(uint8_t *public_key, uint8_t *secret_key);
+
+/**
+ * \brief Produces a FAEST-EM-256s signature for the supplied message.
+ *
+ * \param[out] signature       Pointer to the buffer for the signature (17984 bytes).
+ * \param[out] signature_len   On success, set to 17984.
+ * \param[in]  message         Pointer to the message to sign.
+ * \param[in]  message_len     Length of the message in bytes.
+ * \param[in]  secret_key      Pointer to the 64-byte secret key.
+ * \return OQS_SUCCESS on success, otherwise OQS_ERROR.
+ */
+OQS_API OQS_STATUS OQS_SIG_faest_em_256s_sign(uint8_t *signature, size_t *signature_len, const uint8_t *message, size_t message_len, const uint8_t *secret_key);
+
+/**
+ * \brief Verifies a FAEST-EM-256s signature for the supplied message.
+ *
+ * \param[in] message        Pointer to the message to verify.
+ * \param[in] message_len    Length of the message in bytes.
+ * \param[in] signature      Pointer to the 17984-byte signature to verify.
+ * \param[in] signature_len  Length of the signature (must be 17984).
+ * \param[in] public_key     Pointer to the 64-byte public key.
+ * \return OQS_SUCCESS if the signature is valid, otherwise OQS_ERROR.
+ */
+OQS_API OQS_STATUS OQS_SIG_faest_em_256s_verify(const uint8_t *message, size_t message_len, const uint8_t *signature, size_t signature_len, const uint8_t *public_key);
+
+/**
+ * \brief Context-string signing helper for FAEST-EM-256s.
+ *
+ * FAEST-EM does not define a context-string variant. This helper succeeds only
+ * when called with an empty context string and otherwise returns OQS_ERROR.
+ */
+OQS_API OQS_STATUS OQS_SIG_faest_em_256s_sign_with_ctx_str(uint8_t *signature, size_t *signature_len, const uint8_t *message, size_t message_len, const uint8_t *ctx_str, size_t ctx_str_len, const uint8_t *secret_key);
+
+/**
+ * \brief Context-string verification helper for FAEST-EM-256s.
+ *
+ * FAEST-EM does not define a context-string variant. This helper succeeds only
+ * when called with an empty context string and otherwise returns OQS_ERROR.
+ */
+OQS_API OQS_STATUS OQS_SIG_faest_em_256s_verify_with_ctx_str(const uint8_t *message, size_t message_len, const uint8_t *signature, size_t signature_len, const uint8_t *ctx_str, size_t ctx_str_len, const uint8_t *public_key);
+
 #if defined(OQS_ENABLE_SIG_faest_128s)
 /**
  * \brief Constructs an OQS_SIG object for FAEST-128s.
@@ -286,6 +408,20 @@ OQS_SIG *OQS_SIG_faest_256s_new(void);
  * \brief Constructs an OQS_SIG object for FAEST-EM-128s.
  */
 OQS_SIG *OQS_SIG_faest_em_128s_new(void);
+#endif
+
+#if defined(OQS_ENABLE_SIG_faest_em_192s)
+/**
+ * \brief Constructs an OQS_SIG object for FAEST-EM-192s.
+ */
+OQS_SIG *OQS_SIG_faest_em_192s_new(void);
+#endif
+
+#if defined(OQS_ENABLE_SIG_faest_em_256s)
+/**
+ * \brief Constructs an OQS_SIG object for FAEST-EM-256s.
+ */
+OQS_SIG *OQS_SIG_faest_em_256s_new(void);
 #endif
 
 #ifdef __cplusplus

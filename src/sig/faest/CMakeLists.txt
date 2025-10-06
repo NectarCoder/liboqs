@@ -40,6 +40,24 @@ set(FAEST_EM_128S_LIB_SOURCES
     faest_em_128s/lib/KeccakSpongetimes4.c
 )
 
+set(FAEST_EM_192S_LIB_SOURCES
+    faest_em_192s/lib/KeccakHash.c
+    faest_em_192s/lib/KeccakHashtimes4.c
+    faest_em_192s/lib/KeccakP-1600-opt64.c
+    faest_em_192s/lib/KeccakP-1600-times4-on1.c
+    faest_em_192s/lib/KeccakSponge.c
+    faest_em_192s/lib/KeccakSpongetimes4.c
+)
+
+set(FAEST_EM_256S_LIB_SOURCES
+    faest_em_256s/lib/KeccakHash.c
+    faest_em_256s/lib/KeccakHashtimes4.c
+    faest_em_256s/lib/KeccakP-1600-opt64.c
+    faest_em_256s/lib/KeccakP-1600-times4-on1.c
+    faest_em_256s/lib/KeccakSponge.c
+    faest_em_256s/lib/KeccakSpongetimes4.c
+)
+
 if(OQS_ENABLE_SIG_faest_128s)
     set(FAEST_128S_NAMESPACE_HEADER ${CMAKE_CURRENT_LIST_DIR}/faest_128s/namespace_faest_128s.h)
 
@@ -194,6 +212,84 @@ if(OQS_ENABLE_SIG_faest_em_128s)
     target_compile_options(faest_em_128s_glue PRIVATE "-include" ${FAEST_EM_128S_NAMESPACE_HEADER})
 
     set(_FAEST_OBJS ${_FAEST_OBJS} $<TARGET_OBJECTS:faest_em_128s_ref> $<TARGET_OBJECTS:faest_em_128s_glue>)
+endif()
+
+if(OQS_ENABLE_SIG_faest_em_192s)
+    set(FAEST_EM_192S_NAMESPACE_HEADER ${CMAKE_CURRENT_LIST_DIR}/faest_em_192s/namespace_faest_em_192s.h)
+
+    set(FAEST_EM_192S_SOURCES
+        ${FAEST_EM_192S_LIB_SOURCES}
+        faest_em_192s/aes.c
+        faest_em_192s/bavc.c
+        faest_em_192s/compat.c
+        faest_em_192s/crypto_sign.c
+        faest_em_192s/faest.c
+        faest_em_192s/faest_em_192s.c
+        faest_em_192s/faest_aes.c
+        faest_em_192s/fields.c
+        faest_em_192s/instances.c
+        faest_em_192s/owf.c
+        faest_em_192s/random_oracle.c
+        faest_em_192s/randomness.c
+        faest_em_192s/rng.c
+        faest_em_192s/universal_hashing.c
+        faest_em_192s/utils.c
+        faest_em_192s/vole.c
+    )
+
+    add_library(faest_em_192s_ref OBJECT ${FAEST_EM_192S_SOURCES})
+    target_include_directories(faest_em_192s_ref PRIVATE
+        ${CMAKE_CURRENT_LIST_DIR}/faest_em_192s
+        ${CMAKE_CURRENT_LIST_DIR}/faest_em_192s/lib)
+    target_compile_options(faest_em_192s_ref PRIVATE "-include" ${FAEST_EM_192S_NAMESPACE_HEADER})
+    target_compile_definitions(faest_em_192s_ref PRIVATE OQS_FAEST_DISABLE_VECTOR_ATTR)
+
+    add_library(faest_em_192s_glue OBJECT sig_faest_em_192s.c)
+    target_include_directories(faest_em_192s_glue PRIVATE
+        ${CMAKE_CURRENT_LIST_DIR}
+        ${CMAKE_CURRENT_LIST_DIR}/faest_em_192s)
+    target_compile_options(faest_em_192s_glue PRIVATE "-include" ${FAEST_EM_192S_NAMESPACE_HEADER})
+
+    set(_FAEST_OBJS ${_FAEST_OBJS} $<TARGET_OBJECTS:faest_em_192s_ref> $<TARGET_OBJECTS:faest_em_192s_glue>)
+endif()
+
+if(OQS_ENABLE_SIG_faest_em_256s)
+    set(FAEST_EM_256S_NAMESPACE_HEADER ${CMAKE_CURRENT_LIST_DIR}/faest_em_256s/namespace_faest_em_256s.h)
+
+    set(FAEST_EM_256S_SOURCES
+        ${FAEST_EM_256S_LIB_SOURCES}
+        faest_em_256s/aes.c
+        faest_em_256s/bavc.c
+        faest_em_256s/compat.c
+        faest_em_256s/crypto_sign.c
+        faest_em_256s/faest.c
+        faest_em_256s/faest_em_256s.c
+        faest_em_256s/faest_aes.c
+        faest_em_256s/fields.c
+        faest_em_256s/instances.c
+        faest_em_256s/owf.c
+        faest_em_256s/random_oracle.c
+        faest_em_256s/randomness.c
+        faest_em_256s/rng.c
+        faest_em_256s/universal_hashing.c
+        faest_em_256s/utils.c
+        faest_em_256s/vole.c
+    )
+
+    add_library(faest_em_256s_ref OBJECT ${FAEST_EM_256S_SOURCES})
+    target_include_directories(faest_em_256s_ref PRIVATE
+        ${CMAKE_CURRENT_LIST_DIR}/faest_em_256s
+        ${CMAKE_CURRENT_LIST_DIR}/faest_em_256s/lib)
+    target_compile_options(faest_em_256s_ref PRIVATE "-include" ${FAEST_EM_256S_NAMESPACE_HEADER})
+    target_compile_definitions(faest_em_256s_ref PRIVATE OQS_FAEST_DISABLE_VECTOR_ATTR)
+
+    add_library(faest_em_256s_glue OBJECT sig_faest_em_256s.c)
+    target_include_directories(faest_em_256s_glue PRIVATE
+        ${CMAKE_CURRENT_LIST_DIR}
+        ${CMAKE_CURRENT_LIST_DIR}/faest_em_256s)
+    target_compile_options(faest_em_256s_glue PRIVATE "-include" ${FAEST_EM_256S_NAMESPACE_HEADER})
+
+    set(_FAEST_OBJS ${_FAEST_OBJS} $<TARGET_OBJECTS:faest_em_256s_ref> $<TARGET_OBJECTS:faest_em_256s_glue>)
 endif()
 
 set(FAEST_OBJS ${_FAEST_OBJS} PARENT_SCOPE)

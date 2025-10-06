@@ -755,7 +755,9 @@ OQS_STATUS combine_message_signature(uint8_t **signed_msg, size_t *signed_msg_le
 	} else if (0 == strcmp(sig->method_name, "FAEST-128s") ||
 	           0 == strcmp(sig->method_name, "FAEST-192s") ||
 	           0 == strcmp(sig->method_name, "FAEST-256s") ||
-	           0 == strcmp(sig->method_name, "FAEST-EM-128s")) {
+	           0 == strcmp(sig->method_name, "FAEST-EM-128s") ||
+	           0 == strcmp(sig->method_name, "FAEST-EM-192s") ||
+	           0 == strcmp(sig->method_name, "FAEST-EM-256s")) {
 		// signed_msg = msg || signature
 		*signed_msg_len = signature_len + msg_len;
 		*signed_msg = OQS_MEM_malloc(*signed_msg_len);
