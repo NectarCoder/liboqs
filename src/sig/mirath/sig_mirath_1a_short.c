@@ -1,16 +1,16 @@
 /**
- * \file sig_mirath_1a_fast.c
- * \brief Implementation of OQS_SIG wrapper for Mirath-1a-fast
+ * \file sig_mirath_1a_short.c
+ * \brief Implementation of OQS_SIG wrapper for Mirath-1a-short
  */
 
 #include <oqs/sig_mirath.h>
 
-#if defined(OQS_ENABLE_SIG_mirath_tcith_1a_fast)
+#if defined(OQS_ENABLE_SIG_mirath_tcith_1a_short)
 #include <stdlib.h>
-#include "mirath_tcith_1a_fast/api.h"
+#include "mirath_tcith_1a_short/api.h"
 #include <string.h>
 
-OQS_SIG *OQS_SIG_mirath_tcith_1a_fast_new(void) {
+OQS_SIG *OQS_SIG_mirath_tcith_1a_short_new(void) {
 
 	OQS_SIG *sig = malloc(sizeof(OQS_SIG));
 	if (sig == NULL) {
@@ -18,26 +18,26 @@ OQS_SIG *OQS_SIG_mirath_tcith_1a_fast_new(void) {
 	}
 	memset(sig, 0, sizeof(OQS_SIG));
 
-	sig->method_name = OQS_SIG_alg_mirath_tcith_1a_fast;
+	sig->method_name = OQS_SIG_alg_mirath_tcith_1a_short;
 	sig->alg_version = "2.0";
 
 	sig->claimed_nist_level = 1;
 	sig->euf_cma = true;
 
-	sig->length_public_key = OQS_SIG_mirath_tcith_1a_fast_length_public_key;
-	sig->length_secret_key = OQS_SIG_mirath_tcith_1a_fast_length_secret_key;
-	sig->length_signature = OQS_SIG_mirath_tcith_1a_fast_length_signature;
+	sig->length_public_key = OQS_SIG_mirath_tcith_1a_short_length_public_key;
+	sig->length_secret_key = OQS_SIG_mirath_tcith_1a_short_length_secret_key;
+	sig->length_signature = OQS_SIG_mirath_tcith_1a_short_length_signature;
 
-	sig->keypair = (OQS_STATUS (*)(uint8_t *, uint8_t *)) OQS_SIG_mirath_tcith_1a_fast_keypair;
-	sig->sign = (OQS_STATUS (*)(uint8_t *, size_t *, const uint8_t *, size_t, const uint8_t *)) OQS_SIG_mirath_tcith_1a_fast_sign;
-	sig->verify = (OQS_STATUS (*)(const uint8_t *, size_t, const uint8_t *, size_t, const uint8_t *)) OQS_SIG_mirath_tcith_1a_fast_verify;
-	sig->sign_with_ctx_str = (OQS_STATUS (*)(uint8_t *, size_t *, const uint8_t *, size_t, const uint8_t *, size_t, const uint8_t *)) OQS_SIG_mirath_tcith_1a_fast_sign_with_ctx_str;
-	sig->verify_with_ctx_str = (OQS_STATUS (*)(const uint8_t *, size_t, const uint8_t *, size_t, const uint8_t *, size_t, const uint8_t *)) OQS_SIG_mirath_tcith_1a_fast_verify_with_ctx_str;
+	sig->keypair = (OQS_STATUS (*)(uint8_t *, uint8_t *)) OQS_SIG_mirath_tcith_1a_short_keypair;
+	sig->sign = (OQS_STATUS (*)(uint8_t *, size_t *, const uint8_t *, size_t, const uint8_t *)) OQS_SIG_mirath_tcith_1a_short_sign;
+	sig->verify = (OQS_STATUS (*)(const uint8_t *, size_t, const uint8_t *, size_t, const uint8_t *)) OQS_SIG_mirath_tcith_1a_short_verify;
+	sig->sign_with_ctx_str = (OQS_STATUS (*)(uint8_t *, size_t *, const uint8_t *, size_t, const uint8_t *, size_t, const uint8_t *)) OQS_SIG_mirath_tcith_1a_short_sign_with_ctx_str;
+	sig->verify_with_ctx_str = (OQS_STATUS (*)(const uint8_t *, size_t, const uint8_t *, size_t, const uint8_t *, size_t, const uint8_t *)) OQS_SIG_mirath_tcith_1a_short_verify_with_ctx_str;
 
 	return sig;
 }
 
-OQS_API OQS_STATUS OQS_SIG_mirath_tcith_1a_fast_keypair(uint8_t *public_key, uint8_t *secret_key) {
+OQS_API OQS_STATUS OQS_SIG_mirath_tcith_1a_short_keypair(uint8_t *public_key, uint8_t *secret_key) {
 	if (crypto_sign_keypair(public_key, secret_key) == 0) {
 		return OQS_SUCCESS;
 	} else {
@@ -45,7 +45,7 @@ OQS_API OQS_STATUS OQS_SIG_mirath_tcith_1a_fast_keypair(uint8_t *public_key, uin
 	}
 }
 
-OQS_API OQS_STATUS OQS_SIG_mirath_tcith_1a_fast_sign(uint8_t *signature, size_t *signature_len, const uint8_t *message, size_t message_len, const uint8_t *secret_key) {
+OQS_API OQS_STATUS OQS_SIG_mirath_tcith_1a_short_sign(uint8_t *signature, size_t *signature_len, const uint8_t *message, size_t message_len, const uint8_t *secret_key) {
 	if (message_len > SIZE_MAX - CRYPTO_BYTES) {
 		return OQS_ERROR;
 	}
@@ -70,7 +70,7 @@ OQS_API OQS_STATUS OQS_SIG_mirath_tcith_1a_fast_sign(uint8_t *signature, size_t 
 	return OQS_SUCCESS;
 }
 
-OQS_API OQS_STATUS OQS_SIG_mirath_tcith_1a_fast_verify(const uint8_t *message, size_t message_len, const uint8_t *signature, size_t signature_len, const uint8_t *public_key) {
+OQS_API OQS_STATUS OQS_SIG_mirath_tcith_1a_short_verify(const uint8_t *message, size_t message_len, const uint8_t *signature, size_t signature_len, const uint8_t *public_key) {
 	if (signature_len != CRYPTO_BYTES) {
 		return OQS_ERROR;
 	}
@@ -105,22 +105,22 @@ OQS_API OQS_STATUS OQS_SIG_mirath_tcith_1a_fast_verify(const uint8_t *message, s
 	return OQS_SUCCESS;
 }
 
-OQS_API OQS_STATUS OQS_SIG_mirath_tcith_1a_fast_sign_with_ctx_str(uint8_t *signature, size_t *signature_len, const uint8_t *message, size_t message_len, const uint8_t *ctx_str, size_t ctx_str_len, const uint8_t *secret_key) {
+OQS_API OQS_STATUS OQS_SIG_mirath_tcith_1a_short_sign_with_ctx_str(uint8_t *signature, size_t *signature_len, const uint8_t *message, size_t message_len, const uint8_t *ctx_str, size_t ctx_str_len, const uint8_t *secret_key) {
 	// PERK doesn't support context strings, fail if a non-empty context is provided
 	if (ctx_str != NULL && ctx_str_len > 0) {
 		return OQS_ERROR;
 	}
 	// Otherwise use regular signing
-	return OQS_SIG_mirath_tcith_1a_fast_sign(signature, signature_len, message, message_len, secret_key);
+	return OQS_SIG_mirath_tcith_1a_short_sign(signature, signature_len, message, message_len, secret_key);
 }
 
-OQS_API OQS_STATUS OQS_SIG_mirath_tcith_1a_fast_verify_with_ctx_str(const uint8_t *message, size_t message_len, const uint8_t *signature, size_t signature_len, const uint8_t *ctx_str, size_t ctx_str_len, const uint8_t *public_key) {
+OQS_API OQS_STATUS OQS_SIG_mirath_tcith_1a_short_verify_with_ctx_str(const uint8_t *message, size_t message_len, const uint8_t *signature, size_t signature_len, const uint8_t *ctx_str, size_t ctx_str_len, const uint8_t *public_key) {
 	// PERK doesn't support context strings, fail if a non-empty context is provided
 	if (ctx_str != NULL && ctx_str_len > 0) {
 		return OQS_ERROR;
 	}
 	// Otherwise use regular verification
-	return OQS_SIG_mirath_tcith_1a_fast_verify(message, message_len, signature, signature_len, public_key);
+	return OQS_SIG_mirath_tcith_1a_short_verify(message, message_len, signature, signature_len, public_key);
 }
 
 #endif

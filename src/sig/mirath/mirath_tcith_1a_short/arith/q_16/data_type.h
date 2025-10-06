@@ -5,6 +5,6 @@
 typedef uint8_t ff_t;
 
 /// we represent each field element with a single byte.
-typedef uint8_t ff_mu_t;
+typedef uint16_t ff_mu_t;
 
 #endif //MIRATH_DATA_TYPE_ARITH_H

@@ -202,8 +202,8 @@ extern "C" {
 #define OQS_SIG_alg_hawk_512 "Hawk-512"
 /** Algorithm identifier for Hawk-1024 */
 #define OQS_SIG_alg_hawk_1024 "Hawk-1024"
-/** Algorithm identifier for MIRATH-tcith-1a-fast */
-#define OQS_SIG_alg_mirath_tcith_1a_fast "Mirath-1a-fast"
+/** Algorithm identifier for MIRATH-tcith-1a-short */
+#define OQS_SIG_alg_mirath_tcith_1a_short "Mirath-1a-short"
 /** Algorithm identifier for RYDE-1F */
 #define OQS_SIG_alg_ryde_1f "RYDE-1F"
 /** Algorithm identifier for RYDE-1S */

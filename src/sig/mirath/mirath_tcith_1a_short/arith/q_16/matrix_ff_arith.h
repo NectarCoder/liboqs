@@ -17,30 +17,6 @@
 #define OFF_E_A ((8 * MIRATH_VAR_FF_Y_BYTES) - 4 * (MIRATH_PARAM_M * MIRATH_PARAM_N - MIRATH_PARAM_K))
 #define OFF_E_B ((8 * mirath_matrix_ff_bytes_size(MIRATH_PARAM_K, 1)) - 4 * MIRATH_PARAM_K)
 
-#define MIN(X, Y) (((X) < (Y)) ? (X) : (Y))
-
-/// TODO doc
-/// \param m
-/// \param nrows
-/// \param i
-/// \param j
-/// \param bytes
-static inline
-uint32_t gf16_matrix_load4(const ff_t *m,
-                           const uint32_t nrows,
-                           const uint32_t i,
-                           const uint32_t j,
-                           const uint32_t bytes) {
-    uint8_t tmp[4];
-    const uint32_t pos = mirath_matrix_ff_bytes_per_column(nrows) * j + i/2;
-    for (uint32_t k = 0; k < MIN(bytes, 4); k++) {
-        tmp[k] = m[pos + k];
-    }
-
-    return *((uint32_t*)tmp);
-}
-
-
 static inline void mirath_matrix_set_to_ff(ff_t *matrix, const uint32_t n_rows, const uint32_t n_cols) {
     if (n_rows & 1) {
         const uint32_t matrix_height =  mirath_matrix_ff_bytes_per_column(n_rows);
@@ -131,5 +107,4 @@ static inline void mirath_matrix_ff_product_arith(ff_t *result, const ff_t *matr
     }
 }
 
-#undef MIN
 #endif

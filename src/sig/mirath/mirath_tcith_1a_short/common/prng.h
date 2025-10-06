@@ -5,15 +5,14 @@
 #include <stdint.h>
 #include "hash.h"
 
-#include "KeccakHash.h"
-typedef Keccak_HashInstance mirath_prng_t;
+#include "fips202.h"
+typedef keccak_state mirath_prng_t;
 
-#define shake_init Keccak_HashInitialize_SHAKE128
-#define shake_absorb(a, b, c) Keccak_HashUpdate(a, b, (c)*8)
-#define shake_finalize(prng) Keccak_HashFinal(prng, NULL)
-#define shake_squeeze(a, b, c) Keccak_HashSqueeze ((c), (a), (b*8))
-
-#define shake_256 SHAKE256
+#define shake_init shake128_init
+#define shake_absorb shake128_absorb
+#define shake_finalize shake128_finalize
+#define shake_squeeze shake128_squeeze
+#define shake_256 shake256
 
 /* Initialize 'prng' from 'salt' and 'seed'.
  * If 'salt == NULL' then 'salt' is ignored.

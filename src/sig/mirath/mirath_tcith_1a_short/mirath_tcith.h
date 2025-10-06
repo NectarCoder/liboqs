@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include "mirath_parameters.h"
 #include "mirath_ggm_tree.h"
-#include "arith/mirath_arith.h"
+#include "arith//mirath_arith.h"
 
 #define MIRATH_BLOCK_LENGTH ((MIRATH_VAR_FF_S_BYTES + MIRATH_VAR_FF_C_BYTES + (MIRATH_PARAM_RHO * sizeof(ff_mu_t)) + (MIRATH_SECURITY_BYTES - 1)) / MIRATH_SECURITY_BYTES)
 

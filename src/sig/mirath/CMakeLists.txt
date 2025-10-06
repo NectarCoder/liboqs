@@ -1,49 +1,49 @@
 # SPDX-License-Identifier: MIT
 
 set(_MIRATH_OBJS "")
-set(MIRATH_TCITH_1A_FAST_LIB_SOURCES
-    mirath_tcith_1a_fast/common/fips202.c
-    mirath_tcith_1a_fast/common/hash.c
-    mirath_tcith_1a_fast/common/KeccakHash.c
-    mirath_tcith_1a_fast/common/KeccakP-1600-opt64.c
-    mirath_tcith_1a_fast/common/prng.c
-    mirath_tcith_1a_fast/common/random.c
+set(MIRATH_TCITH_1A_SHORT_LIB_SOURCES
+    mirath_tcith_1a_short/common/fips202.c
+    mirath_tcith_1a_short/common/hash.c
+    mirath_tcith_1a_short/common/KeccakHash.c
+    mirath_tcith_1a_short/common/KeccakP-1600-opt64.c
+    mirath_tcith_1a_short/common/prng.c
+    mirath_tcith_1a_short/common/random.c
 )
-if(OQS_ENABLE_SIG_mirath_tcith_1a_fast)
-    set(MIRATH_TCITH_1A_FAST_NAMESPACE_HEADER ${CMAKE_CURRENT_LIST_DIR}/mirath_tcith_1a_fast/namespace_mirath_tcith_1a_fast.h)
+if(OQS_ENABLE_SIG_mirath_tcith_1a_short)
+    set(MIRATH_TCITH_1A_SHORT_NAMESPACE_HEADER ${CMAKE_CURRENT_LIST_DIR}/mirath_tcith_1a_short/namespace_mirath_tcith_1a_short.h)
     # Main MIRATH algorithm sources (without lib dependencies)
-    set(MIRATH_TCITH_1A_FAST_SOURCES
-        ${MIRATH_TCITH_1A_FAST_LIB_SOURCES}
-        mirath_tcith_1a_fast/main.c
-        mirath_tcith_1a_fast/mirath_ggm_tree.c
-        mirath_tcith_1a_fast/mirath_keygen.c
-        mirath_tcith_1a_fast/mirath_matrix_ff.c
-        mirath_tcith_1a_fast/mirath_parsing.c
-        mirath_tcith_1a_fast/mirath_sign.c
-        mirath_tcith_1a_fast/mirath_tcith.c
-        mirath_tcith_1a_fast/mirath_verify.c
-        mirath_tcith_1a_fast/sign.c
+    set(MIRATH_TCITH_1A_SHORT_SOURCES
+        ${MIRATH_TCITH_1A_SHORT_LIB_SOURCES}
+        mirath_tcith_1a_short/main.c
+        mirath_tcith_1a_short/mirath_ggm_tree.c
+        mirath_tcith_1a_short/mirath_keygen.c
+        mirath_tcith_1a_short/mirath_matrix_ff.c
+        mirath_tcith_1a_short/mirath_parsing.c
+        mirath_tcith_1a_short/mirath_sign.c
+        mirath_tcith_1a_short/mirath_tcith.c
+        mirath_tcith_1a_short/mirath_verify.c
+        mirath_tcith_1a_short/sign.c
     )
 
-    add_library(mirath_tcith_1a_fast_ref OBJECT ${MIRATH_TCITH_1A_FAST_SOURCES})
+    add_library(mirath_tcith_1a_short_ref OBJECT ${MIRATH_TCITH_1A_SHORT_SOURCES})
     
-    target_include_directories(mirath_tcith_1a_fast_ref PRIVATE
-        ${CMAKE_CURRENT_LIST_DIR}/mirath_tcith_1a_fast
-        ${CMAKE_CURRENT_LIST_DIR}/mirath_tcith_1a_fast/common
-        ${CMAKE_CURRENT_LIST_DIR}/mirath_tcith_1a_fast/rijndael
-        ${CMAKE_CURRENT_LIST_DIR}/mirath_tcith_1a_fast/arith)
-    target_compile_options(mirath_tcith_1a_fast_ref PRIVATE "-include" ${MIRATH_TCITH_1A_FAST_NAMESPACE_HEADER})
+    target_include_directories(mirath_tcith_1a_short_ref PRIVATE
+        ${CMAKE_CURRENT_LIST_DIR}/mirath_tcith_1a_short
+        ${CMAKE_CURRENT_LIST_DIR}/mirath_tcith_1a_short/common
+        ${CMAKE_CURRENT_LIST_DIR}/mirath_tcith_1a_short/rijndael
+        ${CMAKE_CURRENT_LIST_DIR}/mirath_tcith_1a_short/arith)
+    target_compile_options(mirath_tcith_1a_short_ref PRIVATE "-include" ${MIRATH_TCITH_1A_SHORT_NAMESPACE_HEADER})
     
     
-    # Add the glue code as a separate object for the MIRATH_1a_fast variant
-    add_library(mirath_tcith_1a_fast_glue OBJECT sig_mirath_1a_fast.c)
-    target_include_directories(mirath_tcith_1a_fast_glue PRIVATE 
-        ${CMAKE_CURRENT_LIST_DIR}/mirath_tcith_1a_fast
-        ${CMAKE_CURRENT_LIST_DIR}/mirath_tcith_1a_fast/common
-        ${CMAKE_CURRENT_LIST_DIR}/mirath_tcith_1a_fast/rijndael
-        ${CMAKE_CURRENT_LIST_DIR}/mirath_tcith_1a_fast/arith)
-    target_compile_options(mirath_tcith_1a_fast_glue PRIVATE "-include" ${MIRATH_TCITH_1A_FAST_NAMESPACE_HEADER})
-    set(_MIRATH_OBJS ${_MIRATH_OBJS} $<TARGET_OBJECTS:mirath_tcith_1a_fast_ref> $<TARGET_OBJECTS:mirath_tcith_1a_fast_glue>)
+    # Add the glue code as a separate object for the MIRATH_1a_short variant
+    add_library(mirath_tcith_1a_short_glue OBJECT sig_mirath_1a_short.c)
+    target_include_directories(mirath_tcith_1a_short_glue PRIVATE 
+        ${CMAKE_CURRENT_LIST_DIR}/mirath_tcith_1a_short
+        ${CMAKE_CURRENT_LIST_DIR}/mirath_tcith_1a_short/common
+        ${CMAKE_CURRENT_LIST_DIR}/mirath_tcith_1a_short/rijndael
+        ${CMAKE_CURRENT_LIST_DIR}/mirath_tcith_1a_short/arith)
+    target_compile_options(mirath_tcith_1a_short_glue PRIVATE "-include" ${MIRATH_TCITH_1A_SHORT_NAMESPACE_HEADER})
+    set(_MIRATH_OBJS ${_MIRATH_OBJS} $<TARGET_OBJECTS:mirath_tcith_1a_short_ref> $<TARGET_OBJECTS:mirath_tcith_1a_short_glue>)
 endif()
 
 set(MIRATH_OBJS ${_MIRATH_OBJS} PARENT_SCOPE)

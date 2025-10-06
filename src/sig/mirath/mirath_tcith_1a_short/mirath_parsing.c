@@ -103,15 +103,28 @@ void unparse_signature(uint8_t *signature, const uint8_t salt[MIRATH_PARAM_SALT_
             col += 1;
         }
 
+        uint32_t on_mu = 4;
+        ff_mu_t mask_high_mu = (uint16_t)0x0F00;
 
         for (uint32_t i = 0; i < MIRATH_PARAM_RHO; i++) {
             ff_mu_t entry = mid_alpha[e][i];
             const uint32_t shift = (8-off_ptr);
-            *ptr |= (entry << shift);
+            uint8_t entry_low = (entry & 0x00FF);
+            uint8_t entry_high = (entry & mask_high_mu) >> 8;
+            *ptr |= (entry_low << shift);
             ptr += 1;
-            *ptr = 0;
-            if (off_ptr < 8) {
-                *ptr = (entry >> off_ptr);
+            *ptr = (entry_low >> off_ptr);
+            *ptr |= (entry_high << shift);
+            if (off_ptr > on_mu) {
+                off_ptr = off_ptr - on_mu;
+            } else if (off_ptr == on_mu) {
+                ptr += 1;
+                *ptr = 0;
+                off_ptr = 8;
+            } else {
+                ptr += 1;
+                *ptr = (entry_high >> off_ptr);
+                off_ptr = off_ptr + 8 - on_mu;
             }
         }
     }
@@ -200,12 +213,31 @@ int parse_signature(uint8_t salt[MIRATH_PARAM_SALT_BYTES], uint64_t *ctr, hash_t
             col += 1;
         }
 
+        uint32_t on_mu = 4;
+        ff_mu_t mask_high_mu = (uint16_t)0x0F;
 
         for (uint32_t i = 0; i < MIRATH_PARAM_RHO; i++) {
             ff_mu_t entry = 0;
-            entry = (*ptr >> (8 - off_ptr));
+            uint8_t entry_low = 0;
+            uint8_t entry_high = 0 ;
+            entry_low = (*ptr >> (8 - off_ptr));
             ptr += 1;
-            entry |= (*ptr << off_ptr);
+            entry_low |= (*ptr << off_ptr);
+            entry_high = (*ptr >> (8 - off_ptr));
+            if (off_ptr > on_mu) {
+                entry_high &= mask_high_mu;
+                off_ptr = off_ptr - on_mu;
+            } else if (off_ptr == on_mu) {
+                ptr += 1;
+                off_ptr = 8;
+            } else {
+                ptr += 1;
+                entry_high |= ((*ptr << off_ptr) & mask_high_mu);
+                off_ptr = off_ptr + 8 - on_mu;
+            }
+            entry = entry_high;
+            entry = ((entry << 8) | (entry_low));
+            mid_alpha[e][i] = entry;
             mid_alpha[e][i] = entry;
         }
     }

@@ -11,7 +11,7 @@
 #include "mirath_tcith.h"
 #include "mirath_parsing.h"
 
-#include "rijndael/seed_expand_functions_avx.h"
+#include "rijndael/seed_expand_functions_ref.h"
 
 #ifndef _SHA3_
 static inline void mirath_commit(uint8_t pair_node[2][MIRATH_SECURITY_BYTES],
@@ -195,6 +195,10 @@ void commit_parallel_sharings(ff_mu_t S_base[MIRATH_PARAM_TAU][MIRATH_VAR_S],
             mirath_matrix_set_to_ff(C_rnd, MIRATH_PARAM_R, MIRATH_PARAM_N - MIRATH_PARAM_R);
             memcpy(v_rnd, sample + MIRATH_VAR_FF_S_BYTES + MIRATH_VAR_FF_C_BYTES, MIRATH_PARAM_RHO);
 
+            for (uint32_t j = 0; j < MIRATH_PARAM_RHO; j++) {
+                // this works only for (q=2, mu=12) and (q=16, mu=3)
+                v_rnd[j] &= (ff_mu_t)0x0FFF;
+            }
             // Performs S_acc = S_acc + S_rnd, C_acc = C_acc + C_rnd and v[e] = v[e] + v_rnd
             mirath_matrix_ff_add(S_acc, S_acc, S_rnd, MIRATH_PARAM_M, MIRATH_PARAM_R);
             mirath_matrix_ff_add(C_acc, C_acc, C_rnd, MIRATH_PARAM_R, MIRATH_PARAM_N - MIRATH_PARAM_R);
@@ -244,6 +248,10 @@ void compute_share(ff_mu_t S_share[MIRATH_VAR_S], ff_mu_t C_share[MIRATH_VAR_C],
             mirath_matrix_set_to_ff(Ci, MIRATH_PARAM_R, MIRATH_PARAM_N - MIRATH_PARAM_R);
             memcpy(vi, sample + MIRATH_VAR_FF_S_BYTES + MIRATH_VAR_FF_C_BYTES, MIRATH_PARAM_RHO);
 
+            for (uint32_t j = 0; j < MIRATH_PARAM_RHO; j++) {
+                // this works only for (q=2, mu=12) and (q=16, mu=3)
+                vi[j] &= (ff_mu_t)0x0FFF;
+            }
 
             const ff_mu_t sc = (ff_mu_t) ((uint16_t) i_star ^ i);
 

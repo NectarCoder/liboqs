@@ -7,7 +7,7 @@
 
 //q=2 paramater sets
 
-#include "q_16/mu_fast/ff_mu.h"
+#include "q_16/mu_short/ff_mu.h"
 
 #include "q_16/data_type.h"
 #include "q_16/ff.h"
