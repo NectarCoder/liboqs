@@ -204,6 +204,10 @@ extern "C" {
 #define OQS_SIG_alg_hawk_1024 "Hawk-1024"
 /** Algorithm identifier for MIRATH-tcith-1a-short */
 #define OQS_SIG_alg_mirath_tcith_1a_short "Mirath-1a-short"
+/** Algorithm identifier for MIRATH-tcith-3a-short */
+#define OQS_SIG_alg_mirath_tcith_1b_short "Mirath-1b-short"
+/** Algorithm identifier for MIRATH-tcith-3a-short */
+#define OQS_SIG_alg_mirath_tcith_3a_short "Mirath-3a-short"
 /** Algorithm identifier for RYDE-1F */
 #define OQS_SIG_alg_ryde_1f "RYDE-1F"
 /** Algorithm identifier for RYDE-1S */
@@ -217,7 +221,7 @@ extern "C" {
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALGS_LENGTH_START
 
 /** Number of algorithm identifiers above. */
-#define OQS_SIG_algs_length 91
+#define OQS_SIG_algs_length 93
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALGS_LENGTH_END
 
 /**

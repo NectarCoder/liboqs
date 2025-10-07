@@ -101,6 +101,174 @@ OQS_SIG *OQS_SIG_mirath_tcith_1a_short_new(void);
 #endif
 
 
+/* mirath_tcith_1a_short */
+
+/** Algorithm identifier for Mirath_tcith_1a_short */
+#define OQS_SIG_alg_mirath_tcith_1b_short "Mirath-1b-short"
+
+/** Hawk-512 public key length, in bytes */
+#define OQS_SIG_mirath_tcith_1b_short_length_public_key 57
+
+/** Hawk-512 secret key length, in bytes */
+#define OQS_SIG_mirath_tcith_1b_short_length_secret_key 32
+
+/** Hawk-512 signature length, in bytes (maximum size for signed message) */
+#define OQS_SIG_mirath_tcith_1b_short_length_signature 2990
+
+/**
+ * \brief Process a Hawk-512 key pair.
+ * \warning The secret key contains the public key as a suffix.
+ *
+ * \param[out] public_key    Pointer to the buffer for the public key (64 bytes).
+ * \param[out] secret_key    Pointer to the buffer for the secret key (80 bytes).
+ * \return OQS_SUCCESS or OQS_ERROR
+ */
+OQS_API OQS_STATUS OQS_SIG_mirath_tcith_1b_short_keypair(uint8_t *public_key, uint8_t *secret_key);
+
+/**
+ * \brief Signing function for Hawk-512.
+ *
+ * \param[out] signature       Pointer to the buffer for the signature (5444 bytes).
+ * \param[out] signature_len   Pointer to the length of the signature (always 5444).
+ * \param[in]  message         Pointer to the message to be signed.
+ * \param[in]  message_len     Length of the message to be signed.
+ * \param[in]  secret_key      Pointer to the secret key (80 bytes).
+ * \return OQS_SUCCESS or OQS_ERROR
+ */
+OQS_API OQS_STATUS OQS_SIG_mirath_tcith_1b_short_sign(uint8_t *signature, size_t *signature_len, const uint8_t *message, size_t message_len, const uint8_t *secret_key);
+
+/**
+ * \brief Verification function for Hawk-512.
+ *
+ * \param[in]  message          Pointer to the message.
+ * \param[in]  message_len      Length of the message.
+ * \param[in]  signature        Pointer to the signature (5444 bytes).
+ * \param[in]  signature_len    Length of the signature.
+ * \param[in]  public_key       Pointer to the public key (64 bytes).
+ * \return OQS_SUCCESS or OQS_ERROR
+ */
+OQS_API OQS_STATUS OQS_SIG_mirath_tcith_1b_short_verify(const uint8_t *message, size_t message_len, const uint8_t *signature, size_t signature_len, const uint8_t *public_key);
+
+/**
+ * \brief Hawk-512 signature generation with context string.
+ *
+ * \param[out] signature         Pointer to the output signature buffer.
+ * \param[out] signature_len     Pointer to the length of the signature.
+ * \param[in]  message           Pointer to the message to be signed.
+ * \param[in]  message_len       Length of the message.
+ * \param[in]  ctx_str           Pointer to the context string.
+ * \param[in]  ctx_str_len       Length of the context string.
+ * \param[in]  secret_key        Pointer to the secret key.
+ * \return OQS_SUCCESS or OQS_ERROR
+ */
+OQS_API OQS_STATUS OQS_SIG_mirath_tcith_1b_short_sign_with_ctx_str(uint8_t *signature, size_t *signature_len, const uint8_t *message, size_t message_len, const uint8_t *ctx_str, size_t ctx_str_len, const uint8_t *secret_key);
+
+/**
+ * \brief Hawk-512 signature verification with context string.
+ *
+ * \param[in]  message           Pointer to the message.
+ * \param[in]  message_len       Length of the message.
+ * \param[in]  signature         Pointer to the signature.
+ * \param[in]  signature_len     Length of the signature.
+ * \param[in]  ctx_str           Pointer to the context string.
+ * \param[in]  ctx_str_len       Length of the context string.
+ * \param[in]  public_key        Pointer to the public key.
+ * \return OQS_SUCCESS or OQS_ERROR
+ */
+OQS_API OQS_STATUS OQS_SIG_mirath_tcith_1b_short_verify_with_ctx_str(const uint8_t *message, size_t message_len, const uint8_t *signature, size_t signature_len, const uint8_t *ctx_str, size_t ctx_str_len, const uint8_t *public_key);
+
+#if defined(OQS_ENABLE_SIG_mirath_tcith_1b_short)
+/**
+ * \brief OQS_SIG object for Hawk-512.
+ */
+OQS_SIG *OQS_SIG_mirath_tcith_1b_short_new(void);
+#endif
+
+
+
+/* mirath_tcith_1a_short */
+
+/** Algorithm identifier for Mirath_tcith_1a_short */
+#define OQS_SIG_alg_mirath_tcith_3a_short "Mirath-3a-short"
+
+/** Hawk-512 public key length, in bytes */
+#define OQS_SIG_mirath_tcith_3a_short_length_public_key 107
+
+/** Hawk-512 secret key length, in bytes */
+#define OQS_SIG_mirath_tcith_3a_short_length_secret_key 48
+
+/** Hawk-512 signature length, in bytes (maximum size for signed message) */
+#define OQS_SIG_mirath_tcith_3a_short_length_signature 7456
+
+/**
+ * \brief Process a Hawk-512 key pair.
+ * \warning The secret key contains the public key as a suffix.
+ *
+ * \param[out] public_key    Pointer to the buffer for the public key (64 bytes).
+ * \param[out] secret_key    Pointer to the buffer for the secret key (80 bytes).
+ * \return OQS_SUCCESS or OQS_ERROR
+ */
+OQS_API OQS_STATUS OQS_SIG_mirath_tcith_3a_short_keypair(uint8_t *public_key, uint8_t *secret_key);
+
+/**
+ * \brief Signing function for Hawk-512.
+ *
+ * \param[out] signature       Pointer to the buffer for the signature (5444 bytes).
+ * \param[out] signature_len   Pointer to the length of the signature (always 5444).
+ * \param[in]  message         Pointer to the message to be signed.
+ * \param[in]  message_len     Length of the message to be signed.
+ * \param[in]  secret_key      Pointer to the secret key (80 bytes).
+ * \return OQS_SUCCESS or OQS_ERROR
+ */
+OQS_API OQS_STATUS OQS_SIG_mirath_tcith_3a_short_sign(uint8_t *signature, size_t *signature_len, const uint8_t *message, size_t message_len, const uint8_t *secret_key);
+
+/**
+ * \brief Verification function for Hawk-512.
+ *
+ * \param[in]  message          Pointer to the message.
+ * \param[in]  message_len      Length of the message.
+ * \param[in]  signature        Pointer to the signature (5444 bytes).
+ * \param[in]  signature_len    Length of the signature.
+ * \param[in]  public_key       Pointer to the public key (64 bytes).
+ * \return OQS_SUCCESS or OQS_ERROR
+ */
+OQS_API OQS_STATUS OQS_SIG_mirath_tcith_3a_short_verify(const uint8_t *message, size_t message_len, const uint8_t *signature, size_t signature_len, const uint8_t *public_key);
+
+/**
+ * \brief Hawk-512 signature generation with context string.
+ *
+ * \param[out] signature         Pointer to the output signature buffer.
+ * \param[out] signature_len     Pointer to the length of the signature.
+ * \param[in]  message           Pointer to the message to be signed.
+ * \param[in]  message_len       Length of the message.
+ * \param[in]  ctx_str           Pointer to the context string.
+ * \param[in]  ctx_str_len       Length of the context string.
+ * \param[in]  secret_key        Pointer to the secret key.
+ * \return OQS_SUCCESS or OQS_ERROR
+ */
+OQS_API OQS_STATUS OQS_SIG_mirath_tcith_3a_short_sign_with_ctx_str(uint8_t *signature, size_t *signature_len, const uint8_t *message, size_t message_len, const uint8_t *ctx_str, size_t ctx_str_len, const uint8_t *secret_key);
+
+/**
+ * \brief Hawk-512 signature verification with context string.
+ *
+ * \param[in]  message           Pointer to the message.
+ * \param[in]  message_len       Length of the message.
+ * \param[in]  signature         Pointer to the signature.
+ * \param[in]  signature_len     Length of the signature.
+ * \param[in]  ctx_str           Pointer to the context string.
+ * \param[in]  ctx_str_len       Length of the context string.
+ * \param[in]  public_key        Pointer to the public key.
+ * \return OQS_SUCCESS or OQS_ERROR
+ */
+OQS_API OQS_STATUS OQS_SIG_mirath_tcith_3a_short_verify_with_ctx_str(const uint8_t *message, size_t message_len, const uint8_t *signature, size_t signature_len, const uint8_t *ctx_str, size_t ctx_str_len, const uint8_t *public_key);
+
+#if defined(OQS_ENABLE_SIG_mirath_tcith_3a_short)
+/**
+ * \brief OQS_SIG object for Hawk-512.
+ */
+OQS_SIG *OQS_SIG_mirath_tcith_3a_short_new(void);
+#endif
+
 #ifdef __cplusplus
 }
 #endif
