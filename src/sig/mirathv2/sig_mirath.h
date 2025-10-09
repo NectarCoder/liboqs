@@ -104,7 +104,7 @@ OQS_SIG *OQS_SIG_mirath_tcith_1a_short_new(void);
 /* mirath_tcith_1b_short */
 
 /** Algorithm identifier for Mirath_tcith_1b_short */
-#define OQS_SIG_alg_mirath_tcith_1b_short "Mirath-1b-short"
+#define OQS_SIG_alg_mirath_tcith_1b_short "Mirath-1b-short-v2"
 
 /** Mirath_1b_short public key length, in bytes */
 #define OQS_SIG_mirath_tcith_1b_short_length_public_key 57
@@ -188,7 +188,7 @@ OQS_SIG *OQS_SIG_mirath_tcith_1b_short_new(void);
 /* mirath_tcith_3a_short */
 
 /** Algorithm identifier for Mirath_tcith_3a_short */
-#define OQS_SIG_alg_mirath_tcith_3a_short "Mirath-3a-short"
+#define OQS_SIG_alg_mirath_tcith_3a_short "Mirath-3a-short-v2"
 
 /** Mirath_3a_short public key length, in bytes */
 #define OQS_SIG_mirath_tcith_3a_short_length_public_key 107
@@ -272,7 +272,7 @@ OQS_SIG *OQS_SIG_mirath_tcith_3a_short_new(void);
 /* mirath_tcith_3b_short */
 
 /** Algorithm identifier for Mirath_tcith_3b_short */
-#define OQS_SIG_alg_mirath_tcith_3b_short "Mirath-3b-short"
+#define OQS_SIG_alg_mirath_tcith_3b_short "Mirath-3b-short-v2"
 
 /** Mirath_3a_short public key length, in bytes */
 #define OQS_SIG_mirath_tcith_3b_short_length_public_key 84
@@ -356,7 +356,7 @@ OQS_SIG *OQS_SIG_mirath_tcith_3b_short_new(void);
 /* mirath_tcith_5a_short */
 
 /** Algorithm identifier for Mirath_tcith_5a_short */
-#define OQS_SIG_alg_mirath_tcith_5a_short "Mirath-5a-short"
+#define OQS_SIG_alg_mirath_tcith_5a_short "Mirath-5a-short-v2"
 
 /** Mirath_3a_short public key length, in bytes */
 #define OQS_SIG_mirath_tcith_5a_short_length_public_key 147
@@ -441,7 +441,7 @@ OQS_SIG *OQS_SIG_mirath_tcith_5a_short_new(void);
 /* mirath_tcith_5b_short */
 
 /** Algorithm identifier for Mirath_tcith_5b_short */
-#define OQS_SIG_alg_mirath_tcith_5b_short "Mirath-5b-short"
+#define OQS_SIG_alg_mirath_tcith_5b_short "Mirath-5b-short-v2"
 
 /** Mirath_3a_short public key length, in bytes */
 #define OQS_SIG_mirath_tcith_5b_short_length_public_key 112
