@@ -20,7 +20,7 @@ extern "C" {
 /* mirath_tcith_1a_short */
 
 /** Algorithm identifier for Mirath_tcith_1a_short */
-#define OQS_SIG_alg_mirath_tcith_1a_short "Mirath-1a-short"
+#define OQS_SIG_alg_mirath_tcith_1a_short "Mirath-1a-short-v2"
 
 /** Mirath_1a_short public key length, in bytes */
 #define OQS_SIG_mirath_tcith_1a_short_length_public_key 73
