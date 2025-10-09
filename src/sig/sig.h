@@ -172,20 +172,6 @@ extern "C" {
 #define OQS_SIG_alg_snova_SNOVA_75_33_2 "SNOVA_75_33_2"
 /** Algorithm identifier for SNOVA_29_6_5 */
 #define OQS_SIG_alg_snova_SNOVA_29_6_5 "SNOVA_29_6_5"
-/** Algorithm identifier for PERK-128-fast-3 */
-#define OQS_SIG_alg_perk_128_fast_3 "PERK-128-fast-3"
-/** Algorithm identifier for PERK-128-short-3 */
-#define OQS_SIG_alg_perk_128_short_3 "PERK-128-short-3"
-/** Algorithm identifier for PERK-128-short-5 */
-#define OQS_SIG_alg_perk_128_short_5 "PERK-128-short-5"
-/** Algorithm identifier for PERK-192-short-3 */
-#define OQS_SIG_alg_perk_192_short_3 "PERK-192-short-3"
-/** Algorithm identifier for PERK-192-short-5 */
-#define OQS_SIG_alg_perk_192_short_5 "PERK-192-short-5"
-/** Algorithm identifier for PERK-256-short-3 */
-#define OQS_SIG_alg_perk_256_short_3 "PERK-256-short-3"
-/** Algorithm identifier for PERK-256-short-5 */
-#define OQS_SIG_alg_perk_256_short_5 "PERK-256-short-5"
 /** Algorithm identifier for FAEST-128s */
 #define OQS_SIG_alg_faest_128s "FAEST-128s"
 /** Algorithm identifier for FAEST-192s */
