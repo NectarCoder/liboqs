@@ -355,11 +355,6 @@
 #cmakedefine OQS_ENABLE_SIG_ryde_3s 1
 #cmakedefine OQS_ENABLE_SIG_ryde_5s 1
 
-#cmakedefine OQS_ENABLE_SIG_MIRATH 1
-#cmakedefine OQS_ENABLE_SIG_mirath_tcith_1a_short 1
-#cmakedefine OQS_ENABLE_SIG_mirath_tcith_1b_short 1
-#cmakedefine OQS_ENABLE_SIG_mirath_tcith_3a_short 1
-
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ADD_ALG_ENABLE_DEFINES_END
 
 ///// OQS_COPY_FROM_LIBJADE_FRAGMENT_ADD_ALG_ENABLE_DEFINES_START

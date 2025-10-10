@@ -200,12 +200,6 @@ extern "C" {
 #define OQS_SIG_alg_ryde_3s "RYDE-3S"
 /** Algorithm identifier for RYDE-5S */
 #define OQS_SIG_alg_ryde_5s "RYDE-5S"
-/** Algorithm identifier for MIRATH-tcith-1a-short */
-#define OQS_SIG_alg_mirath_tcith_1a_short "Mirath-1a-short"
-/** Algorithm identifier for MIRATH-tcith-3a-short */
-#define OQS_SIG_alg_mirath_tcith_1b_short "Mirath-1b-short"
-/** Algorithm identifier for MIRATH-tcith-3a-short */
-#define OQS_SIG_alg_mirath_tcith_3a_short "Mirath-3a-short"
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALG_IDENTIFIER_END
 // EDIT-WHEN-ADDING-SIG
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALGS_LENGTH_START
@@ -492,9 +486,6 @@ OQS_API bool OQS_SIG_supports_ctx_str(const char *alg_name);
 #ifdef OQS_ENABLE_SIG_HAWK
 #include <oqs/sig_hawk.h>
 #endif /* OQS_ENABLE_SIG_HAWK */
-#ifdef OQS_ENABLE_SIG_MIRATH
-#include <oqs/sig_mirath.h>
-#endif /* OQS_ENABLE_SIG_MIRATH */
 #ifdef OQS_ENABLE_SIG_RYDE
 #include <oqs/sig_ryde.h>
 #endif /* OQS_ENABLE_SIG_RYDE */

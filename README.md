@@ -19,11 +19,6 @@ Run `./SETUP.sh` to build liboqs with all algorithms enabled.
 > For the purpose of benchmarking we set some CMAKE parameters to set the optimization level to generic.  
 Hence, there will be no AVX or ARM/Neon optmizations when running `SETUP.sh`.  
 
-> [!WARNING]
-> Currently, Mirath integration is still in progress, and liboqs does not build.  
-Use this command to build instead:  
-`CMAKE_PARAMS='-DOQS_ENABLE_SIG_MIRATH=OFF -DOQS_ENABLE_SIG_mirath_tcith_1a_fast=OFF' ./SETUP.sh`
-
 Go to the `test_sig` folder, run `make`.  
 Run `./test_sig <algorithm-id>` to see some test results.  
 Algorithm ID list can be found in the `src/sig/sig.h` header.  
