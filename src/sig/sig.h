@@ -172,6 +172,10 @@ extern "C" {
 #define OQS_SIG_alg_snova_SNOVA_75_33_2 "SNOVA_75_33_2"
 /** Algorithm identifier for SNOVA_29_6_5 */
 #define OQS_SIG_alg_snova_SNOVA_29_6_5 "SNOVA_29_6_5"
+/** Algorithm identifier for Hawk-512 */
+#define OQS_SIG_alg_hawk_512 "Hawk-512"
+/** Algorithm identifier for Hawk-1024 */
+#define OQS_SIG_alg_hawk_1024 "Hawk-1024"
 /** Algorithm identifier for FAEST-128s */
 #define OQS_SIG_alg_faest_128s "FAEST-128s"
 /** Algorithm identifier for FAEST-192s */
@@ -184,16 +188,12 @@ extern "C" {
 #define OQS_SIG_alg_faest_em_192s "FAEST-EM-192s"
 /** Algorithm identifier for FAEST-EM-256s */
 #define OQS_SIG_alg_faest_em_256s "FAEST-EM-256s"
-/** Algorithm identifier for Hawk-512 */
-#define OQS_SIG_alg_hawk_512 "Hawk-512"
-/** Algorithm identifier for Hawk-1024 */
-#define OQS_SIG_alg_hawk_1024 "Hawk-1024"
-/** Algorithm identifier for MIRATH-tcith-1a-short */
-#define OQS_SIG_alg_mirath_tcith_1a_short "Mirath-1a-short"
-/** Algorithm identifier for MIRATH-tcith-3a-short */
-#define OQS_SIG_alg_mirath_tcith_1b_short "Mirath-1b-short"
-/** Algorithm identifier for MIRATH-tcith-3a-short */
-#define OQS_SIG_alg_mirath_tcith_3a_short "Mirath-3a-short"
+/** Algorithm identifier for PERK-AK-1-short */
+#define OQS_SIG_alg_perk_ak_1_short "PERK-AK-1-short"
+/** Algorithm identifier for PERK-AK-3-short */
+#define OQS_SIG_alg_perk_ak_3_short "PERK-AK-3-short"
+/** Algorithm identifier for PERK-AK-5-short */
+#define OQS_SIG_alg_perk_ak_5_short "PERK-AK-5-short"
 /** Algorithm identifier for RYDE-1F */
 #define OQS_SIG_alg_ryde_1f "RYDE-1F"
 /** Algorithm identifier for RYDE-1S */
@@ -202,12 +202,18 @@ extern "C" {
 #define OQS_SIG_alg_ryde_3s "RYDE-3S"
 /** Algorithm identifier for RYDE-5S */
 #define OQS_SIG_alg_ryde_5s "RYDE-5S"
+/** Algorithm identifier for MIRATH-tcith-1a-short */
+#define OQS_SIG_alg_mirath_tcith_1a_short "Mirath-1a-short"
+/** Algorithm identifier for MIRATH-tcith-3a-short */
+#define OQS_SIG_alg_mirath_tcith_1b_short "Mirath-1b-short"
+/** Algorithm identifier for MIRATH-tcith-3a-short */
+#define OQS_SIG_alg_mirath_tcith_3a_short "Mirath-3a-short"
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALG_IDENTIFIER_END
 // EDIT-WHEN-ADDING-SIG
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALGS_LENGTH_START
 
 /** Number of algorithm identifiers above. */
-#define OQS_SIG_algs_length 93
+#define OQS_SIG_algs_length 96
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALGS_LENGTH_END
 
 /**

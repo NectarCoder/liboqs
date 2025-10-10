@@ -1,0 +1,60 @@
+name: PERK
+type: signature
+principal-submitters:
+- TODO
+crypto-assumption: TODO
+website: TODO
+nist-round: 2
+spec-version: v2.1.0
+primary-upstream:
+  source: TODO
+  spdx-license-identifier: TODO
+parameter-sets:
+- name: PERK-AK-1-short
+  claimed-nist-level: 1
+  claimed-security: EUF-CMA
+  length-public-key: 104
+  length-secret-key: 120
+  length-signature: 3473
+  implementations-switch-on-runtime-cpu-features: false
+  implementations:
+  - upstream: primary-upstream
+    upstream-id: ref
+    supported-platforms: TODO
+    common-crypto:
+    - TODO
+    no-secret-dependent-branching-claimed: TODO
+    no-secret-dependent-branching-checked-by-valgrind: TODO
+    large-stack-usage: TODO
+- name: PERK-AK-3-short
+  claimed-nist-level: 3
+  claimed-security: EUF-CMA
+  length-public-key: 151
+  length-secret-key: 175
+  length-signature: 8311
+  implementations-switch-on-runtime-cpu-features: false
+  implementations:
+  - upstream: primary-upstream
+    upstream-id: ref
+    supported-platforms: TODO
+    common-crypto:
+    - TODO
+    no-secret-dependent-branching-claimed: TODO
+    no-secret-dependent-branching-checked-by-valgrind: TODO
+    large-stack-usage: TODO
+- name: PERK-AK-5-short
+  claimed-nist-level: 5
+  claimed-security: EUF-CMA
+  length-public-key: 195
+  length-secret-key: 227
+  length-signature: 14830
+  implementations-switch-on-runtime-cpu-features: false
+  implementations:
+  - upstream: primary-upstream
+    upstream-id: ref
+    supported-platforms: TODO
+    common-crypto:
+    - TODO
+    no-secret-dependent-branching-claimed: TODO
+    no-secret-dependent-branching-checked-by-valgrind: TODO
+    large-stack-usage: TODO

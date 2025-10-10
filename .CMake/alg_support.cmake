@@ -225,6 +225,10 @@ cmake_dependent_option(OQS_ENABLE_SIG_snova_SNOVA_66_15_3 "" ON "OQS_ENABLE_SIG_
 cmake_dependent_option(OQS_ENABLE_SIG_snova_SNOVA_75_33_2 "" ON "OQS_ENABLE_SIG_SNOVA" OFF)
 cmake_dependent_option(OQS_ENABLE_SIG_snova_SNOVA_29_6_5 "" ON "OQS_ENABLE_SIG_SNOVA" OFF)
 
+option(OQS_ENABLE_SIG_HAWK "Enable hawk algorithm family" ON)
+cmake_dependent_option(OQS_ENABLE_SIG_hawk_512 "" ON "OQS_ENABLE_SIG_HAWK" OFF)
+cmake_dependent_option(OQS_ENABLE_SIG_hawk_1024 "" ON "OQS_ENABLE_SIG_HAWK" OFF)
+
 option(OQS_ENABLE_SIG_FAEST "Enable faest algorithm family" ON)
 cmake_dependent_option(OQS_ENABLE_SIG_faest_128s "" ON "OQS_ENABLE_SIG_FAEST" OFF)
 cmake_dependent_option(OQS_ENABLE_SIG_faest_192s "" ON "OQS_ENABLE_SIG_FAEST" OFF)
@@ -233,16 +237,16 @@ cmake_dependent_option(OQS_ENABLE_SIG_faest_em_128s "" ON "OQS_ENABLE_SIG_FAEST"
 cmake_dependent_option(OQS_ENABLE_SIG_faest_em_192s "" ON "OQS_ENABLE_SIG_FAEST" OFF)
 cmake_dependent_option(OQS_ENABLE_SIG_faest_em_256s "" ON "OQS_ENABLE_SIG_FAEST" OFF)
 
-option(OQS_ENABLE_SIG_HAWK "Enable hawk algorithm family" ON)
-cmake_dependent_option(OQS_ENABLE_SIG_hawk_512 "" ON "OQS_ENABLE_SIG_HAWK" OFF)
-cmake_dependent_option(OQS_ENABLE_SIG_hawk_1024 "" ON "OQS_ENABLE_SIG_HAWK" OFF)
+option(OQS_ENABLE_SIG_PERK "Enable perk algorithm family" ON)
+cmake_dependent_option(OQS_ENABLE_SIG_perk_ak_1_short "" ON "OQS_ENABLE_SIG_PERK" OFF)
+cmake_dependent_option(OQS_ENABLE_SIG_perk_ak_3_short "" ON "OQS_ENABLE_SIG_PERK" OFF)
+cmake_dependent_option(OQS_ENABLE_SIG_perk_ak_5_short "" ON "OQS_ENABLE_SIG_PERK" OFF)
 
 option(OQS_ENABLE_SIG_RYDE "Enable ryde algorithm family" ON)
 cmake_dependent_option(OQS_ENABLE_SIG_ryde_1f "" ON "OQS_ENABLE_SIG_RYDE" OFF)
 cmake_dependent_option(OQS_ENABLE_SIG_ryde_1s "" ON "OQS_ENABLE_SIG_RYDE" OFF)
 cmake_dependent_option(OQS_ENABLE_SIG_ryde_3s "" ON "OQS_ENABLE_SIG_RYDE" OFF)
 cmake_dependent_option(OQS_ENABLE_SIG_ryde_5s "" ON "OQS_ENABLE_SIG_RYDE" OFF)
-
 
 option(OQS_ENABLE_SIG_MIRATH "Enable mirath algorithm family" ON)
 cmake_dependent_option(OQS_ENABLE_SIG_mirath_tcith_1a_short "" ON "OQS_ENABLE_SIG_MIRATH" OFF)

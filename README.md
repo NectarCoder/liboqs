@@ -15,7 +15,12 @@ From the project root directory:
 Run `./SETUP_DEPS.sh` to download and install the dependencies. Then,  
 Run `./SETUP.sh` to build liboqs with all algorithms enabled.
 
-> **NOTE:** Currently, Mirath integration is still in progress, and liboqs does not build.  
+> [!NOTE]
+> For the purpose of benchmarking we set some CMAKE parameters to set the optimization level to generic.  
+Hence, there will be no AVX or ARM/Neon optmizations when running `SETUP.sh`.  
+
+> [!WARNING]
+> Currently, Mirath integration is still in progress, and liboqs does not build.  
 Use this command to build instead:  
 `CMAKE_PARAMS='-DOQS_ENABLE_SIG_MIRATH=OFF -DOQS_ENABLE_SIG_mirath_tcith_1a_fast=OFF' ./SETUP.sh`
 

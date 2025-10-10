@@ -96,6 +96,9 @@ OQS_API const char *OQS_SIG_alg_identifier(size_t i) {
 		OQS_SIG_alg_mirath_tcith_1a_short,
 		OQS_SIG_alg_mirath_tcith_1b_short,
 		OQS_SIG_alg_mirath_tcith_3a_short,
+		OQS_SIG_alg_perk_ak_1_short,
+		OQS_SIG_alg_perk_ak_3_short,
+		OQS_SIG_alg_perk_ak_5_short,
 		OQS_SIG_alg_ryde_1f,
 		OQS_SIG_alg_ryde_1s,
 		OQS_SIG_alg_ryde_3s,
@@ -681,6 +684,27 @@ OQS_API int OQS_SIG_alg_is_enabled(const char *method_name) {
 
 	} else if (0 == strcasecmp(method_name, OQS_SIG_alg_mirath_tcith_3a_short)) {
 #ifdef OQS_ENABLE_SIG_mirath_tcith_3a_short
+		return 1;
+#else
+		return 0;
+#endif
+
+	} else if (0 == strcasecmp(method_name, OQS_SIG_alg_perk_ak_1_short)) {
+#ifdef OQS_ENABLE_SIG_perk_ak_1_short
+		return 1;
+#else
+		return 0;
+#endif
+
+	} else if (0 == strcasecmp(method_name, OQS_SIG_alg_perk_ak_3_short)) {
+#ifdef OQS_ENABLE_SIG_perk_ak_3_short
+		return 1;
+#else
+		return 0;
+#endif
+
+	} else if (0 == strcasecmp(method_name, OQS_SIG_alg_perk_ak_5_short)) {
+#ifdef OQS_ENABLE_SIG_perk_ak_5_short
 		return 1;
 #else
 		return 0;
@@ -1292,6 +1316,27 @@ OQS_API OQS_SIG *OQS_SIG_new(const char *method_name) {
 		return NULL;
 #endif
 
+	} else if (0 == strcasecmp(method_name, OQS_SIG_alg_perk_ak_1_short)) {
+#ifdef OQS_ENABLE_SIG_perk_ak_1_short
+		return OQS_SIG_perk_ak_1_short_new();
+#else
+		return NULL;
+#endif
+
+	} else if (0 == strcasecmp(method_name, OQS_SIG_alg_perk_ak_3_short)) {
+#ifdef OQS_ENABLE_SIG_perk_ak_3_short
+		return OQS_SIG_perk_ak_3_short_new();
+#else
+		return NULL;
+#endif
+
+	} else if (0 == strcasecmp(method_name, OQS_SIG_alg_perk_ak_5_short)) {
+#ifdef OQS_ENABLE_SIG_perk_ak_5_short
+		return OQS_SIG_perk_ak_5_short_new();
+#else
+		return NULL;
+#endif
+
 	} else if (0 == strcasecmp(method_name, OQS_SIG_alg_ryde_1f)) {
 #ifdef OQS_ENABLE_SIG_ryde_1f
 		return OQS_SIG_ryde_1f_new();
@@ -1313,11 +1358,11 @@ OQS_API OQS_SIG *OQS_SIG_new(const char *method_name) {
 		return NULL;
 #endif
 
-} else if (0 == strcasecmp(method_name, OQS_SIG_alg_ryde_5s)) {
+	} else if (0 == strcasecmp(method_name, OQS_SIG_alg_ryde_5s)) {
 #ifdef OQS_ENABLE_SIG_ryde_5s
-	return OQS_SIG_ryde_5s_new();
+		return OQS_SIG_ryde_5s_new();
 #else
-	return NULL;
+		return NULL;
 #endif
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_NEW_CASE_END
 		// EDIT-WHEN-ADDING-SIG

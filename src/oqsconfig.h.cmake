@@ -337,12 +337,6 @@
 #cmakedefine OQS_ENABLE_SIG_hawk_512 1
 #cmakedefine OQS_ENABLE_SIG_hawk_1024 1
 
-#cmakedefine OQS_ENABLE_SIG_RYDE 1
-#cmakedefine OQS_ENABLE_SIG_ryde_1f 1
-#cmakedefine OQS_ENABLE_SIG_ryde_1s 1
-#cmakedefine OQS_ENABLE_SIG_ryde_3s 1
-#cmakedefine OQS_ENABLE_SIG_ryde_5s 1
-
 #cmakedefine OQS_ENABLE_SIG_FAEST 1
 #cmakedefine OQS_ENABLE_SIG_faest_128s 1
 #cmakedefine OQS_ENABLE_SIG_faest_192s 1
@@ -350,6 +344,17 @@
 #cmakedefine OQS_ENABLE_SIG_faest_em_128s 1
 #cmakedefine OQS_ENABLE_SIG_faest_em_192s 1
 #cmakedefine OQS_ENABLE_SIG_faest_em_256s 1
+
+#cmakedefine OQS_ENABLE_SIG_PERK 1
+#cmakedefine OQS_ENABLE_SIG_perk_ak_1_short 1
+#cmakedefine OQS_ENABLE_SIG_perk_ak_3_short 1
+#cmakedefine OQS_ENABLE_SIG_perk_ak_5_short 1
+
+#cmakedefine OQS_ENABLE_SIG_RYDE 1
+#cmakedefine OQS_ENABLE_SIG_ryde_1f 1
+#cmakedefine OQS_ENABLE_SIG_ryde_1s 1
+#cmakedefine OQS_ENABLE_SIG_ryde_3s 1
+#cmakedefine OQS_ENABLE_SIG_ryde_5s 1
 
 #cmakedefine OQS_ENABLE_SIG_MIRATH 1
 #cmakedefine OQS_ENABLE_SIG_mirath_tcith_1a_short 1
