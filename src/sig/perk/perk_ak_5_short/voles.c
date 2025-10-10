@@ -7,6 +7,10 @@
 #include "ggm_tree.h"
 #include "parameters.h"
 
+#include <oqs/common.h>
+
+#include <string.h>
+
 #if (PRG_EXPAND_SEED_IMPL == aes)
 #include "vole_prg2_aes.h"
 #elif (PRG_EXPAND_SEED_IMPL == xkcp)
@@ -24,12 +28,14 @@
 
 unsigned sig_perk_convert_to_vole(perk_vole_data_t u, perk_vole_data_t v[], const unsigned subtree, const salt_t salt,
                                   const ggm_tree_t ggm_tree) {
-    //
     unsigned const k = ggm_tree_subtree_k(subtree);
     unsigned const N = 1 << k;
     unsigned const mu = (subtree < PERK_PARAM_TAU_PRIME ? PERK_PARAM_MU1 : PERK_PARAM_MU2);
+    size_t const r_len = 1u << (PERK_PARAM_KAPPA1 - 1U);
+    unsigned result = mu;
 
-    perk_vole_data_t r[1 << (PERK_PARAM_KAPPA1 - 1U)] = {0};
+    perk_vole_data_t *r = OQS_MEM_calloc(r_len, sizeof(*r));
+    OQS_EXIT_IF_NULLPTR(r, "sig_perk_convert_to_vole");
 
     // v0 := · · · := vd−1 := 0
     // u and v are zeroed by the caller
@@ -52,7 +58,6 @@ unsigned sig_perk_convert_to_vole(perk_vole_data_t u, perk_vole_data_t v[], cons
     for (unsigned j = 1; j < k; j++) {
         unsigned const Ndiv2tothejplus1 = (N / (1 << (j + 1)));
         for (unsigned i = 0; i < Ndiv2tothejplus1; i++) {
-            //
             xor_vole(v[j], v[j], r[2 * i + 1]);
             xor_vole(r[i], r[2 * i], r[2 * i + 1]);
         }
@@ -62,7 +67,9 @@ unsigned sig_perk_convert_to_vole(perk_vole_data_t u, perk_vole_data_t v[], cons
     }
 
     memcpy(u, r[0], sizeof(perk_vole_data_t));
-    return mu;
+
+    OQS_MEM_insecure_free(r);
+    return result;
 }
 
 // alg. 3.16
@@ -138,8 +145,10 @@ unsigned sig_perk_permute_and_convert_to_vole(perk_vole_data_t v[], const unsign
     unsigned const k = ggm_tree_subtree_k(subtree);
     unsigned const N = 1 << k;
     unsigned const mu = (subtree < PERK_PARAM_TAU_PRIME ? PERK_PARAM_MU1 : PERK_PARAM_MU2);
+    size_t const r_len = 1u << (PERK_PARAM_KAPPA1 - 1U);
 
-    perk_vole_data_t r[1 << (PERK_PARAM_KAPPA1 - 1U)] = {0};
+    perk_vole_data_t *r = OQS_MEM_calloc(r_len, sizeof(*r));
+    OQS_EXIT_IF_NULLPTR(r, "sig_perk_permute_and_convert_to_vole");
     perk_vole_data_t u;
 
     // v0 := · · · := vd−1 := 0
@@ -178,6 +187,7 @@ unsigned sig_perk_permute_and_convert_to_vole(perk_vole_data_t v[], const unsign
         memset(v[j], 0, sizeof(perk_vole_data_t));
     }
 
+    OQS_MEM_insecure_free(r);
     return mu;
 }
 #else
@@ -220,26 +230,38 @@ unsigned sig_perk_permute_and_convert_to_vole(perk_vole_data_t v[], const unsign
 int vole_reconstuct(cmt_t h_com, perk_vole_data_t q_prime[PERK_PARAM_RHO], i_vect_t i_vect,
                     const node_seed_t pdecom[PERK_PARAM_T_OPEN], const cmt_t com_e_i[PERK_PARAM_TAU],
                     const salt_t salt) {
-    //
-    ggm_tree_t partial_ggm_tree = {0};
-    cmt_array_t cmt_array = {0};
+    ggm_tree_t *partial_ggm_tree = NULL;
+    cmt_array_t *cmt_array = NULL;
     sig_perk_hash_state_t h_com_state = {0};
+    int result = PERK_FAILURE;
+
+    partial_ggm_tree = OQS_MEM_aligned_alloc(32, sizeof(*partial_ggm_tree));
+    if (partial_ggm_tree == NULL) {
+        goto cleanup;
+    }
+    memset(*partial_ggm_tree, 0, sizeof(*partial_ggm_tree));
+
+    cmt_array = OQS_MEM_calloc(1, sizeof(*cmt_array));
+    if (cmt_array == NULL) {
+        goto cleanup;
+    }
 
     // alg 3.13 VC.reconstruct
-    int ret = expand_partial_ggm_tree(partial_ggm_tree, salt, pdecom, i_vect);
+    int ret = expand_partial_ggm_tree(*partial_ggm_tree, salt, pdecom, i_vect);
     if (ret < 0) {
-        return PERK_FAILURE;  // wrong i_vec
+        goto cleanup;  // wrong i_vec
     }
-    build_ggm_tree_leaf_cmt(cmt_array, salt, (const_ggm_tree_t)partial_ggm_tree);
+    build_ggm_tree_leaf_cmt(*cmt_array, salt, (const_ggm_tree_t)(*partial_ggm_tree));
     for (unsigned e = 0; e < PERK_PARAM_TAU; e++) {  // fix commitments for the hidden leaves
-        memcpy(cmt_array[i_vect[e] - LEAVES_SEEDS_OFFSET], com_e_i[e], sizeof(cmt_t));
+        memcpy((*cmt_array)[i_vect[e] - LEAVES_SEEDS_OFFSET], com_e_i[e], sizeof(cmt_t));
     }
 
 #if FINAL_COMMITMENT_MODE == xkcp4x
 
-    const uint8_t* cmt_array4[] = {(uint8_t*)(cmt_array + (PARAM_L / 4) * 0), (uint8_t*)(cmt_array + (PARAM_L / 4) * 1),
-                                   (uint8_t*)(cmt_array + (PARAM_L / 4) * 2),
-                                   (uint8_t*)(cmt_array + (PARAM_L / 4) * 3)};
+    const uint8_t* cmt_array4[] = {(uint8_t*)((*cmt_array) + (PARAM_L / 4) * 0),
+                                   (uint8_t*)((*cmt_array) + (PARAM_L / 4) * 1),
+                                   (uint8_t*)((*cmt_array) + (PARAM_L / 4) * 2),
+                                   (uint8_t*)((*cmt_array) + (PARAM_L / 4) * 3)};
 
     cmt_t dst[4] = {0};
     uint8_t* dst4[] = {dst[0], dst[1], dst[2], dst[3]};
@@ -262,7 +284,7 @@ int vole_reconstuct(cmt_t h_com, perk_vole_data_t q_prime[PERK_PARAM_RHO], i_vec
         unsigned const N = 1 << ggm_tree_subtree_k(e);
 
         for (unsigned i = 0; i < N; i++) {
-            sig_perk_hash_update(&h_com_state, cmt_array[ggm_tree_cmt_index(e, i)], sizeof(cmt_t));
+            sig_perk_hash_update(&h_com_state, (*cmt_array)[ggm_tree_cmt_index(e, i)], sizeof(cmt_t));
         }
     }
     sig_perk_hash_final(&h_com_state, h_com, Com2);
@@ -277,12 +299,21 @@ int vole_reconstuct(cmt_t h_com, perk_vole_data_t q_prime[PERK_PARAM_RHO], i_vec
         uint16_t delta_e;
         ggm_tree_subtree_and_leaf(&e1, &delta_e, i_vect[e]);
         if (e != e1) {
-            return PERK_FAILURE;
+            goto cleanup;
         }
-        idx +=
-            sig_perk_permute_and_convert_to_vole(q_prime + idx, e, delta_e, salt, (const_ggm_tree_t)partial_ggm_tree);
+        idx += sig_perk_permute_and_convert_to_vole(q_prime + idx, e, delta_e, salt,
+                                                    (const_ggm_tree_t)(*partial_ggm_tree));
     }
-    return PERK_SUCCESS;
+    result = PERK_SUCCESS;
+
+cleanup:
+    if (cmt_array != NULL) {
+        OQS_MEM_insecure_free(cmt_array);
+    }
+    if (partial_ggm_tree != NULL) {
+        OQS_MEM_aligned_free(partial_ggm_tree);
+    }
+    return result;
 }
 
 static void sig_perk_compute_h1(gf2_64_elt h1, uint8_t* t, uint8_t* x) {

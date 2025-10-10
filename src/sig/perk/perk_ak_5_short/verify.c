@@ -11,6 +11,10 @@
 #include "verify_pkp.h"
 #include "voles.h"
 
+#include <oqs/common.h>
+
+#include <string.h>
+
 static inline void sig_perk_ivect_to_tower_field(gf2_q_poly v_idx, i_vect_t i_vect) {
     unsigned fb = 0;
     for (unsigned e = 0; e < PERK_PARAM_TAU; e++) {
@@ -29,25 +33,54 @@ int sig_perk_verify(const sig_perk_signature_t *signature, const digest_t mu, co
     uint8_t ch1_bar[5 * PERK_SECURITY_BYTES + 8] = {0};
     int ret = PERK_FAILURE;
     uint8_t h_V[2 * PERK_SECURITY_BYTES] = {0};
+    perk_vole_data_t *q_prime = NULL;
+    perk_vole_data_t *q = NULL;
+    uint8_t (*D_tilde)[PERK_VOLE_HASH_BYTES] = NULL;
+    uint8_t (*Q_tilde)[PERK_VOLE_HASH_BYTES] = NULL;
+    uint8_t (*Q_tilde_xor_D_tilde)[PERK_VOLE_HASH_BYTES] = NULL;
+    int result = PERK_FAILURE;
 
     // line 4
     i_vect_t i_vect = {0};
     challenge_decode(i_vect, signature->ch3);
 
+    q_prime = OQS_MEM_calloc(PERK_PARAM_RHO, sizeof(*q_prime));
+    if (q_prime == NULL) {
+        goto cleanup;
+    }
+
+    q = OQS_MEM_calloc(PERK_PARAM_RHO, sizeof(*q));
+    if (q == NULL) {
+        goto cleanup;
+    }
+
+    D_tilde = OQS_MEM_calloc(PERK_PARAM_RHO, sizeof(*D_tilde));
+    if (D_tilde == NULL) {
+        goto cleanup;
+    }
+
+    Q_tilde = OQS_MEM_calloc(PERK_PARAM_RHO, sizeof(*Q_tilde));
+    if (Q_tilde == NULL) {
+        goto cleanup;
+    }
+
+    Q_tilde_xor_D_tilde = OQS_MEM_calloc(PERK_PARAM_RHO, sizeof(*Q_tilde_xor_D_tilde));
+    if (Q_tilde_xor_D_tilde == NULL) {
+        goto cleanup;
+    }
+
     //  Reconstruct VOLEs and check commitments
-    perk_vole_data_t q_prime[PERK_PARAM_RHO] = {0};
     cmt_t h_com = {0};
     ret = vole_reconstuct(h_com, q_prime, i_vect, (const uint8_t(*)[sizeof(node_seed_t)])signature->pdecom,
                           signature->com_e_i, signature->salt);
     if (ret != PERK_SUCCESS) {
-        return PERK_FAILURE;
+        goto cleanup;
     }
 
     // Compute challenge 1
     sig_perk_gen_first_challenge(ch1_bar, mu, h_com, signature->c, signature->salt);
 
     // Check VOLE’s consistency
-    perk_vole_data_t q[PERK_PARAM_RHO] = {0};
 
     // Compute Q
     for (unsigned i = 0; i < PERK_PARAM_MU1; i++) {
@@ -78,7 +111,6 @@ int sig_perk_verify(const sig_perk_signature_t *signature, const digest_t mu, co
         }
     }
 
-    uint8_t D_tilde[PERK_PARAM_RHO][PERK_VOLE_HASH_BYTES] = {0};
     uint16_t idx = 0;
 
     // Compute D tilde
@@ -106,12 +138,9 @@ int sig_perk_verify(const sig_perk_signature_t *signature, const digest_t mu, co
     }
 
     // Compute Q tilde
-    uint8_t Q_tilde[PERK_PARAM_RHO][PERK_VOLE_HASH_BYTES] = {0};
     for (uint16_t i = 0; i < PERK_PARAM_RHO; i++) {
         sig_perk_vole_hash(Q_tilde[i], ch1_bar, q[i]);
     }
-
-    uint8_t Q_tilde_xor_D_tilde[PERK_PARAM_RHO][PERK_VOLE_HASH_BYTES] = {0};
 
     for (unsigned i = 0; i < PERK_PARAM_RHO; ++i) {
         for (unsigned j = 0; j < PERK_VOLE_HASH_BYTES; ++j) {
@@ -136,13 +165,32 @@ int sig_perk_verify(const sig_perk_signature_t *signature, const digest_t mu, co
 
     for (unsigned i = 0; i < sizeof(ch3_t); i++) {
         if (ch3_bar[i] != signature->ch3[i]) {
-            return PERK_FAILURE;
+            goto cleanup;
         }
     }
 
     if (PERK_SUCCESS != b_V) {
-        return PERK_FAILURE;
+        goto cleanup;
     }
 
-    return PERK_SUCCESS;
+    result = PERK_SUCCESS;
+
+cleanup:
+    if (Q_tilde_xor_D_tilde != NULL) {
+        OQS_MEM_insecure_free(Q_tilde_xor_D_tilde);
+    }
+    if (Q_tilde != NULL) {
+        OQS_MEM_insecure_free(Q_tilde);
+    }
+    if (D_tilde != NULL) {
+        OQS_MEM_insecure_free(D_tilde);
+    }
+    if (q != NULL) {
+        OQS_MEM_insecure_free(q);
+    }
+    if (q_prime != NULL) {
+        OQS_MEM_insecure_free(q_prime);
+    }
+
+    return result;
 }

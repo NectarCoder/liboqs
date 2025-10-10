@@ -6,6 +6,8 @@
 #include "signature.h"
 #include "parameters.h"
 
+#include <oqs/common.h>
+
 #include <stdio.h>
 #include <string.h>
 #include "crypto_memset.h"
@@ -71,18 +73,55 @@ int sig_perk_sign(sig_perk_signature_t *signature, const digest_t mu, const sig_
                   const sig_perk_public_key_t *pk) {
     uint8_t rand[2 * PERK_SEED_BYTES] = {0};
     uint8_t ch1[5 * PERK_SECURITY_BYTES + 8] = {0};
-    sig_perk_beta_prime_t beta_array[PERK_PARAM_N][PERK_PARAM_D][PERK_PARAM_BASIS - 1] = {0};
-    sig_perk_share_z_t z_array[PERK_PARAM_N][PERK_PARAM_N] = {0};
-    sig_perk_check_t col_check_array[PERK_PARAM_N] = {0};
+    sig_perk_beta_prime_t (*beta_array)[PERK_PARAM_D][PERK_PARAM_BASIS - 1] = NULL;
+    sig_perk_share_z_t (*z_array)[PERK_PARAM_N] = NULL;
+    sig_perk_check_t *col_check_array = NULL;
     cmt_t h_com = {0};
     perk_vole_data_t u = {0};
-    perk_vole_data_t v[PERK_PARAM_RHO] = {0};
-    ggm_tree_t big_tree = {0};
-    cmt_array_t cmt_array = {0};
-    uint8_t v_tilde[PERK_PARAM_RHO][PERK_VOLE_HASH_BYTES] = {0};
+    perk_vole_data_t *v = NULL;
+    ggm_tree_t *big_tree = NULL;
+    cmt_array_t *cmt_array = NULL;
+    uint8_t (*v_tilde)[PERK_VOLE_HASH_BYTES] = NULL;
     ch2_t ch2 = {0};
     i_vect_t i_vect = {0};
     uint8_t h_V[2 * PERK_SECURITY_BYTES] = {0};
+    int result = PERK_FAILURE;
+
+    beta_array = OQS_MEM_calloc(PERK_PARAM_N, sizeof(*beta_array));
+    if (beta_array == NULL) {
+        goto cleanup;
+    }
+
+    z_array = OQS_MEM_calloc(PERK_PARAM_N, sizeof(*z_array));
+    if (z_array == NULL) {
+        goto cleanup;
+    }
+
+    col_check_array = OQS_MEM_calloc(PERK_PARAM_N, sizeof(*col_check_array));
+    if (col_check_array == NULL) {
+        goto cleanup;
+    }
+
+    v = OQS_MEM_calloc(PERK_PARAM_RHO, sizeof(*v));
+    if (v == NULL) {
+        goto cleanup;
+    }
+
+    v_tilde = OQS_MEM_calloc(PERK_PARAM_RHO, sizeof(*v_tilde));
+    if (v_tilde == NULL) {
+        goto cleanup;
+    }
+
+    cmt_array = OQS_MEM_calloc(1, sizeof(*cmt_array));
+    if (cmt_array == NULL) {
+        goto cleanup;
+    }
+
+    big_tree = OQS_MEM_aligned_alloc(32, sizeof(*big_tree));
+    if (big_tree == NULL) {
+        goto cleanup;
+    }
+    memset(*big_tree, 0, sizeof(*big_tree));
 
     // Sample rand
     randombytes(rand, 2 * PERK_SEED_BYTES);
@@ -95,17 +134,17 @@ int sig_perk_sign(sig_perk_signature_t *signature, const digest_t mu, const sig_
     sig_perk_prg_update(&state_H3, mu, PERK_HASH_BYTES);
     sig_perk_prg_update(&state_H3, rand, 2 * PERK_SEED_BYTES);
     sig_perk_prg_final(&state_H3, H3);
-    sig_perk_prg(&state_H3, big_tree[0], PERK_SEED_BYTES);
+    sig_perk_prg(&state_H3, (*big_tree)[0], PERK_SEED_BYTES);
     sig_perk_prg(&state_H3, signature->salt, sizeof(signature->salt));
 
-    SIG_PERK_VERBOSE_PRINT_uint8_t_array("tree root seed", big_tree[0], PERK_SEED_BYTES);
+    SIG_PERK_VERBOSE_PRINT_uint8_t_array("tree root seed", (*big_tree)[0], PERK_SEED_BYTES);
     SIG_PERK_VERBOSE_PRINT_uint8_t_array("salt", signature->salt, sizeof(signature->salt));
 
     // VOLE construction and commitments
-    expand_ggm_tree(big_tree, signature->salt);
-    build_ggm_tree_leaf_cmt(cmt_array, signature->salt, (const_ggm_tree_t)big_tree);
-    sig_perk_vole_commit(h_com, signature->c, u, v, signature->salt, (const_ggm_tree_t)big_tree,
-                         (const_cmt_array_t)cmt_array);
+    expand_ggm_tree(*big_tree, signature->salt);
+    build_ggm_tree_leaf_cmt(*cmt_array, signature->salt, (const_ggm_tree_t)(*big_tree));
+    sig_perk_vole_commit(h_com, signature->c, u, v, signature->salt, (const_ggm_tree_t)(*big_tree),
+                         (const_cmt_array_t)(*cmt_array));
 
     SIG_PERK_VERBOSE_PRINT_uint8_t_array("h_com", h_com, sizeof(cmt_t));
 
@@ -136,22 +175,48 @@ int sig_perk_sign(sig_perk_signature_t *signature, const digest_t mu, const sig_
                        (const_vole_data_p_t)v, ch2);
     SIG_PERK_VERBOSE_PRINT_f_poly_t_struct(&signature->a);
 
-    int ret = open_vector_commitments(signature->ch3, &signature->ctr, signature->pdecom, i_vect,
-                                      (const_ggm_tree_t)big_tree, ch2, &signature->a);
+    int tmp_ret = open_vector_commitments(signature->ch3, &signature->ctr, signature->pdecom, i_vect,
+                                          (const_ggm_tree_t)(*big_tree), ch2, &signature->a);
     SIG_PERK_VERBOSE_PRINT_uint8_t_array("ch3", signature->ch3, sizeof(signature->ch3));
     SIG_PERK_VERBOSE_PRINT_counter(signature->ctr);
     SIG_PERK_VERBOSE_PRINT_pdecom_seeds((const node_seed_t *)signature->pdecom);
     SIG_PERK_VERBOSE_PRINT_i_vect_t(i_vect);
 
-    if (ret != PERK_SUCCESS) {
-        return ret;
+    if (tmp_ret != PERK_SUCCESS) {
+        result = tmp_ret;
+        goto cleanup;
     }
     // copy commitments of the hidden leaves in the signature
     for (unsigned i = 0; i < PERK_PARAM_TAU; i++) {
-        memcpy(signature->com_e_i[i], cmt_array[i_vect[i] - LEAVES_SEEDS_OFFSET], sizeof(cmt_t));
+        memcpy(signature->com_e_i[i], (*cmt_array)[i_vect[i] - LEAVES_SEEDS_OFFSET], sizeof(cmt_t));
     }
 
     SIG_PERK_VERBOSE_PRINT_com_e_i((const cmt_t *)signature->com_e_i);
 
-    return PERK_SUCCESS;
+    result = PERK_SUCCESS;
+
+cleanup:
+    if (big_tree != NULL) {
+        OQS_MEM_aligned_free(big_tree);
+    }
+    if (cmt_array != NULL) {
+        OQS_MEM_insecure_free(cmt_array);
+    }
+    if (v_tilde != NULL) {
+        OQS_MEM_insecure_free(v_tilde);
+    }
+    if (v != NULL) {
+        OQS_MEM_insecure_free(v);
+    }
+    if (col_check_array != NULL) {
+        OQS_MEM_insecure_free(col_check_array);
+    }
+    if (z_array != NULL) {
+        OQS_MEM_insecure_free(z_array);
+    }
+    if (beta_array != NULL) {
+        OQS_MEM_insecure_free(beta_array);
+    }
+
+    return result;
 }
