@@ -13,15 +13,9 @@
 
 | Parameter set       | Parameter set alias | Security model | Claimed NIST Level | Public key size (bytes) | Secret key size (bytes) | Signature size (bytes) |
 |:--------------------|:--------------------|:---------------|--------------------:|------------------------:|------------------------:|-----------------------:|
-| RYDE-1F             | NA                  | EUF-CMA        |                   1 |                      69 |                      32 |                  3597 |
 | RYDE-1S             | NA                  | EUF-CMA        |                   1 |                      69 |                      32 |                  3115 |
 | RYDE-3S             | NA                  | EUF-CMA        |                   3 |                     101 |                      48 |                  7064 |
 | RYDE-5S             | NA                  | EUF-CMA        |                   5 |                     132 |                      64 |                 12607 |
-
-## RYDE-1F implementation characteristics
-
-|       Implementation source       | Identifier in upstream   | Supported architecture(s)   | Supported operating system(s)   | CPU extension(s) used   | No branching-on-secrets claimed?   | No branching-on-secrets checked by valgrind?   | Large stack usage?   |
-|:---------------------------------:|:-------------------------|:----------------------------|:--------------------------------|:------------------------|:-----------------------------------|:-----------------------------------------------|:---------------------|
 
 ## RYDE-3S implementation characteristics
 

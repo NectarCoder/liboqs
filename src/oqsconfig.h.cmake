@@ -351,7 +351,6 @@
 #cmakedefine OQS_ENABLE_SIG_perk_ak_5_short 1
 
 #cmakedefine OQS_ENABLE_SIG_RYDE 1
-#cmakedefine OQS_ENABLE_SIG_ryde_1f 1
 #cmakedefine OQS_ENABLE_SIG_ryde_1s 1
 #cmakedefine OQS_ENABLE_SIG_ryde_3s 1
 #cmakedefine OQS_ENABLE_SIG_ryde_5s 1

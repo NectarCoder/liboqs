@@ -243,7 +243,6 @@ cmake_dependent_option(OQS_ENABLE_SIG_perk_ak_3_short "" ON "OQS_ENABLE_SIG_PERK
 cmake_dependent_option(OQS_ENABLE_SIG_perk_ak_5_short "" ON "OQS_ENABLE_SIG_PERK" OFF)
 
 option(OQS_ENABLE_SIG_RYDE "Enable ryde algorithm family" ON)
-cmake_dependent_option(OQS_ENABLE_SIG_ryde_1f "" ON "OQS_ENABLE_SIG_RYDE" OFF)
 cmake_dependent_option(OQS_ENABLE_SIG_ryde_1s "" ON "OQS_ENABLE_SIG_RYDE" OFF)
 cmake_dependent_option(OQS_ENABLE_SIG_ryde_3s "" ON "OQS_ENABLE_SIG_RYDE" OFF)
 cmake_dependent_option(OQS_ENABLE_SIG_ryde_5s "" ON "OQS_ENABLE_SIG_RYDE" OFF)

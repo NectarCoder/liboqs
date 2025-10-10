@@ -194,8 +194,6 @@ extern "C" {
 #define OQS_SIG_alg_perk_ak_3_short "PERK-AK-3-short"
 /** Algorithm identifier for PERK-AK-5-short */
 #define OQS_SIG_alg_perk_ak_5_short "PERK-AK-5-short"
-/** Algorithm identifier for RYDE-1F */
-#define OQS_SIG_alg_ryde_1f "RYDE-1F"
 /** Algorithm identifier for RYDE-1S */
 #define OQS_SIG_alg_ryde_1s "RYDE-1S"
 /** Algorithm identifier for RYDE-3S */
