@@ -14,8 +14,17 @@
 | Parameter set       | Parameter set alias | Security model | Claimed NIST Level | Public key size (bytes) | Secret key size (bytes) | Signature size (bytes) |
 |:--------------------|:--------------------|:---------------|--------------------:|------------------------:|------------------------:|-----------------------:|
 | SDitH-CAT1-SHORT    | NA                  | EUF-CMA        |                   1 |                      70 |                     163 |                  3705 |
+| SDitH-CAT3-SHORT    | NA                  | EUF-CMA        |                   3 |                      98 |                     232 |                  7964 |
 
 ## SDitH-CAT1-SHORT implementation characteristics
+
+|       Implementation source       | Identifier in upstream   | Supported architecture(s)   | Supported operating system(s)   | CPU extension(s) used   | No branching-on-secrets claimed?   | No branching-on-secrets checked by valgrind?   | Large stack usage?   |
+|:---------------------------------:|:-------------------------|:----------------------------|:--------------------------------|:------------------------|:-----------------------------------|:-----------------------------------------------|:---------------------|
+| [Primary Source](#primary-source) | ref                      | TODO                        | TODO                            | TODO                    | TODO                               | TODO                                              | TODO                |
+
+Are implementations chosen based on runtime CPU feature detection? **No**.
+
+## SDitH-CAT3-SHORT implementation characteristics
 
 |       Implementation source       | Identifier in upstream   | Supported architecture(s)   | Supported operating system(s)   | CPU extension(s) used   | No branching-on-secrets claimed?   | No branching-on-secrets checked by valgrind?   | Large stack usage?   |
 |:---------------------------------:|:-------------------------|:----------------------------|:--------------------------------|:------------------------|:-----------------------------------|:-----------------------------------------------|:---------------------|

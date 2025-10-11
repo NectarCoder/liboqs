@@ -99,6 +99,34 @@ OQS_API OQS_STATUS OQS_SIG_sdith_cat1_short_verify_with_ctx_str(const uint8_t *m
 OQS_SIG *OQS_SIG_sdith_cat1_short_new(void);
 #endif
 
+/* sdith_cat3_short */
+
+/** Algorithm identifier for SDitH-CAT3-SHORT */
+#define OQS_SIG_alg_sdith_cat3_short "SDitH-CAT3-SHORT"
+
+/** SDitH-CAT3-SHORT public key length, in bytes */
+#define OQS_SIG_sdith_cat3_short_length_public_key 98
+
+/** SDitH-CAT3-SHORT secret key length, in bytes */
+#define OQS_SIG_sdith_cat3_short_length_secret_key 232
+
+/** SDitH-CAT3-SHORT signature length, in bytes */
+#define OQS_SIG_sdith_cat3_short_length_signature 7964
+
+OQS_API OQS_STATUS OQS_SIG_sdith_cat3_short_keypair(uint8_t *public_key, uint8_t *secret_key);
+
+OQS_API OQS_STATUS OQS_SIG_sdith_cat3_short_sign(uint8_t *signature, size_t *signature_len, const uint8_t *message, size_t message_len, const uint8_t *secret_key);
+
+OQS_API OQS_STATUS OQS_SIG_sdith_cat3_short_verify(const uint8_t *message, size_t message_len, const uint8_t *signature, size_t signature_len, const uint8_t *public_key);
+
+OQS_API OQS_STATUS OQS_SIG_sdith_cat3_short_sign_with_ctx_str(uint8_t *signature, size_t *signature_len, const uint8_t *message, size_t message_len, const uint8_t *ctx_str, size_t ctx_str_len, const uint8_t *secret_key);
+
+OQS_API OQS_STATUS OQS_SIG_sdith_cat3_short_verify_with_ctx_str(const uint8_t *message, size_t message_len, const uint8_t *signature, size_t signature_len, const uint8_t *ctx_str, size_t ctx_str_len, const uint8_t *public_key);
+
+#if defined(OQS_ENABLE_SIG_sdith_cat3_short)
+OQS_SIG *OQS_SIG_sdith_cat3_short_new(void);
+#endif
+
 #ifdef __cplusplus
 } // extern "C"
 #endif
