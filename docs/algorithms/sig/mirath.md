@@ -14,12 +14,14 @@
 | Parameter set               | Parameter set alias | Security model | Claimed NIST Level | Public key size (bytes) | Secret key size (bytes) | Signature size (bytes) |
 |:----------------------------|:--------------------|:---------------|--------------------:|------------------------:|------------------------:|-----------------------:|
 | MIRATH-TCITH-1A-SHORT       | NA                  | EUF-CMA        |                   1 |                      73 |                      32 |                  3182 |
+| MIRATH-TCITH-1B-SHORT       | NA                  | EUF-CMA        |                   1 |                      57 |                      32 |                  2990 |
 
 ## MIRATH-TCITH-1A-SHORT implementation characteristics
 
 |       Implementation source       | Identifier in upstream   | Supported architecture(s)   | Supported operating system(s)   | CPU extension(s) used   | No branching-on-secrets claimed?   | No branching-on-secrets checked by valgrind?   | Large stack usage?   |
 |:---------------------------------:|:-------------------------|:----------------------------|:--------------------------------|:------------------------|:-----------------------------------|:-----------------------------------------------|:---------------------|
-| [Primary Source](#primary-source) | ref                      | TODO                        | TODO                            | TODO                    | TODO                               | TODO                                           | TODO                 |
+| [Primary Source](#primary-source) | ref (1A-short)           | TODO                        | TODO                            | TODO                    | TODO                               | TODO                                           | TODO                 |
+| [Primary Source](#primary-source) | ref (1B-short)           | TODO                        | TODO                            | TODO                    | TODO                               | TODO                                           | TODO                 |
 
 Are implementations chosen based on runtime CPU feature detection? **No**.
 

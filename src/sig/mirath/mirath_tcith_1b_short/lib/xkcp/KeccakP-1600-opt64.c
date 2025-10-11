@@ -26,6 +26,7 @@ Please refer to LowLevel.build for the exact list of other files it must be comb
 #include <string.h>
 #include <stdlib.h>
 #include "KeccakHash.h"
+#include "../../namespace_mirath_tcith_1b_short.h"
 
 #if defined(KeccakP1600_useLaneComplementing)
 #define UseBebigokimisa

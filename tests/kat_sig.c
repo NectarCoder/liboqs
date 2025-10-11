@@ -152,6 +152,16 @@ OQS_STATUS combine_message_signature(uint8_t **signed_msg, size_t *signed_msg_le
 		memcpy(*signed_msg, signature, signature_len);
 		memcpy(*signed_msg + signature_len, msg, msg_len);
 		return OQS_SUCCESS;
+	} else if (0 == strcmp(sig->method_name, "MIRATH-TCITH-1A-SHORT") || 0 == strcmp(sig->method_name, "MIRATH-TCITH-1B-SHORT")) {
+		// signed_msg = signature || msg
+		*signed_msg_len = signature_len + msg_len;
+		*signed_msg = OQS_MEM_malloc(*signed_msg_len);
+		if (*signed_msg == NULL) {
+			return OQS_ERROR;
+		}
+		memcpy(*signed_msg, signature, signature_len);
+		memcpy(*signed_msg + signature_len, msg, msg_len);
+		return OQS_SUCCESS;
 	} else if (0 == strcmp(sig->method_name, "SPHINCS+-SHA2-128f-simple")) {
 		// signed_msg = signature || msg
 		*signed_msg_len = signature_len + msg_len;
