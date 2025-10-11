@@ -208,12 +208,14 @@ extern "C" {
 #define OQS_SIG_alg_mirath_tcith_3a_short "MIRATH-TCITH-3A-SHORT"
 /** Algorithm identifier for MIRATH-TCITH-3B-SHORT */
 #define OQS_SIG_alg_mirath_tcith_3b_short "MIRATH-TCITH-3B-SHORT"
+/** Algorithm identifier for MIRATH-TCITH-5A-SHORT */
+#define OQS_SIG_alg_mirath_tcith_5a_short "MIRATH-TCITH-5A-SHORT"
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALG_IDENTIFIER_END
 // EDIT-WHEN-ADDING-SIG
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALGS_LENGTH_START
 
 /** Number of algorithm identifiers above. */
-#define OQS_SIG_algs_length 100
+#define OQS_SIG_algs_length 101
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALGS_LENGTH_END
 
 /**

@@ -103,6 +103,7 @@ OQS_API const char *OQS_SIG_alg_identifier(size_t i) {
 		OQS_SIG_alg_mirath_tcith_1b_short,
 		OQS_SIG_alg_mirath_tcith_3a_short,
 		OQS_SIG_alg_mirath_tcith_3b_short,
+		OQS_SIG_alg_mirath_tcith_5a_short,
 		///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALG_IDENTIFIER_END
 	};
 	if (i >= OQS_SIG_algs_length) {
@@ -738,6 +739,13 @@ OQS_API int OQS_SIG_alg_is_enabled(const char *method_name) {
 		return 0;
 #endif
 
+	} else if (0 == strcasecmp(method_name, OQS_SIG_alg_mirath_tcith_5a_short)) {
+#ifdef OQS_ENABLE_SIG_mirath_tcith_5a_short
+		return 1;
+#else
+		return 0;
+#endif
+
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ENABLED_CASE_END
 	} else {
 		return 0;
@@ -1362,6 +1370,13 @@ OQS_API OQS_SIG *OQS_SIG_new(const char *method_name) {
 	} else if (0 == strcasecmp(method_name, OQS_SIG_alg_mirath_tcith_3b_short)) {
 #ifdef OQS_ENABLE_SIG_mirath_tcith_3b_short
 		return OQS_SIG_mirath_tcith_3b_short_new();
+#else
+		return NULL;
+#endif
+
+	} else if (0 == strcasecmp(method_name, OQS_SIG_alg_mirath_tcith_5a_short)) {
+#ifdef OQS_ENABLE_SIG_mirath_tcith_5a_short
+		return OQS_SIG_mirath_tcith_5a_short_new();
 #else
 		return NULL;
 #endif
