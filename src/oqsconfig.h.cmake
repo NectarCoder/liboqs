@@ -366,6 +366,7 @@
 #cmakedefine OQS_ENABLE_SIG_SDITH 1
 #cmakedefine OQS_ENABLE_SIG_sdith_cat1_short 1
 #cmakedefine OQS_ENABLE_SIG_sdith_cat3_short 1
+#cmakedefine OQS_ENABLE_SIG_sdith_cat5_short 1
 
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ADD_ALG_ENABLE_DEFINES_END
 

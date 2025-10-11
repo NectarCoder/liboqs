@@ -15,6 +15,7 @@
 |:--------------------|:--------------------|:---------------|--------------------:|------------------------:|------------------------:|-----------------------:|
 | SDitH-CAT1-SHORT    | NA                  | EUF-CMA        |                   1 |                      70 |                     163 |                  3705 |
 | SDitH-CAT3-SHORT    | NA                  | EUF-CMA        |                   3 |                      98 |                     232 |                  7964 |
+| SDitH-CAT5-SHORT    | NA                  | EUF-CMA        |                   5 |                     132 |                     307 |                 14121 |
 
 ## SDitH-CAT1-SHORT implementation characteristics
 
@@ -25,6 +26,12 @@
 Are implementations chosen based on runtime CPU feature detection? **No**.
 
 ## SDitH-CAT3-SHORT implementation characteristics
+
+|       Implementation source       | Identifier in upstream   | Supported architecture(s)   | Supported operating system(s)   | CPU extension(s) used   | No branching-on-secrets claimed?   | No branching-on-secrets checked by valgrind?   | Large stack usage?   |
+|:---------------------------------:|:-------------------------|:----------------------------|:--------------------------------|:------------------------|:-----------------------------------|:-----------------------------------------------|:---------------------|
+| [Primary Source](#primary-source) | ref                      | TODO                        | TODO                            | TODO                    | TODO                               | TODO                                              | TODO                |
+
+## SDitH-CAT5-SHORT implementation characteristics
 
 |       Implementation source       | Identifier in upstream   | Supported architecture(s)   | Supported operating system(s)   | CPU extension(s) used   | No branching-on-secrets claimed?   | No branching-on-secrets checked by valgrind?   | Large stack usage?   |
 |:---------------------------------:|:-------------------------|:----------------------------|:--------------------------------|:------------------------|:-----------------------------------|:-----------------------------------------------|:---------------------|

@@ -200,8 +200,6 @@ extern "C" {
 #define OQS_SIG_alg_ryde_3s "RYDE-3S"
 /** Algorithm identifier for RYDE-5S */
 #define OQS_SIG_alg_ryde_5s "RYDE-5S"
-/** Algorithm identifier for SDitH-CAT1-SHORT */
-#define OQS_SIG_alg_sdith_cat1_short "SDitH-CAT1-SHORT"
 /** Algorithm identifier for MIRATH-TCITH-1A-SHORT */
 #define OQS_SIG_alg_mirath_tcith_1a_short "MIRATH-TCITH-1A-SHORT"
 /** Algorithm identifier for MIRATH-TCITH-1B-SHORT */
@@ -214,14 +212,18 @@ extern "C" {
 #define OQS_SIG_alg_mirath_tcith_5a_short "MIRATH-TCITH-5A-SHORT"
 /** Algorithm identifier for MIRATH-TCITH-5B-SHORT */
 #define OQS_SIG_alg_mirath_tcith_5b_short "MIRATH-TCITH-5B-SHORT"
+/** Algorithm identifier for SDitH-CAT1-SHORT */
+#define OQS_SIG_alg_sdith_cat1_short "SDitH-CAT1-SHORT"
 /** Algorithm identifier for SDitH-CAT3-SHORT */
 #define OQS_SIG_alg_sdith_cat3_short "SDitH-CAT3-SHORT"
+/** Algorithm identifier for SDitH-CAT5-SHORT */
+#define OQS_SIG_alg_sdith_cat5_short "SDitH-CAT5-SHORT"
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALG_IDENTIFIER_END
 // EDIT-WHEN-ADDING-SIG
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALGS_LENGTH_START
 
 /** Number of algorithm identifiers above. */
-#define OQS_SIG_algs_length 104
+#define OQS_SIG_algs_length 105
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALGS_LENGTH_END
 
 /**

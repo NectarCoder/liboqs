@@ -101,6 +101,7 @@ OQS_API const char *OQS_SIG_alg_identifier(size_t i) {
 		OQS_SIG_alg_ryde_5s,
 			OQS_SIG_alg_sdith_cat1_short,
 		OQS_SIG_alg_sdith_cat3_short,
+		OQS_SIG_alg_sdith_cat5_short,
 		OQS_SIG_alg_mirath_tcith_1a_short,
 		OQS_SIG_alg_mirath_tcith_1b_short,
 		OQS_SIG_alg_mirath_tcith_3a_short,
@@ -723,6 +724,13 @@ OQS_API int OQS_SIG_alg_is_enabled(const char *method_name) {
 
 	} else if (0 == strcasecmp(method_name, OQS_SIG_alg_sdith_cat3_short)) {
 #ifdef OQS_ENABLE_SIG_sdith_cat3_short
+		return 1;
+#else
+		return 0;
+#endif
+
+	} else if (0 == strcasecmp(method_name, OQS_SIG_alg_sdith_cat5_short)) {
+#ifdef OQS_ENABLE_SIG_sdith_cat5_short
 		return 1;
 #else
 		return 0;
@@ -1422,6 +1430,13 @@ OQS_API OQS_SIG *OQS_SIG_new(const char *method_name) {
 	} else if (0 == strcasecmp(method_name, OQS_SIG_alg_sdith_cat3_short)) {
 #ifdef OQS_ENABLE_SIG_sdith_cat3_short
 		return OQS_SIG_sdith_cat3_short_new();
+#else
+		return NULL;
+#endif
+
+	} else if (0 == strcasecmp(method_name, OQS_SIG_alg_sdith_cat5_short)) {
+#ifdef OQS_ENABLE_SIG_sdith_cat5_short
+		return OQS_SIG_sdith_cat5_short_new();
 #else
 		return NULL;
 #endif
