@@ -78,6 +78,29 @@ OQS_API OQS_STATUS OQS_SIG_mirath_tcith_5a_short_verify_with_ctx_str(const uint8
 
 #endif /* OQS_ENABLE_SIG_mirath_tcith_5a_short */
 
+#if defined(OQS_ENABLE_SIG_mirath_tcith_5b_short)
+
+/** Algorithm identifier for mirath_tcith_5b_short */
+#define OQS_SIG_alg_mirath_tcith_5b_short "MIRATH-TCITH-5B-SHORT"
+
+/** mirath_tcith_5b_short public key length in bytes */
+#define OQS_SIG_mirath_tcith_5b_short_length_public_key 112
+
+/** mirath_tcith_5b_short secret key length in bytes */
+#define OQS_SIG_mirath_tcith_5b_short_length_secret_key 64
+
+/** mirath_tcith_5b_short signature length in bytes */
+#define OQS_SIG_mirath_tcith_5b_short_length_signature 12229
+
+OQS_SIG *OQS_SIG_mirath_tcith_5b_short_new(void);
+OQS_API OQS_STATUS OQS_SIG_mirath_tcith_5b_short_keypair(uint8_t *public_key, uint8_t *secret_key);
+OQS_API OQS_STATUS OQS_SIG_mirath_tcith_5b_short_sign(uint8_t *signature, size_t *signature_len, const uint8_t *message, size_t message_len, const uint8_t *secret_key);
+OQS_API OQS_STATUS OQS_SIG_mirath_tcith_5b_short_verify(const uint8_t *message, size_t message_len, const uint8_t *signature, size_t signature_len, const uint8_t *public_key);
+OQS_API OQS_STATUS OQS_SIG_mirath_tcith_5b_short_sign_with_ctx_str(uint8_t *signature, size_t *signature_len, const uint8_t *message, size_t message_len, const uint8_t *ctx_str, size_t ctx_str_len, const uint8_t *secret_key);
+OQS_API OQS_STATUS OQS_SIG_mirath_tcith_5b_short_verify_with_ctx_str(const uint8_t *message, size_t message_len, const uint8_t *signature, size_t signature_len, const uint8_t *ctx_str, size_t ctx_str_len, const uint8_t *public_key);
+
+#endif /* OQS_ENABLE_SIG_mirath_tcith_5b_short */
+
 #if defined(OQS_ENABLE_SIG_mirath_tcith_1b_short)
 
 /** Algorithm identifier for mirath_tcith_1b_short */
