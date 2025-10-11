@@ -246,6 +246,9 @@ option(OQS_ENABLE_SIG_RYDE "Enable ryde algorithm family" ON)
 cmake_dependent_option(OQS_ENABLE_SIG_ryde_1s "" ON "OQS_ENABLE_SIG_RYDE" OFF)
 cmake_dependent_option(OQS_ENABLE_SIG_ryde_3s "" ON "OQS_ENABLE_SIG_RYDE" OFF)
 cmake_dependent_option(OQS_ENABLE_SIG_ryde_5s "" ON "OQS_ENABLE_SIG_RYDE" OFF)
+
+option(OQS_ENABLE_SIG_MIRATH "Enable mirath algorithm family" ON)
+cmake_dependent_option(OQS_ENABLE_SIG_mirath_tcith_1a_short "" ON "OQS_ENABLE_SIG_MIRATH" OFF)
 ##### OQS_COPY_FROM_UPSTREAM_FRAGMENT_ADD_ENABLE_BY_ALG_END
 
 ##### OQS_COPY_FROM_LIBJADE_FRAGMENT_ADD_ENABLE_BY_ALG_START
