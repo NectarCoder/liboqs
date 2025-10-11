@@ -254,6 +254,9 @@ cmake_dependent_option(OQS_ENABLE_SIG_mirath_tcith_3a_short "" ON "OQS_ENABLE_SI
 cmake_dependent_option(OQS_ENABLE_SIG_mirath_tcith_3b_short "" ON "OQS_ENABLE_SIG_MIRATH" OFF)
 cmake_dependent_option(OQS_ENABLE_SIG_mirath_tcith_5a_short "" ON "OQS_ENABLE_SIG_MIRATH" OFF)
 cmake_dependent_option(OQS_ENABLE_SIG_mirath_tcith_5b_short "" ON "OQS_ENABLE_SIG_MIRATH" OFF)
+
+option(OQS_ENABLE_SIG_SDITH "Enable sdith algorithm family" ON)
+cmake_dependent_option(OQS_ENABLE_SIG_sdith_cat1_short "" ON "OQS_ENABLE_SIG_SDITH" OFF)
 ##### OQS_COPY_FROM_UPSTREAM_FRAGMENT_ADD_ENABLE_BY_ALG_END
 
 ##### OQS_COPY_FROM_LIBJADE_FRAGMENT_ADD_ENABLE_BY_ALG_START

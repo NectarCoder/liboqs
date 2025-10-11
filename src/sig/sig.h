@@ -200,6 +200,8 @@ extern "C" {
 #define OQS_SIG_alg_ryde_3s "RYDE-3S"
 /** Algorithm identifier for RYDE-5S */
 #define OQS_SIG_alg_ryde_5s "RYDE-5S"
+/** Algorithm identifier for SDitH-CAT1-SHORT */
+#define OQS_SIG_alg_sdith_cat1_short "SDitH-CAT1-SHORT"
 /** Algorithm identifier for MIRATH-TCITH-1A-SHORT */
 #define OQS_SIG_alg_mirath_tcith_1a_short "MIRATH-TCITH-1A-SHORT"
 /** Algorithm identifier for MIRATH-TCITH-1B-SHORT */
@@ -217,7 +219,7 @@ extern "C" {
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALGS_LENGTH_START
 
 /** Number of algorithm identifiers above. */
-#define OQS_SIG_algs_length 102
+#define OQS_SIG_algs_length 103
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALGS_LENGTH_END
 
 /**
@@ -489,21 +491,24 @@ OQS_API bool OQS_SIG_supports_ctx_str(const char *alg_name);
 #ifdef OQS_ENABLE_SIG_SNOVA
 #include <oqs/sig_snova.h>
 #endif /* OQS_ENABLE_SIG_SNOVA */
-#ifdef OQS_ENABLE_SIG_PERK
-#include <oqs/sig_perk.h>
-#endif /* OQS_ENABLE_SIG_PERK */
-#ifdef OQS_ENABLE_SIG_FAEST
-#include <oqs/sig_faest.h>
-#endif /* OQS_ENABLE_SIG_FAEST */
 #ifdef OQS_ENABLE_SIG_HAWK
 #include <oqs/sig_hawk.h>
 #endif /* OQS_ENABLE_SIG_HAWK */
+#ifdef OQS_ENABLE_SIG_FAEST
+#include <oqs/sig_faest.h>
+#endif /* OQS_ENABLE_SIG_FAEST */
+#ifdef OQS_ENABLE_SIG_PERK
+#include <oqs/sig_perk.h>
+#endif /* OQS_ENABLE_SIG_PERK */
 #ifdef OQS_ENABLE_SIG_RYDE
 #include <oqs/sig_ryde.h>
 #endif /* OQS_ENABLE_SIG_RYDE */
 #ifdef OQS_ENABLE_SIG_MIRATH
 #include <oqs/sig_mirath.h>
 #endif /* OQS_ENABLE_SIG_MIRATH */
+#ifdef OQS_ENABLE_SIG_SDITH
+#include <oqs/sig_sdith.h>
+#endif /* OQS_ENABLE_SIG_SDITH */
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_INCLUDE_END
 // EDIT-WHEN-ADDING-SIG
 

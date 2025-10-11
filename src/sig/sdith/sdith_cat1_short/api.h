@@ -31,7 +31,7 @@ property. The software developed by NIST employees is not subject to copyright p
 #define CRYPTO_BYTES 3705
 
 // Change the algorithm name
-#define CRYPTO_ALGNAME "SDiTH-CAT1-SHORT"
+#define CRYPTO_ALGNAME "SDitH-CAT1-SHORT"
 #define SIGNATURE_PARAMS CAT1_SHORT_PARAMETERS
 
 int crypto_sign_keypair(unsigned char* pk, unsigned char* sk);

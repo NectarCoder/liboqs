@@ -1,7 +1,7 @@
 #ifndef SDITH_SIGNATURE_H
 #define SDITH_SIGNATURE_H
 
-// This header contains the main SDiTH signature
+// This header contains the main SDitH signature
 
 #include "commons.h"
 
