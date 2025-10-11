@@ -16,6 +16,7 @@
 | MIRATH-TCITH-1A-SHORT       | NA                  | EUF-CMA        |                   1 |                      73 |                      32 |                  3182 |
 | MIRATH-TCITH-1B-SHORT       | NA                  | EUF-CMA        |                   1 |                      57 |                      32 |                  2990 |
 | MIRATH-TCITH-3A-SHORT       | NA                  | EUF-CMA        |                   3 |                     107 |                      48 |                  7456 |
+| MIRATH-TCITH-3B-SHORT       | NA                  | EUF-CMA        |                   3 |                      84 |                      48 |                  6825 |
 
 ## MIRATH-TCITH-1A-SHORT implementation characteristics
 
@@ -34,7 +35,12 @@
 |       Implementation source       | Identifier in upstream   | Supported architecture(s)   | Supported operating system(s)   | CPU extension(s) used   | No branching-on-secrets claimed?   | No branching-on-secrets checked by valgrind?   | Large stack usage?   |
 |:---------------------------------:|:-------------------------|:----------------------------|:--------------------------------|:------------------------|:-----------------------------------|:-----------------------------------------------|:---------------------|
 | [Primary Source](#primary-source) | ref (3A-short)           | TODO                        | TODO                            | TODO                    | TODO                               | TODO                                           | TODO                 |
-| [Primary Source](#primary-source) | ref (1B-short)           | TODO                        | TODO                            | TODO                    | TODO                               | TODO                                           | TODO                 |
+
+## MIRATH-TCITH-3B-SHORT implementation characteristics
+
+|       Implementation source       | Identifier in upstream   | Supported architecture(s)   | Supported operating system(s)   | CPU extension(s) used   | No branching-on-secrets claimed?   | No branching-on-secrets checked by valgrind?   | Large stack usage?   |
+|:---------------------------------:|:-------------------------|:----------------------------|:--------------------------------|:------------------------|:-----------------------------------|:-----------------------------------------------|:---------------------|
+| [Primary Source](#primary-source) | ref (3B-short)           | TODO                        | TODO                            | TODO                    | TODO                               | TODO                                           | TODO                 |
 
 Are implementations chosen based on runtime CPU feature detection? **No**.
 

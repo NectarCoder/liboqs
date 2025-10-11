@@ -129,5 +129,47 @@ if(OQS_ENABLE_SIG_mirath_tcith_3a_short)
         $<TARGET_OBJECTS:mirath_tcith_3a_short_glue>)
 endif()
 
+if(OQS_ENABLE_SIG_mirath_tcith_3b_short)
+    set(MIRATH_TCITH_3B_SHORT_NAMESPACE_HEADER ${CMAKE_CURRENT_LIST_DIR}/mirath_tcith_3b_short/namespace_mirath_tcith_3b_short.h)
+
+    set(MIRATH_TCITH_3B_SHORT_LIB_SOURCES
+        mirath_tcith_3b_short/rng.c
+        mirath_tcith_3b_short/hash_sha3_192.c
+        mirath_tcith_3b_short/lib/xkcp/KeccakHash.c
+        mirath_tcith_3b_short/lib/xkcp/KeccakP-1600-opt64.c
+    )
+
+    set(MIRATH_TCITH_3B_SHORT_SOURCES
+        ${MIRATH_TCITH_3B_SHORT_LIB_SOURCES}
+        mirath_tcith_3b_short/mirath_ggm_tree.c
+        mirath_tcith_3b_short/mirath_keygen.c
+        mirath_tcith_3b_short/mirath_matrix_ff.c
+        mirath_tcith_3b_short/sign.c
+        mirath_tcith_3b_short/lib/tcith/mirath_parsing.c
+        mirath_tcith_3b_short/lib/tcith/mirath_sign.c
+        mirath_tcith_3b_short/lib/tcith/mirath_tcith.c
+        mirath_tcith_3b_short/lib/tcith/mirath_verify.c
+    )
+
+    add_library(mirath_tcith_3b_short_ref OBJECT ${MIRATH_TCITH_3B_SHORT_SOURCES})
+    target_include_directories(mirath_tcith_3b_short_ref PRIVATE
+        ${CMAKE_CURRENT_LIST_DIR}/mirath_tcith_3b_short
+        ${CMAKE_CURRENT_LIST_DIR}/mirath_tcith_3b_short/lib
+        ${CMAKE_CURRENT_LIST_DIR}/mirath_tcith_3b_short/lib/arith
+        ${CMAKE_CURRENT_LIST_DIR}/mirath_tcith_3b_short/lib/tcith
+        ${CMAKE_CURRENT_LIST_DIR}/mirath_tcith_3b_short/lib/xkcp)
+    target_compile_options(mirath_tcith_3b_short_ref PRIVATE "-include" ${MIRATH_TCITH_3B_SHORT_NAMESPACE_HEADER})
+
+    add_library(mirath_tcith_3b_short_glue OBJECT sig_mirath_tcith_3b_short.c)
+    target_include_directories(mirath_tcith_3b_short_glue PRIVATE
+        ${CMAKE_CURRENT_LIST_DIR}
+        ${CMAKE_CURRENT_LIST_DIR}/mirath_tcith_3b_short)
+    target_compile_options(mirath_tcith_3b_short_glue PRIVATE "-include" ${MIRATH_TCITH_3B_SHORT_NAMESPACE_HEADER})
+
+    set(_MIRATH_OBJS ${_MIRATH_OBJS}
+        $<TARGET_OBJECTS:mirath_tcith_3b_short_ref>
+        $<TARGET_OBJECTS:mirath_tcith_3b_short_glue>)
+endif()
+
 set(MIRATH_OBJS ${_MIRATH_OBJS} PARENT_SCOPE)
 set(MIRATH_LIBS ${_MIRATH_LIBS} PARENT_SCOPE)
