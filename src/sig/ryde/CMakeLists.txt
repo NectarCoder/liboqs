@@ -41,7 +41,6 @@ if(OQS_ENABLE_SIG_ryde_1s)
         ${CMAKE_CURRENT_LIST_DIR}/ryde1s/lib
         ${CMAKE_CURRENT_LIST_DIR}/ryde1s/lib/rng
         ${CMAKE_CURRENT_LIST_DIR}/ryde1s/lib/xkcp
-        ${CMAKE_CURRENT_LIST_DIR}/ryde1s/lib/xkcp/avx2
         ${CMAKE_CURRENT_LIST_DIR}/ryde1s/lib/xkcp/opt64)
     target_compile_options(ryde1s_ref PRIVATE "-include" ${RYDE1S_NAMESPACE_HEADER})
 
@@ -94,7 +93,6 @@ if(OQS_ENABLE_SIG_ryde_3s)
         ${CMAKE_CURRENT_LIST_DIR}/ryde3s/lib
         ${CMAKE_CURRENT_LIST_DIR}/ryde3s/lib/rng
         ${CMAKE_CURRENT_LIST_DIR}/ryde3s/lib/xkcp
-        ${CMAKE_CURRENT_LIST_DIR}/ryde3s/lib/xkcp/avx2
         ${CMAKE_CURRENT_LIST_DIR}/ryde3s/lib/xkcp/opt64)
     target_compile_options(ryde3s_ref PRIVATE "-include" ${RYDE3S_NAMESPACE_HEADER})
 
@@ -147,7 +145,6 @@ if(OQS_ENABLE_SIG_ryde_5s)
         ${CMAKE_CURRENT_LIST_DIR}/ryde5s/lib
         ${CMAKE_CURRENT_LIST_DIR}/ryde5s/lib/rng
         ${CMAKE_CURRENT_LIST_DIR}/ryde5s/lib/xkcp
-        ${CMAKE_CURRENT_LIST_DIR}/ryde5s/lib/xkcp/avx2
         ${CMAKE_CURRENT_LIST_DIR}/ryde5s/lib/xkcp/opt64)
     target_compile_options(ryde5s_ref PRIVATE "-include" ${RYDE5S_NAMESPACE_HEADER})
 
