@@ -368,6 +368,9 @@
 #cmakedefine OQS_ENABLE_SIG_sdith_cat3_short 1
 #cmakedefine OQS_ENABLE_SIG_sdith_cat5_short 1
 
+#cmakedefine OQS_ENABLE_SIG_MQOM 1
+#cmakedefine OQS_ENABLE_SIG_mqom2_cat1_gf2_short_r3 1
+
 #cmakedefine OQS_ENABLE_SIG_LESS 1
 #cmakedefine OQS_ENABLE_SIG_less_252_45 1
 

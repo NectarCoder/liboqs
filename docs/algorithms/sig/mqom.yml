@@ -1,0 +1,31 @@
+name: MQOM
+type: signature
+principal-submitters:
+- Ryad Benadjila
+- Charles Bouillaguet
+- Thibauld Feneuil
+- Matthieu Rivain
+crypto-assumption: hardness of solving random multivariate quadratic systems over GF(2)
+website: https://mqom.org
+nist-round: Additional Call for Signatures (Round 2)
+spec-version: v2.0
+primary-upstream:
+  source: src/sig/mqom/mqom2_cat1_gf2_short_r3/lib
+  spdx-license-identifier: CC0-1.0
+parameter-sets:
+- name: MQOM2-CAT1-GF2-SHORT-R3
+  claimed-nist-level: 1
+  claimed-security: EUF-CMA
+  length-public-key: 52
+  length-secret-key: 72
+  length-signature: 2868
+  implementations-switch-on-runtime-cpu-features: false
+  implementations:
+  - upstream: primary-upstream
+    upstream-id: ref
+    supported-platforms: all
+    common-crypto:
+    - SHAKE128: upstream
+    no-secret-dependent-branching-claimed: false
+    no-secret-dependent-branching-checked-by-valgrind: false
+    large-stack-usage: true
