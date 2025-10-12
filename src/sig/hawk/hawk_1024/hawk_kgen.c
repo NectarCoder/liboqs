@@ -3,15 +3,20 @@
 /*
  * Reduce f modulo 2; output is a sequence of n bits (n/8 bytes).
  */
-TARGET_AVX2
 static void
 extract_lowbit(unsigned logn, uint8_t *restrict f2, const int8_t *restrict f)
 {
 	size_t n = (size_t)1 << logn;
-	for (size_t u = 0; u < n; u += 32) {
-		__m256i x = _mm256_loadu_si256((const __m256i *)(f + u));
-		x = _mm256_slli_epi16(x, 7);
-		*(uint32_t *)(f2 + (u >> 3)) = _mm256_movemask_epi8(x);
+	const uint8_t *fu = (const uint8_t *)f;
+	for (size_t u = 0; u < n; u += 8) {
+		f2[u >> 3] = (fu[u + 0] & 1u)
+			| ((fu[u + 1] & 1u) << 1)
+			| ((fu[u + 2] & 1u) << 2)
+			| ((fu[u + 3] & 1u) << 3)
+			| ((fu[u + 4] & 1u) << 4)
+			| ((fu[u + 5] & 1u) << 5)
+			| ((fu[u + 6] & 1u) << 6)
+			| ((fu[u + 7] & 1u) << 7);
 	}
 }
 

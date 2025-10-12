@@ -49,27 +49,6 @@ void Hawk_regen_fg(unsigned logn,
 
 /* ==================================================================== */
 
-/*
- * This implementation uses AVX2 intrinsics.
- */
-#include <immintrin.h>
-#if defined __GNUC__ || defined __clang__
-#include <x86intrin.h>
-#endif
-#ifndef HAWK_LE
-#define HAWK_LE   1
-#endif
-#ifndef HAWK_UNALIGNED
-#define HAWK_UNALIGNED   1
-#endif
-#if defined __GNUC__
-#define TARGET_AVX2         __attribute__((target("avx2,bmi,pclmul")))
-#define TARGET_AVX2_ONLY    __attribute__((target("avx2")))
-#define ALIGNED_AVX2   __attribute__((aligned(32)))
-#elif defined _MSC_VER && _MSC_VER
-#pragma warning( disable : 4752 )
-#endif
-
 #ifndef TARGET_AVX2
 #define TARGET_AVX2
 #endif

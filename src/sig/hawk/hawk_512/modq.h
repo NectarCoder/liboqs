@@ -76,17 +76,6 @@ Zq(add)(uint32_t x, uint32_t y)
 	return Q - x;
 }
 
-MQ_UNUSED TARGET_AVX2
-static inline __m256i
-Zq(add_x16)(__m256i a, __m256i b)
-{
-	__m256i Qx16 = _mm256_set1_epi16(Q);
-	a = _mm256_sub_epi16(Qx16, _mm256_add_epi16(a, b));
-	a = _mm256_add_epi16(a,
-		_mm256_and_si256(Qx16, _mm256_srai_epi16(a, 15)));
-	return _mm256_sub_epi16(Qx16, a);
-}
-
 MQ_UNUSED
 static inline uint32_t
 Zq(sub)(uint32_t x, uint32_t y)
@@ -96,17 +85,6 @@ Zq(sub)(uint32_t x, uint32_t y)
 	return Q - y;
 }
 
-MQ_UNUSED TARGET_AVX2
-static inline __m256i
-Zq(sub_x16)(__m256i a, __m256i b)
-{
-	__m256i Qx16 = _mm256_set1_epi16(Q);
-	b = _mm256_sub_epi16(b, a);
-	b = _mm256_add_epi16(b,
-		_mm256_and_si256(Qx16, _mm256_srai_epi16(b, 15)));
-	return _mm256_sub_epi16(Qx16, b);
-}
-
 MQ_UNUSED
 static inline uint32_t
 Zq(neg)(uint32_t x)
@@ -114,31 +92,11 @@ Zq(neg)(uint32_t x)
 	return Zq(sub)(Q, x);
 }
 
-MQ_UNUSED TARGET_AVX2
-static inline __m256i
-Zq(neg_x16)(__m256i a)
-{
-	return Zq(sub_x16)(_mm256_set1_epi16(Q), a);
-}
-
 MQ_UNUSED
 static inline uint32_t
 Zq(half)(uint32_t x)
 {
 	return (x >> 1) + (((Q + 1) >> 1) & -(x & 1));
-}
-
-MQ_UNUSED TARGET_AVX2
-static inline __m256i
-Zq(half_x16)(__m256i a)
-{
-	__m256i hx16 = _mm256_set1_epi16((Q + 1) >> 1);
-	__m256i y1 = _mm256_set1_epi16(1);
-	__m256i yodd = _mm256_sub_epi16(
-		_mm256_setzero_si256(), _mm256_and_si256(a, y1));
-	return _mm256_add_epi16(
-		_mm256_srli_epi16(a, 1),
-		_mm256_and_si256(yodd, hx16));
 }
 
 MQ_UNUSED
@@ -150,42 +108,11 @@ Zq(montyred)(uint32_t x)
 	return (x >> 16) + 1;
 }
 
-MQ_UNUSED TARGET_AVX2
-static inline __m256i
-Zq(montyred_x16)(__m256i lo, __m256i hi)
-{
-	__m256i Qx16 = _mm256_set1_epi16(Q);
-	__m256i Q0Ilox16 = _mm256_set1_epi16(Q0Ilo);
-	__m256i Q0Ihix16 = _mm256_set1_epi16(Q0Ihi);
-
-	/* y <- (uint32_t)(x * q0i) >> 16 */
-	__m256i y = _mm256_add_epi16(
-		_mm256_add_epi16(
-			_mm256_mulhi_epu16(lo, Q0Ilox16),
-			_mm256_mullo_epi16(lo, Q0Ihix16)),
-		_mm256_mullo_epi16(hi, Q0Ilox16));
-
-	/* y <- (y * q) >> 16 */
-	y = _mm256_mulhi_epu16(y, Qx16);
-
-	/* return y + 1 */
-	return _mm256_add_epi16(y, _mm256_set1_epi16(1));
-}
-
 MQ_UNUSED
 static inline uint32_t
 Zq(montymul)(uint32_t x, uint32_t y)
 {
 	return Zq(montyred)(x * y);
-}
-
-MQ_UNUSED TARGET_AVX2
-static inline __m256i
-Zq(montymul_x16)(__m256i a, __m256i b)
-{
-	return Zq(montyred_x16)(
-		_mm256_mullo_epi16(a, b),
-		_mm256_mulhi_epu16(a, b));
 }
 
 MQ_UNUSED
@@ -195,27 +122,11 @@ Zq(montysqr)(uint32_t x)
 	return Zq(montyred)(x * x);
 }
 
-MQ_UNUSED TARGET_AVX2
-static inline __m256i
-Zq(montysqr_x16)(__m256i a)
-{
-	return Zq(montyred_x16)(
-		_mm256_mullo_epi16(a, a),
-		_mm256_mulhi_epu16(a, a));
-}
-
 MQ_UNUSED
 static inline uint32_t
 Zq(tomonty)(uint32_t x)
 {
 	return Zq(montyred(x * R2));
-}
-
-MQ_UNUSED TARGET_AVX2
-static inline __m256i
-Zq(tomonty_x16)(__m256i a)
-{
-	return Zq(montymul_x16)(a, _mm256_set1_epi16(R2));
 }
 
 /*
@@ -245,17 +156,6 @@ Zq(set_small)(int x)
 	return Q - y;
 }
 
-MQ_UNUSED TARGET_AVX2
-static inline __m256i
-Zq(set_small_x16)(__m256i a)
-{
-	__m256i Qx16 = _mm256_set1_epi16(Q);
-	a = _mm256_sub_epi16(_mm256_setzero_si256(), a);
-	a = _mm256_add_epi16(a,
-		_mm256_and_si256(Qx16, _mm256_srai_epi16(a, 15)));
-	return _mm256_sub_epi16(Qx16, a);
-}
-
 /*
  * Convert back an integer from [1..q] representation to [0..q-1]
  * representation.
@@ -265,15 +165,6 @@ static inline uint32_t
 Zq(unorm)(uint32_t x)
 {
 	return x & ((x - Q) >> 16);
-}
-
-MQ_UNUSED TARGET_AVX2
-static inline __m256i
-Zq(unorm_x16)(__m256i a)
-{
-	__m256i Qx16 = _mm256_set1_epi16(Q);
-	return _mm256_and_si256(a, _mm256_srai_epi16(
-		_mm256_sub_epi16(a, Qx16), 15));
 }
 
 /*
@@ -286,16 +177,6 @@ Zq(snorm)(uint32_t x)
 {
 	x -= Q & (((Q >> 1) - x) >> 16);
 	return *(int32_t *)&x;
-}
-
-MQ_UNUSED TARGET_AVX2
-static inline __m256i
-Zq(snorm_x16)(__m256i a)
-{
-	__m256i Qx16 = _mm256_set1_epi16(Q);
-	__m256i hQx16 = _mm256_set1_epi16(Q >> 1);
-	return _mm256_sub_epi16(a,
-		_mm256_and_si256(Qx16, _mm256_cmpgt_epi16(a, hQx16)));
 }
 
 /*
@@ -365,7 +246,6 @@ Zq(div)(uint32_t x, uint32_t y)
  *   12289    7
  *   18433   19
  */
-ALIGNED_AVX2
 static const uint16_t Zq(GM)[] = {
 #if Q == 12289
 	 10952,  11183,  10651,   1669,  12036,   5517,  11593,   9397,
@@ -634,7 +514,6 @@ static const uint16_t Zq(GM)[] = {
  * mq_iGM[x] = (2^31)*((1/g)^rev(x)) mod q.
  * (Note: 2^31 instead of 2^32 because we want to pre-divide it by 2)
  */
-ALIGNED_AVX2
 static const uint16_t Zq(iGM)[] = {
 #if Q == 12289
 	  5476,    553,   5310,    819,   1446,    348,   3386,   6271,
@@ -899,139 +778,10 @@ static const uint16_t Zq(iGM)[] = {
 #endif
 };
 
-MQ_UNUSED TARGET_AVX2
-static void
-Zq(NTT32)(__m256i *a0, __m256i *a1, size_t k)
-{
-	__m256i yt1, yt2, yt3, yt4;
-
-	__m256i ya0 = *a0;
-	__m256i ya1 = *a1;
-
-	/* t = 32, m = 1 */
-	yt1 = ya0;
-	yt2 = Zq(montymul_x16)(ya1, _mm256_set1_epi16(Zq(GM)[k]));
-	ya0 = Zq(add_x16)(yt1, yt2);
-	ya1 = Zq(sub_x16)(yt1, yt2);
-
-	/* ya0:  0  1  2  3  4  5  6  7 |  8  9 10 11 12 13 14 15
-	   ya1: 16 17 18 19 20 21 22 23 | 24 25 26 27 28 29 30 31 */
-
-	/* t = 16, m = 2 */
-	yt1 = _mm256_permute2x128_si256(ya0, ya1, 0x20);
-	yt2 = _mm256_permute2x128_si256(ya0, ya1, 0x31);
-	uint16_t g1_0 = Zq(GM)[(k << 1) + 0];
-	uint16_t g1_1 = Zq(GM)[(k << 1) + 1];
-	__m256i yg1 = _mm256_setr_epi16(
-		g1_0, g1_0, g1_0, g1_0, g1_0, g1_0, g1_0, g1_0,
-		g1_1, g1_1, g1_1, g1_1, g1_1, g1_1, g1_1, g1_1);
-	yt2 = Zq(montymul_x16)(yt2, yg1);
-	ya0 = Zq(add_x16)(yt1, yt2);
-	ya1 = Zq(sub_x16)(yt1, yt2);
-
-	/* ya0:  0  1  2  3  4  5  6  7 | 16 17 18 19 20 21 22 23
-	   ya1:  8  9 10 11 12 13 14 15 | 24 25 26 27 28 29 30 31 */
-
-	/* t = 8, m = 4 */
-	yt1 = _mm256_unpacklo_epi64(ya0, ya1);
-	yt2 = _mm256_unpackhi_epi64(ya0, ya1);
-	__m256i yg2 = _mm256_setr_epi64x(
-		Zq(GM)[(k << 2) + 0], Zq(GM)[(k << 2) + 1],
-		Zq(GM)[(k << 2) + 2], Zq(GM)[(k << 2) + 3]);
-	yg2 = _mm256_or_si256(yg2, _mm256_slli_epi64(yg2, 32));
-	yg2 = _mm256_or_si256(yg2, _mm256_slli_epi32(yg2, 16));
-	yt2 = Zq(montymul_x16)(yt2, yg2);
-	ya0 = Zq(add_x16)(yt1, yt2);
-	ya1 = Zq(sub_x16)(yt1, yt2);
-
-	/* ya0:  0  1  2  3  8  9 10 11 | 16 17 18 19 24 25 26 27
-	   ya1:  4  5  6  7 12 13 14 15 | 20 21 22 23 28 29 30 31 */
-
-	/* t = 4, m = 8 */
-	yt3 = _mm256_shuffle_epi32(ya0, 0xD8);
-	yt4 = _mm256_shuffle_epi32(ya1, 0xD8);
-	yt1 = _mm256_unpacklo_epi32(yt3, yt4);
-	yt2 = _mm256_unpackhi_epi32(yt3, yt4);
-	__m256i yg3 = _mm256_cvtepi16_epi32(
-		_mm_loadu_si128((const __m128i *)&Zq(GM)[k << 3]));
-	yg3 = _mm256_or_si256(yg3, _mm256_slli_epi32(yg3, 16));
-	yt2 = Zq(montymul_x16)(yt2, yg3);
-	ya0 = Zq(add_x16)(yt1, yt2);
-	ya1 = Zq(sub_x16)(yt1, yt2);
-
-	/* ya0:  0  1  4  5  8  9 12 13 | 16 17 20 21 24 25 28 29
-	   ya1:  2  3  6  7 10 11 14 15 | 18 19 22 23 26 27 30 31 */
-
-	/* t = 2, m = 16 */
-	__m256i ysk = _mm256_setr_epi8(
-		0, 1, 4, 5, 8, 9, 12, 13, 2, 3, 6, 7, 10, 11, 14, 15,
-		0, 1, 4, 5, 8, 9, 12, 13, 2, 3, 6, 7, 10, 11, 14, 15);
-	yt3 = _mm256_shuffle_epi8(ya0, ysk);
-	yt4 = _mm256_shuffle_epi8(ya1, ysk);
-	yt1 = _mm256_unpacklo_epi16(yt3, yt4);
-	yt2 = _mm256_unpackhi_epi16(yt3, yt4);
-	yt2 = Zq(montymul_x16)(yt2,
-		_mm256_loadu_si256((const __m256i *)&Zq(GM)[k << 4]));
-	ya0 = Zq(add_x16)(yt1, yt2);
-	ya1 = Zq(sub_x16)(yt1, yt2);
-
-	/* ya0:  0  2  4  6  8 10 12 14 | 16 18 20 22 24 26 28 30
-	   ya1:  1  3  5  7  9 11 13 15 | 17 19 21 23 25 27 29 31 */
-	yt1 = _mm256_unpacklo_epi16(ya0, ya1);
-	yt2 = _mm256_unpackhi_epi16(ya0, ya1);
-	*a0 = _mm256_permute2x128_si256(yt1, yt2, 0x20);
-	*a1 = _mm256_permute2x128_si256(yt1, yt2, 0x31);
-}
-
-MQ_UNUSED TARGET_AVX2
+MQ_UNUSED
 static void
 Zq(NTT)(unsigned logn, uint16_t *restrict a)
 {
-	switch (logn) {
-	case 1:
-	case 2:
-	case 3:
-	case 4:
-		/* We use the plain integer code for degrees < 32. */
-		break;
-	default: {
-		size_t n = (size_t)1 << logn;
-		size_t t = n;
-		for (unsigned lm = 0; lm < (logn - 5); lm ++) {
-			size_t m = (size_t)1 << lm;
-			size_t ht = t >> 1;
-			size_t v0 = 0;
-			for (size_t u = 0; u < m; u ++) {
-				__m256i ys = _mm256_set1_epi16(Zq(GM)[u + m]);
-				for (size_t v = 0; v < ht; v += 16) {
-					size_t k1 = v0 + v;
-					size_t k2 = k1 + ht;
-					__m256i *a1 = (__m256i *)(a + k1);
-					__m256i *a2 = (__m256i *)(a + k2);
-					__m256i y1 = _mm256_loadu_si256(a1);
-					__m256i y2 = _mm256_loadu_si256(a2);
-					y2 = Zq(montymul_x16)(y2, ys);
-					_mm256_storeu_si256(a1,
-						Zq(add_x16)(y1, y2));
-					_mm256_storeu_si256(a2,
-						Zq(sub_x16)(y1, y2));
-				}
-				v0 += t;
-			}
-			t = ht;
-		}
-		size_t m = n >> 5;
-		for (size_t u = 0; u < m; u ++) {
-			__m256i *pa = (__m256i *)(a + (u << 5));
-			__m256i ya0 = _mm256_loadu_si256(pa + 0);
-			__m256i ya1 = _mm256_loadu_si256(pa + 1);
-			Zq(NTT32)(&ya0, &ya1, u + m);
-			_mm256_storeu_si256(pa + 0, ya0);
-			_mm256_storeu_si256(pa + 1, ya1);
-		}
-		return;
-	}
-	}
 	size_t t = (size_t)1 << logn;
 	for (unsigned lm = 0; lm < logn; lm ++) {
 		size_t m = (size_t)1 << lm;
@@ -1053,142 +803,10 @@ Zq(NTT)(unsigned logn, uint16_t *restrict a)
 	}
 }
 
-MQ_UNUSED TARGET_AVX2
-static void
-Zq(iNTT32)(__m256i *a0, __m256i *a1, size_t k)
-{
-	__m256i yt1, yt2, yt3, yt4;
-
-	__m256i ya0 = *a0;
-	__m256i ya1 = *a1;
-
-	/* ya0:  0  1  2  3  4  5  6  7 |  8  9 10 11 12 13 14 15
-	   ya1: 16 17 18 19 20 21 22 23 | 24 25 26 27 28 29 30 31 */
-
-	yt1 = _mm256_permute2x128_si256(ya0, ya1, 0x20);
-	yt2 = _mm256_permute2x128_si256(ya0, ya1, 0x31);
-
-	/* yt1:  0  1  2  3  4  5  6  7 | 16 17 18 19 20 21 22 23
-	   yt2:  8  9 10 11 12 13 14 15 | 24 25 26 27 28 29 30 31 */
-
-	__m256i ysk = _mm256_setr_epi8(
-		0, 1, 4, 5, 8, 9, 12, 13, 2, 3, 6, 7, 10, 11, 14, 15,
-		0, 1, 4, 5, 8, 9, 12, 13, 2, 3, 6, 7, 10, 11, 14, 15);
-	yt3 = _mm256_shuffle_epi8(yt1, ysk);
-	yt4 = _mm256_shuffle_epi8(yt2, ysk);
-
-	/* yt3:  0  2  4  6  1  3  5  7 | 16 18 20 22 17 19 21 23
-	   yt4:  8 10 12 14  9 11 13 15 | 24 26 28 30 25 27 29 31 */
-
-	yt1 = _mm256_unpacklo_epi64(yt3, yt4);
-	yt2 = _mm256_unpackhi_epi64(yt3, yt4);
-	ya0 = Zq(half_x16)(Zq(add_x16)(yt1, yt2));
-	ya1 = Zq(montymul_x16)(Zq(sub_x16)(yt1, yt2),
-		_mm256_loadu_si256((const __m256i *)&Zq(iGM)[k << 4]));
-
-	/* ya0:  0  2  4  6  8 10 12 14 | 16 18 20 22 24 26 28 30
-	   ya1:  1  3  5  7  9 11 13 15 | 17 19 21 23 25 27 29 31 */
-
-	yt1 = _mm256_blend_epi16(ya0, _mm256_slli_epi32(ya1, 16), 0xAA);
-	yt2 = _mm256_blend_epi16(_mm256_srli_epi32(ya0, 16), ya1, 0xAA);
-	__m256i yig3 = _mm256_cvtepi16_epi32(
-		_mm_loadu_si128((const __m128i *)&Zq(iGM)[k << 3]));
-	yig3 = _mm256_or_si256(yig3, _mm256_slli_epi32(yig3, 16));
-	ya0 = Zq(half_x16)(Zq(add_x16)(yt1, yt2));
-	ya1 = Zq(montymul_x16)(Zq(sub_x16)(yt1, yt2), yig3);
-
-	/* ya0:  0  1  4  5  8  9 12 13 | 16 17 20 21 24 25 28 29
-	   ya1:  2  3  6  7 10 11 14 15 | 18 19 22 23 26 27 30 31 */
-
-	yt1 = _mm256_blend_epi16(ya0, _mm256_slli_epi64(ya1, 32), 0xCC);
-	yt2 = _mm256_blend_epi16(_mm256_srli_epi64(ya0, 32), ya1, 0xCC);
-	__m256i yig2 = _mm256_setr_epi64x(
-		Zq(iGM)[(k << 2) + 0], Zq(iGM)[(k << 2) + 1],
-		Zq(iGM)[(k << 2) + 2], Zq(iGM)[(k << 2) + 3]);
-	yig2 = _mm256_or_si256(yig2, _mm256_slli_epi64(yig2, 32));
-	yig2 = _mm256_or_si256(yig2, _mm256_slli_epi32(yig2, 16));
-	ya0 = Zq(half_x16)(Zq(add_x16)(yt1, yt2));
-	ya1 = Zq(montymul_x16)(Zq(sub_x16)(yt1, yt2), yig2);
-
-	/* ya0:  0  1  2  3  8  9 10 11 | 16 17 18 19 24 25 26 27
-	   ya1:  4  5  6  7 12 13 14 15 | 20 21 22 23 28 29 30 31 */
-
-	yt1 = _mm256_unpacklo_epi64(ya0, ya1);
-	yt2 = _mm256_unpackhi_epi64(ya0, ya1);
-	uint16_t ig1_0 = Zq(iGM)[(k << 1) + 0];
-	uint16_t ig1_1 = Zq(iGM)[(k << 1) + 1];
-	__m256i yig1 = _mm256_setr_epi16(
-		ig1_0, ig1_0, ig1_0, ig1_0, ig1_0, ig1_0, ig1_0, ig1_0,
-		ig1_1, ig1_1, ig1_1, ig1_1, ig1_1, ig1_1, ig1_1, ig1_1);
-	ya0 = Zq(half_x16)(Zq(add_x16)(yt1, yt2));
-	ya1 = Zq(montymul_x16)(Zq(sub_x16)(yt1, yt2), yig1);
-
-	/* ya0:  0  1  2  3  4  5  6  7 | 16 17 18 19 20 21 22 23
-	   ya1:  8  9 10 11 12 13 14 15 | 24 25 26 27 28 29 30 31 */
-
-	yt1 = _mm256_permute2x128_si256(ya0, ya1, 0x20);
-	yt2 = _mm256_permute2x128_si256(ya0, ya1, 0x31);
-	__m256i yig0 = _mm256_set1_epi16(Zq(iGM)[k]);
-	ya0 = Zq(half_x16)(Zq(add_x16)(yt1, yt2));
-	ya1 = Zq(montymul_x16)(Zq(sub_x16)(yt1, yt2), yig0);
-
-	/* ya0:  0  1  2  3  4  5  6  7 |  8  9 10 11 12 13 14 15
-	   ya1: 16 17 18 19 20 21 22 23 | 24 25 26 27 28 29 30 31 */
-
-	*a0 = ya0;
-	*a1 = ya1;
-}
-
-MQ_UNUSED TARGET_AVX2
+MQ_UNUSED
 static void
 Zq(iNTT)(unsigned logn, uint16_t *restrict a)
 {
-	switch (logn) {
-	case 1:
-	case 2:
-	case 3:
-	case 4:
-		/* We use the plain integer code for degrees < 32. */
-		break;
-	default: {
-		size_t n = (size_t)1 << logn;
-		size_t m = n >> 5;
-		for (size_t u = 0; u < m; u ++) {
-			__m256i *pa = (__m256i *)(a + (u << 5));
-			__m256i ya0 = _mm256_loadu_si256(pa + 0);
-			__m256i ya1 = _mm256_loadu_si256(pa + 1);
-			Zq(iNTT32)(&ya0, &ya1, u + m);
-			_mm256_storeu_si256(pa + 0, ya0);
-			_mm256_storeu_si256(pa + 1, ya1);
-		}
-		size_t t = 32;
-		for (unsigned lm = 5; lm < logn; lm ++) {
-			size_t hm = (size_t)1 << (logn - 1 - lm);
-			size_t dt = t << 1;
-			size_t v0 = 0;
-			for (size_t u = 0; u < hm; u ++) {
-				__m256i ys = _mm256_set1_epi16(Zq(iGM)[u + hm]);
-				for (size_t v = 0; v < t; v += 16) {
-					size_t k1 = v0 + v;
-					size_t k2 = k1 + t;
-					__m256i *a1 = (__m256i *)(a + k1);
-					__m256i *a2 = (__m256i *)(a + k2);
-					__m256i y1 = _mm256_loadu_si256(a1);
-					__m256i y2 = _mm256_loadu_si256(a2);
-					_mm256_storeu_si256(a1,
-						Zq(half_x16)(
-							Zq(add_x16)(y1, y2)));
-					_mm256_storeu_si256(a2,
-						Zq(montymul_x16)(ys,
-							Zq(sub_x16)(y1, y2)));
-				}
-				v0 += dt;
-			}
-			t = dt;
-		}
-		return;
-	}
-	}
 	size_t t = 1;
 	for (unsigned lm = 0; lm < logn; lm ++) {
 		size_t hm = (size_t)1 << (logn - 1 - lm);
@@ -1210,20 +828,11 @@ Zq(iNTT)(unsigned logn, uint16_t *restrict a)
 	}
 }
 
-MQ_UNUSED TARGET_AVX2
+MQ_UNUSED
 static inline void
 Zq(poly_set_small)(unsigned logn, uint16_t *d, const int8_t *a)
 {
 	size_t n = (size_t)1 << logn;
-	if (logn >= 4) {
-		for (size_t u = 0; u < n; u += 16) {
-			__m128i xa = _mm_loadu_si128((const __m128i *)(a + u));
-			__m256i ya = _mm256_cvtepi8_epi16(xa);
-			__m256i yd = Zq(set_small_x16(ya));
-			_mm256_storeu_si256((__m256i *)(d + u), yd);
-		}
-		return;
-	}
 	for (size_t u = 0; u < n; u ++) {
 		d[u] = Zq(set_small)(a[u]);
 	}
@@ -1234,22 +843,11 @@ Zq(poly_set_small)(unsigned logn, uint16_t *d, const int8_t *a)
  * representation that _starts_ at the same address (i.e. the n first
  * bytes of d are read, and 2*n bytes are written into d).
  */
-MQ_UNUSED TARGET_AVX2
+MQ_UNUSED
 static inline void
 Zq(poly_set_small_inplace_low)(unsigned logn, uint16_t *d)
 {
 	size_t n = (size_t)1 << logn;
-	if (logn >= 4) {
-		size_t u = n;
-		while (u > 0) {
-			u -= 16;
-			__m128i xa = _mm_loadu_si128((__m128i *)&d[u >> 1]);
-			__m256i ya = _mm256_cvtepi8_epi16(xa);
-			__m256i yd = Zq(set_small_x16(ya));
-			_mm256_storeu_si256((__m256i *)&d[u], yd);
-		}
-		return;
-	}
 	size_t u = n;
 	while (u > 0) {
 		u -= 2;
@@ -1266,22 +864,12 @@ Zq(poly_set_small_inplace_low)(unsigned logn, uint16_t *d)
  * representation that _ends_ at the same address (i.e. the n last
  * bytes of d are read, and 2*n bytes are written into d).
  */
-MQ_UNUSED TARGET_AVX2
+MQ_UNUSED
 static inline void
 Zq(poly_set_small_inplace_high)(unsigned logn, uint16_t *d)
 {
 	size_t n = (size_t)1 << logn;
 	size_t hn = n >> 1;
-	if (logn >= 4) {
-		for (size_t u = 0; u < n; u += 16) {
-			__m128i xa = _mm_loadu_si128(
-				(const __m128i *)&d[hn + (u >> 1)]);
-			__m256i ya = _mm256_cvtepi8_epi16(xa);
-			__m256i yd = Zq(set_small_x16(ya));
-			_mm256_storeu_si256((__m256i *)&d[u], yd);
-		}
-		return;
-	}
 	for (size_t u = 0; u < n; u += 2) {
 		uint32_t x = d[hn + (u >> 1)];
 		uint8_t x0 = (uint8_t)x;
@@ -1291,19 +879,11 @@ Zq(poly_set_small_inplace_high)(unsigned logn, uint16_t *d)
 	}
 }
 
-MQ_UNUSED TARGET_AVX2
+MQ_UNUSED
 static inline void
 Zq(poly_snorm)(unsigned logn, uint16_t *d)
 {
 	size_t n = (size_t)1 << logn;
-	if (logn >= 4) {
-		for (size_t u = 0; u < n; u += 16) {
-			__m256i y = _mm256_loadu_si256((__m256i *)(d + u));
-			y = Zq(snorm_x16)(y);
-			_mm256_storeu_si256((__m256i *)(d + u), y);
-		}
-		return;
-	}
 	for (size_t u = 0; u < n; u ++) {
 		d[u] = (uint16_t)Zq(snorm)(d[u]);
 	}

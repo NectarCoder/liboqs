@@ -33,7 +33,6 @@ make_fg_zero(unsigned logn,
  * RAM USAGE: 3*(2^logn_top) (at most)
  * (assumptions: max_bl_small[0] = max_bl_small[1] = 1, max_bl_small[2] = 2)
  */
-TARGET_AVX2
 static void
 make_fg_step(const ntru_profile *prof,
 	unsigned logn_top, unsigned depth, uint32_t *tmp)
@@ -105,49 +104,6 @@ make_fg_step(const ntru_profile *prof,
 		uint32_t R2 = PRIMES[u].R2;
 		uint32_t Rx = mp_Rx31(slen, p, p0i, R2);
 		mp_mkgm(logn, t1, PRIMES[u].g, p, p0i);
-		if (logn >= 3) {
-			__m256i yp = _mm256_set1_epi32(p);
-			__m256i yp0i = _mm256_set1_epi32(p0i);
-			__m256i yR2 = _mm256_set1_epi32(R2);
-			__m256i yRx = _mm256_set1_epi32(Rx);
-			for (size_t v = 0; v < n; v += 8) {
-				__m256i yt = zint_mod_small_signed_x8(
-					fs + v, slen, n, yp, yp0i, yR2, yRx);
-				_mm256_storeu_si256((__m256i *)(t2 + v), yt);
-			}
-			mp_NTT(logn, t2, t1, p, p0i);
-			for (size_t v = 0; v < hn; v += 4) {
-				__m256i yt = _mm256_loadu_si256(
-					(__m256i *)(t2 + (2 * v)));
-				yt = mp_montymul_x4(yt,
-					_mm256_srli_epi64(yt, 32), yp, yp0i);
-				yt = mp_montymul_x4(yt, yR2, yp, yp0i);
-				yt = _mm256_shuffle_epi32(yt, 0xD8);
-				yt = _mm256_permute4x64_epi64(yt, 0xD8);
-				_mm_storeu_si128((__m128i *)(yf + v),
-					_mm256_castsi256_si128(yt));
-			}
-			yf += hn;
-			for (size_t v = 0; v < n; v += 8) {
-				__m256i yt = zint_mod_small_signed_x8(
-					gs + v, slen, n, yp, yp0i, yR2, yRx);
-				_mm256_storeu_si256((__m256i *)(t2 + v), yt);
-			}
-			mp_NTT(logn, t2, t1, p, p0i);
-			for (size_t v = 0; v < hn; v += 4) {
-				__m256i yt = _mm256_loadu_si256(
-					(__m256i *)(t2 + (2 * v)));
-				yt = mp_montymul_x4(yt,
-					_mm256_srli_epi64(yt, 32), yp, yp0i);
-				yt = mp_montymul_x4(yt, yR2, yp, yp0i);
-				yt = _mm256_shuffle_epi32(yt, 0xD8);
-				yt = _mm256_permute4x64_epi64(yt, 0xD8);
-				_mm_storeu_si128((__m128i *)(yg + v),
-					_mm256_castsi256_si128(yt));
-			}
-			yg += hn;
-			continue;
-		}
 		for (size_t v = 0; v < n; v ++) {
 			t2[v] = zint_mod_small_signed(
 				fs + v, slen, n, p, p0i, R2, Rx);
@@ -337,12 +293,6 @@ solve_NTRU_deepest(const ntru_profile *prof,
  * is faster at large degrees, but not at small degrees.
  */
 #define MIN_LOGN_FGNTT   4
-/*
- * The AVX2 implementation requires MIN_LOGN_FGNTT >= 3
- */
-#if MIN_LOGN_FGNTT < 3
-#error Incorrect MIN_LOGN_FGNTT value
-#endif
 
 /*
  * Solving the NTRU equation, intermediate level.
@@ -352,7 +302,6 @@ solve_NTRU_deepest(const ntru_profile *prof,
  *
  * Returned value: 0 on success, a negative error code otherwise.
  */
-TARGET_AVX2
 static int
 solve_NTRU_intermediate(const ntru_profile *restrict prof,
 	unsigned logn_top,
@@ -444,26 +393,11 @@ solve_NTRU_intermediate(const ntru_profile *restrict prof,
 		uint32_t Rx = mp_Rx31((unsigned)dlen, p, p0i, R2);
 		uint32_t *xt = Ft + u * n + hn;
 		uint32_t *yt = Gt + u * n + hn;
-		if (logn >= 4) {
-			__m256i yp = _mm256_set1_epi32(p);
-			__m256i yp0i = _mm256_set1_epi32(p0i);
-			__m256i yR2 = _mm256_set1_epi32(R2);
-			__m256i yRx = _mm256_set1_epi32(Rx);
-			for (size_t v = 0; v < hn; v += 8) {
-				_mm256_storeu_si256((__m256i *)(xt + v),
-					zint_mod_small_signed_x8(Fd + v, dlen,
-						hn, yp, yp0i, yR2, yRx));
-				_mm256_storeu_si256((__m256i *)(yt + v),
-					zint_mod_small_signed_x8(Gd + v, dlen,
-						hn, yp, yp0i, yR2, yRx));
-			}
-		} else {
-			for (size_t v = 0; v < hn; v ++) {
-				xt[v] = zint_mod_small_signed(Fd + v, dlen, hn,
-					p, p0i, R2, Rx);
-				yt[v] = zint_mod_small_signed(Gd + v, dlen, hn,
-					p, p0i, R2, Rx);
-			}
+		for (size_t v = 0; v < hn; v ++) {
+			xt[v] = zint_mod_small_signed(Fd + v, dlen, hn,
+				p, p0i, R2, Rx);
+			yt[v] = zint_mod_small_signed(Gd + v, dlen, hn,
+				p, p0i, R2, Rx);
 		}
 	}
 
@@ -538,59 +472,17 @@ solve_NTRU_intermediate(const ntru_profile *restrict prof,
 		/*
 		 * Compute F and G (unreduced) modulo p.
 		 */
-		if (hn >= 4) {
-			__m256i yp = _mm256_set1_epi32(p);
-			__m256i yp0i = _mm256_set1_epi32(p0i);
-			__m256i yR2 = _mm256_set1_epi32(R2);
-			for (size_t v = 0; v < hn; v += 4) {
-				__m256i yfa = _mm256_loadu_si256(
-					(__m256i *)(fx + (v << 1)));
-				__m256i yga = _mm256_loadu_si256(
-					(__m256i *)(gx + (v << 1)));
-				__m256i yfb = _mm256_srli_epi64(yfa, 32);
-				__m256i ygb = _mm256_srli_epi64(yga, 32);
-				__m128i xFe = _mm_loadu_si128(
-					(__m128i *)(Fe + v + hn));
-				__m128i xGe = _mm_loadu_si128(
-					(__m128i *)(Ge + v + hn));
-				__m256i yFp = _mm256_permute4x64_epi64(
-					_mm256_castsi128_si256(xFe), 0x50);
-				__m256i yGp = _mm256_permute4x64_epi64(
-					_mm256_castsi128_si256(xGe), 0x50);
-				yFp = _mm256_shuffle_epi32(yFp, 0x30);
-				yGp = _mm256_shuffle_epi32(yGp, 0x30);
-				yFp = mp_montymul_x4(yFp, yR2, yp, yp0i);
-				yGp = mp_montymul_x4(yGp, yR2, yp, yp0i);
-				__m256i yFe0 = mp_montymul_x4(
-					ygb, yFp, yp, yp0i);
-				__m256i yFe1 = mp_montymul_x4(
-					yga, yFp, yp, yp0i);
-				__m256i yGe0 = mp_montymul_x4(
-					yfb, yGp, yp, yp0i);
-				__m256i yGe1 = mp_montymul_x4(
-					yfa, yGp, yp, yp0i);
-				_mm256_storeu_si256((__m256i *)(Fe + (v << 1)),
-					_mm256_or_si256(yFe0,
-						_mm256_slli_epi64(yFe1, 32)));
-				_mm256_storeu_si256((__m256i *)(Ge + (v << 1)),
-					_mm256_or_si256(yGe0,
-						_mm256_slli_epi64(yGe1, 32)));
-			}
-		} else {
-			for (size_t v = 0; v < hn; v ++) {
-				uint32_t fa = fx[(v << 1) + 0];
-				uint32_t fb = fx[(v << 1) + 1];
-				uint32_t ga = gx[(v << 1) + 0];
-				uint32_t gb = gx[(v << 1) + 1];
-				uint32_t mFp = mp_montymul(
-					Fe[v + hn], R2, p, p0i);
-				uint32_t mGp = mp_montymul(
-					Ge[v + hn], R2, p, p0i);
-				Fe[(v << 1) + 0] = mp_montymul(gb, mFp, p, p0i);
-				Fe[(v << 1) + 1] = mp_montymul(ga, mFp, p, p0i);
-				Ge[(v << 1) + 0] = mp_montymul(fb, mGp, p, p0i);
-				Ge[(v << 1) + 1] = mp_montymul(fa, mGp, p, p0i);
-			}
+		for (size_t v = 0; v < hn; v ++) {
+			uint32_t fa = fx[(v << 1) + 0];
+			uint32_t fb = fx[(v << 1) + 1];
+			uint32_t ga = gx[(v << 1) + 0];
+			uint32_t gb = gx[(v << 1) + 1];
+			uint32_t mFp = mp_montymul(Fe[v + hn], R2, p, p0i);
+			uint32_t mGp = mp_montymul(Ge[v + hn], R2, p, p0i);
+			Fe[(v << 1) + 0] = mp_montymul(gb, mFp, p, p0i);
+			Fe[(v << 1) + 1] = mp_montymul(ga, mFp, p, p0i);
+			Ge[(v << 1) + 0] = mp_montymul(fb, mGp, p, p0i);
+			Ge[(v << 1) + 1] = mp_montymul(fa, mGp, p, p0i);
 		}
 
 		/*
@@ -732,11 +624,10 @@ solve_NTRU_intermediate(const ntru_profile *restrict prof,
 	vect_mul2e(logn, rt3, scale_t);
 	vect_mul2e(logn, rt4, scale_t);
 	for (size_t u = 0; u < hn; u ++) {
-		fxr ni3 = fxr_neg(rt3[u + hn]);
-		fxr ni4 = fxr_neg(rt4[u + hn]);
-		fxr_div_x4_1(&rt3[u], &ni3, &rt4[u], &ni4, rt1[u]);
-		rt3[u + hn] = ni3;
-		rt4[u + hn] = ni4;
+		rt3[u] = fxr_div(rt3[u], rt1[u]);
+		rt3[u + hn] = fxr_div(fxr_neg(rt3[u + hn]), rt1[u]);
+		rt4[u] = fxr_div(rt4[u], rt1[u]);
+		rt4[u + hn] = fxr_div(fxr_neg(rt4[u + hn]), rt1[u]);
 	}
 
 	/*
@@ -942,19 +833,8 @@ solve_NTRU_intermediate(const ntru_profile *restrict prof,
 		mp_NTT(logn, t1, t4, p, p0i);
 		mp_NTT(logn, t2, t4, p, p0i);
 	}
-	if (n >= 8) {
-		__m256i yp = _mm256_set1_epi32(p);
-		__m256i yp0i = _mm256_set1_epi32(p0i);
-		for (size_t u = 0; u < n; u += 8) {
-			__m256i y1 = _mm256_loadu_si256((__m256i *)(t1 + u));
-			__m256i y2 = _mm256_loadu_si256((__m256i *)(t2 + u));
-			__m256i y3 = mp_montymul_x8(y1, y2, yp, yp0i);
-			_mm256_storeu_si256((__m256i *)(t3 + u), y3);
-		}
-	} else {
-		for (size_t u = 0; u < n; u ++) {
-			t3[u] = mp_montymul(t1[u], t2[u], p, p0i);
-		}
+	for (size_t u = 0; u < n; u ++) {
+		t3[u] = mp_montymul(t1[u], t2[u], p, p0i);
 	}
 	if (use_sub_ntt) {
 		t1 = gt;
@@ -974,28 +854,10 @@ solve_NTRU_intermediate(const ntru_profile *restrict prof,
 		mp_NTT(logn, t2, t4, p, p0i);
 	}
 	uint32_t rv = mp_montymul(prof->q, 1, p, p0i);
-	if (n >= 8) {
-		__m256i yp = _mm256_set1_epi32(p);
-		__m256i yp0i = _mm256_set1_epi32(p0i);
-		__m256i yrv = _mm256_set1_epi32(rv);
-		for (size_t u = 0; u < n; u += 8) {
-			__m256i y1 = _mm256_loadu_si256((__m256i *)(t1 + u));
-			__m256i y2 = _mm256_loadu_si256((__m256i *)(t2 + u));
-			__m256i y3 = _mm256_loadu_si256((__m256i *)(t3 + u));
-			__m256i yx = mp_sub_x8(y3,
-				mp_montymul_x8(y1, y2, yp, yp0i), yp);
-			if ((uint32_t)_mm256_movemask_epi8(
-				_mm256_cmpeq_epi32(yx, yrv)) != 0xFFFFFFFF)
-			{
-				return SOLVE_ERR_REDUCE;
-			}
-		}
-	} else {
-		for (size_t u = 0; u < n; u ++) {
-			uint32_t x = mp_montymul(t1[u], t2[u], p, p0i);
-			if (mp_sub(t3[u], x, p) != rv) {
-				return SOLVE_ERR_REDUCE;
-			}
+	for (size_t u = 0; u < n; u ++) {
+		uint32_t x = mp_montymul(t1[u], t2[u], p, p0i);
+		if (mp_sub(t3[u], x, p) != rv) {
+			return SOLVE_ERR_REDUCE;
 		}
 	}
 
@@ -1009,7 +871,6 @@ solve_NTRU_intermediate(const ntru_profile *restrict prof,
  *
  * Returned value: 0 on success, a negative error code otherwise.
  */
-TARGET_AVX2
 static int
 solve_NTRU_depth0(const ntru_profile *restrict prof,
 	unsigned logn,
@@ -1064,51 +925,17 @@ solve_NTRU_depth0(const ntru_profile *restrict prof,
 	/*
 	 * Build the unreduced (F,G) into ft and gt.
 	 */
-	if (hn >= 4) {
-		__m256i yp = _mm256_set1_epi32(p);
-		__m256i yp0i = _mm256_set1_epi32(p0i);
-		__m256i yR2 = _mm256_set1_epi32(R2);
-		for (size_t v = 0; v < hn; v += 4) {
-			__m256i yfa = _mm256_loadu_si256(
-				(__m256i *)(ft + (v << 1)));
-			__m256i yga = _mm256_loadu_si256(
-				(__m256i *)(gt + (v << 1)));
-			__m256i yfb = _mm256_srli_epi64(yfa, 32);
-			__m256i ygb = _mm256_srli_epi64(yga, 32);
-			__m128i xFd = _mm_loadu_si128((__m128i *)(Fd + v));
-			__m128i xGd = _mm_loadu_si128((__m128i *)(Gd + v));
-			__m256i yFd = _mm256_permute4x64_epi64(
-				_mm256_castsi128_si256(xFd), 0x50);
-			__m256i yGd = _mm256_permute4x64_epi64(
-				_mm256_castsi128_si256(xGd), 0x50);
-			yFd = _mm256_shuffle_epi32(yFd, 0x30);
-			yGd = _mm256_shuffle_epi32(yGd, 0x30);
-			yFd = mp_montymul_x4(yFd, yR2, yp, yp0i);
-			yGd = mp_montymul_x4(yGd, yR2, yp, yp0i);
-			__m256i yFe0 = mp_montymul_x4(ygb, yFd, yp, yp0i);
-			__m256i yFe1 = mp_montymul_x4(yga, yFd, yp, yp0i);
-			__m256i yGe0 = mp_montymul_x4(yfb, yGd, yp, yp0i);
-			__m256i yGe1 = mp_montymul_x4(yfa, yGd, yp, yp0i);
-			_mm256_storeu_si256((__m256i *)(ft + (v << 1)),
-				_mm256_or_si256(yFe0,
-					_mm256_slli_epi64(yFe1, 32)));
-			_mm256_storeu_si256((__m256i *)(gt + (v << 1)),
-				_mm256_or_si256(yGe0,
-					_mm256_slli_epi64(yGe1, 32)));
-		}
-	} else {
-		for (size_t v = 0; v < hn; v ++) {
-			uint32_t fa = ft[(v << 1) + 0];
-			uint32_t fb = ft[(v << 1) + 1];
-			uint32_t ga = gt[(v << 1) + 0];
-			uint32_t gb = gt[(v << 1) + 1];
-			uint32_t mFd = mp_montymul(Fd[v], R2, p, p0i);
-			uint32_t mGd = mp_montymul(Gd[v], R2, p, p0i);
-			ft[(v << 1) + 0] = mp_montymul(gb, mFd, p, p0i);
-			ft[(v << 1) + 1] = mp_montymul(ga, mFd, p, p0i);
-			gt[(v << 1) + 0] = mp_montymul(fb, mGd, p, p0i);
-			gt[(v << 1) + 1] = mp_montymul(fa, mGd, p, p0i);
-		}
+	for (size_t u = 0; u < hn; u ++) {
+		uint32_t fa = ft[(u << 1) + 0];
+		uint32_t fb = ft[(u << 1) + 1];
+		uint32_t ga = gt[(u << 1) + 0];
+		uint32_t gb = gt[(u << 1) + 1];
+		uint32_t mFd = mp_montymul(Fd[u], R2, p, p0i);
+		uint32_t mGd = mp_montymul(Gd[u], R2, p, p0i);
+		ft[(u << 1) + 0] = mp_montymul(gb, mFd, p, p0i);
+		ft[(u << 1) + 1] = mp_montymul(ga, mFd, p, p0i);
+		gt[(u << 1) + 0] = mp_montymul(fb, mGd, p, p0i);
+		gt[(u << 1) + 1] = mp_montymul(fa, mGd, p, p0i);
 	}
 
 	/*

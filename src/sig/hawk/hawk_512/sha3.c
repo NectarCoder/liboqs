@@ -1138,291 +1138,14 @@ shake_extract(shake_context *sc, void *out, size_t len)
 	sc->dptr = (unsigned)dptr;
 }
 
-TARGET_AVX2
-static void
-process_block_x4(uint64_t *A)
-{
-	__m256i ya[25];
-
-	for (int i = 0; i < 25; i ++) {
-		ya[i] = _mm256_loadu_si256((const __m256i *)A + i);
-	}
-
-	/*
-	 * Invert some words (alternate internal representation, which
-	 * saves some operations).
-	 */
-	__m256i yones = _mm256_set1_epi32(-1);
-	ya[ 1] = _mm256_xor_si256(ya[ 1], yones);
-	ya[ 2] = _mm256_xor_si256(ya[ 2], yones);
-	ya[ 8] = _mm256_xor_si256(ya[ 8], yones);
-	ya[12] = _mm256_xor_si256(ya[12], yones);
-	ya[17] = _mm256_xor_si256(ya[17], yones);
-	ya[20] = _mm256_xor_si256(ya[20], yones);
-
-	/*
-	 * Compute the 24 rounds. This loop is partially unrolled (each
-	 * iteration computes two rounds).
-	 */
-	for (int j = 0; j < 24; j += 2) {
-		__m256i yt0, yt1, yt2, yt3, yt4;
-
-#define yy_rotl(yv, nn)   _mm256_or_si256( \
-	_mm256_slli_epi64(yv, nn), _mm256_srli_epi64(yv, 64 - (nn)))
-#define yy_or(a, b)        _mm256_or_si256(a, b)
-#define yy_ornotL(a, b)    _mm256_or_si256(_mm256_xor_si256(a, yones), b)
-#define yy_ornotR(a, b)    _mm256_or_si256(a, _mm256_xor_si256(b, yones))
-#define yy_and(a, b)       _mm256_and_si256(a, b)
-#define yy_andnotL(a, b)   _mm256_andnot_si256(a, b)
-#define yy_andnotR(a, b)   _mm256_andnot_si256(b, a)
-#define yy_xor(a, b)       _mm256_xor_si256(a, b)
-
-#define yCOMB1(yd, i0, i1, i2, i3, i4, i5, i6, i7, i8, i9)   do { \
-		__m256i ytt0, ytt1, ytt2, ytt3; \
-		ytt0 = yy_xor(ya[i0], ya[i1]); \
-		ytt1 = yy_xor(ya[i2], ya[i3]); \
-		ytt0 = yy_xor(ytt0, yy_xor(ya[i4], ytt1)); \
-		ytt0 = yy_rotl(ytt0, 1); \
-		ytt2 = yy_xor(ya[i5], ya[i6]); \
-		ytt3 = yy_xor(ya[i7], ya[i8]); \
-		ytt0 = yy_xor(ytt0, ya[i9]); \
-		ytt2 = yy_xor(ytt2, ytt3); \
-		yd = yy_xor(ytt0, ytt2); \
-	} while (0)
-
-#define yCOMB2(i0, i1, i2, i3, i4, op0, op1, op2, op3, op4)   do { \
-		__m256i yc0, yc1, yc2, yc3, yc4, ykt; \
-		ykt = yy_ ## op0(ya[i1], ya[i2]); \
-		yc0 = yy_xor(ykt, ya[i0]); \
-		ykt = yy_ ## op1(ya[i2], ya[i3]); \
-		yc1 = yy_xor(ykt, ya[i1]); \
-		ykt = yy_ ## op2(ya[i3], ya[i4]); \
-		yc2 = yy_xor(ykt, ya[i2]); \
-		ykt = yy_ ## op3(ya[i4], ya[i0]); \
-		yc3 = yy_xor(ykt, ya[i3]); \
-		ykt = yy_ ## op4(ya[i0], ya[i1]); \
-		yc4 = yy_xor(ykt, ya[i4]); \
-		ya[i0] = yc0; \
-		ya[i1] = yc1; \
-		ya[i2] = yc2; \
-		ya[i3] = yc3; \
-		ya[i4] = yc4; \
-	} while (0)
-
-		/* Round j */
-
-		yCOMB1(yt0, 1, 6, 11, 16, 21, 4, 9, 14, 19, 24);
-		yCOMB1(yt1, 2, 7, 12, 17, 22, 0, 5, 10, 15, 20);
-		yCOMB1(yt2, 3, 8, 13, 18, 23, 1, 6, 11, 16, 21);
-		yCOMB1(yt3, 4, 9, 14, 19, 24, 2, 7, 12, 17, 22);
-		yCOMB1(yt4, 0, 5, 10, 15, 20, 3, 8, 13, 18, 23);
-
-		ya[ 0] = yy_xor(ya[ 0], yt0);
-		ya[ 5] = yy_xor(ya[ 5], yt0);
-		ya[10] = yy_xor(ya[10], yt0);
-		ya[15] = yy_xor(ya[15], yt0);
-		ya[20] = yy_xor(ya[20], yt0);
-		ya[ 1] = yy_xor(ya[ 1], yt1);
-		ya[ 6] = yy_xor(ya[ 6], yt1);
-		ya[11] = yy_xor(ya[11], yt1);
-		ya[16] = yy_xor(ya[16], yt1);
-		ya[21] = yy_xor(ya[21], yt1);
-		ya[ 2] = yy_xor(ya[ 2], yt2);
-		ya[ 7] = yy_xor(ya[ 7], yt2);
-		ya[12] = yy_xor(ya[12], yt2);
-		ya[17] = yy_xor(ya[17], yt2);
-		ya[22] = yy_xor(ya[22], yt2);
-		ya[ 3] = yy_xor(ya[ 3], yt3);
-		ya[ 8] = yy_xor(ya[ 8], yt3);
-		ya[13] = yy_xor(ya[13], yt3);
-		ya[18] = yy_xor(ya[18], yt3);
-		ya[23] = yy_xor(ya[23], yt3);
-		ya[ 4] = yy_xor(ya[ 4], yt4);
-		ya[ 9] = yy_xor(ya[ 9], yt4);
-		ya[14] = yy_xor(ya[14], yt4);
-		ya[19] = yy_xor(ya[19], yt4);
-		ya[24] = yy_xor(ya[24], yt4);
-		ya[ 5] = yy_rotl(ya[ 5], 36);
-		ya[10] = yy_rotl(ya[10],  3);
-		ya[15] = yy_rotl(ya[15], 41);
-		ya[20] = yy_rotl(ya[20], 18);
-		ya[ 1] = yy_rotl(ya[ 1],  1);
-		ya[ 6] = yy_rotl(ya[ 6], 44);
-		ya[11] = yy_rotl(ya[11], 10);
-		ya[16] = yy_rotl(ya[16], 45);
-		ya[21] = yy_rotl(ya[21],  2);
-		ya[ 2] = yy_rotl(ya[ 2], 62);
-		ya[ 7] = yy_rotl(ya[ 7],  6);
-		ya[12] = yy_rotl(ya[12], 43);
-		ya[17] = yy_rotl(ya[17], 15);
-		ya[22] = yy_rotl(ya[22], 61);
-		ya[ 3] = yy_rotl(ya[ 3], 28);
-		ya[ 8] = yy_rotl(ya[ 8], 55);
-		ya[13] = yy_rotl(ya[13], 25);
-		ya[18] = yy_rotl(ya[18], 21);
-		ya[23] = yy_rotl(ya[23], 56);
-		ya[ 4] = yy_rotl(ya[ 4], 27);
-		ya[ 9] = yy_rotl(ya[ 9], 20);
-		ya[14] = yy_rotl(ya[14], 39);
-		ya[19] = yy_rotl(ya[19],  8);
-		ya[24] = yy_rotl(ya[24], 14);
-
-		yCOMB2(0, 6, 12, 18, 24, or, ornotL, and, or, and);
-		yCOMB2(3, 9, 10, 16, 22, or, and, ornotR, or, and);
-		ya[19] = yy_xor(ya[19], yones);
-		yCOMB2(1, 7, 13, 19, 20, or, andnotR, and, or, and);
-		ya[17] = yy_xor(ya[17], yones);
-		yCOMB2(4, 5, 11, 17, 23, and, ornotR, or, and, or);
-		ya[8] = yy_xor(ya[8], yones);
-		yCOMB2(2, 8, 14, 15, 21, and, or, and, or, andnotR);
-
-		ya[0] = yy_xor(ya[0], _mm256_set1_epi64x(RC[j + 0]));
-
-		/* Round j + 1 */
-
-		yCOMB1(yt0, 6, 9, 7, 5, 8, 24, 22, 20, 23, 21);
-		yCOMB1(yt1, 12, 10, 13, 11, 14, 0, 3, 1, 4, 2);
-		yCOMB1(yt2, 18, 16, 19, 17, 15, 6, 9, 7, 5, 8);
-		yCOMB1(yt3, 24, 22, 20, 23, 21, 12, 10, 13, 11, 14);
-		yCOMB1(yt4, 0, 3, 1, 4, 2, 18, 16, 19, 17, 15);
-
-		ya[ 0] = yy_xor(ya[ 0], yt0);
-		ya[ 3] = yy_xor(ya[ 3], yt0);
-		ya[ 1] = yy_xor(ya[ 1], yt0);
-		ya[ 4] = yy_xor(ya[ 4], yt0);
-		ya[ 2] = yy_xor(ya[ 2], yt0);
-		ya[ 6] = yy_xor(ya[ 6], yt1);
-		ya[ 9] = yy_xor(ya[ 9], yt1);
-		ya[ 7] = yy_xor(ya[ 7], yt1);
-		ya[ 5] = yy_xor(ya[ 5], yt1);
-		ya[ 8] = yy_xor(ya[ 8], yt1);
-		ya[12] = yy_xor(ya[12], yt2);
-		ya[10] = yy_xor(ya[10], yt2);
-		ya[13] = yy_xor(ya[13], yt2);
-		ya[11] = yy_xor(ya[11], yt2);
-		ya[14] = yy_xor(ya[14], yt2);
-		ya[18] = yy_xor(ya[18], yt3);
-		ya[16] = yy_xor(ya[16], yt3);
-		ya[19] = yy_xor(ya[19], yt3);
-		ya[17] = yy_xor(ya[17], yt3);
-		ya[15] = yy_xor(ya[15], yt3);
-		ya[24] = yy_xor(ya[24], yt4);
-		ya[22] = yy_xor(ya[22], yt4);
-		ya[20] = yy_xor(ya[20], yt4);
-		ya[23] = yy_xor(ya[23], yt4);
-		ya[21] = yy_xor(ya[21], yt4);
-		ya[ 3] = yy_rotl(ya[ 3], 36);
-		ya[ 1] = yy_rotl(ya[ 1],  3);
-		ya[ 4] = yy_rotl(ya[ 4], 41);
-		ya[ 2] = yy_rotl(ya[ 2], 18);
-		ya[ 6] = yy_rotl(ya[ 6],  1);
-		ya[ 9] = yy_rotl(ya[ 9], 44);
-		ya[ 7] = yy_rotl(ya[ 7], 10);
-		ya[ 5] = yy_rotl(ya[ 5], 45);
-		ya[ 8] = yy_rotl(ya[ 8],  2);
-		ya[12] = yy_rotl(ya[12], 62);
-		ya[10] = yy_rotl(ya[10],  6);
-		ya[13] = yy_rotl(ya[13], 43);
-		ya[11] = yy_rotl(ya[11], 15);
-		ya[14] = yy_rotl(ya[14], 61);
-		ya[18] = yy_rotl(ya[18], 28);
-		ya[16] = yy_rotl(ya[16], 55);
-		ya[19] = yy_rotl(ya[19], 25);
-		ya[17] = yy_rotl(ya[17], 21);
-		ya[15] = yy_rotl(ya[15], 56);
-		ya[24] = yy_rotl(ya[24], 27);
-		ya[22] = yy_rotl(ya[22], 20);
-		ya[20] = yy_rotl(ya[20], 39);
-		ya[23] = yy_rotl(ya[23],  8);
-		ya[21] = yy_rotl(ya[21], 14);
-
-		yCOMB2(0, 9, 13, 17, 21, or, ornotL, and, or, and);
-		yCOMB2(18, 22, 1, 5, 14, or, and, ornotR, or, and);
-		ya[23] = yy_xor(ya[23], yones);
-		yCOMB2(6, 10, 19, 23, 2, or, andnotR, and, or, and);
-		ya[11] = yy_xor(ya[11], yones);
-		yCOMB2(24, 3, 7, 11, 15, and, ornotR, or, and, or);
-		ya[16] = yy_xor(ya[16], yones);
-		yCOMB2(12, 16, 20, 4, 8, and, or, and, or, andnotR);
-
-		ya[0] = yy_xor(ya[0], _mm256_set1_epi64x(RC[j + 1]));
-
-		/* Apply combined permutation for next round */
-
-		__m256i yt = ya[ 5];
-		ya[ 5] = ya[18];
-		ya[18] = ya[11];
-		ya[11] = ya[10];
-		ya[10] = ya[ 6];
-		ya[ 6] = ya[22];
-		ya[22] = ya[20];
-		ya[20] = ya[12];
-		ya[12] = ya[19];
-		ya[19] = ya[15];
-		ya[15] = ya[24];
-		ya[24] = ya[ 8];
-		ya[ 8] = yt;
-		yt = ya[ 1];
-		ya[ 1] = ya[ 9];
-		ya[ 9] = ya[14];
-		ya[14] = ya[ 2];
-		ya[ 2] = ya[13];
-		ya[13] = ya[23];
-		ya[23] = ya[ 4];
-		ya[ 4] = ya[21];
-		ya[21] = ya[16];
-		ya[16] = ya[ 3];
-                ya[ 3] = ya[17];
-                ya[17] = ya[ 7];
-                ya[ 7] = yt;
-
-#undef yy_rotl
-#undef yy_or
-#undef yy_ornotL
-#undef yy_ornotR
-#undef yy_and
-#undef yy_andnotL
-#undef yy_andnotR
-#undef yy_xor
-#undef yCOMB1
-#undef yCOMB2
-	}
-
-	/*
-	 * Invert some words back to normal representation.
-	 */
-	ya[ 1] = _mm256_xor_si256(ya[ 1], yones);
-	ya[ 2] = _mm256_xor_si256(ya[ 2], yones);
-	ya[ 8] = _mm256_xor_si256(ya[ 8], yones);
-	ya[12] = _mm256_xor_si256(ya[12], yones);
-	ya[17] = _mm256_xor_si256(ya[17], yones);
-	ya[20] = _mm256_xor_si256(ya[20], yones);
-
-	/*
-	 * Write back state words.
-	 */
-	for (int i = 0; i < 25; i ++) {
-		_mm256_storeu_si256((__m256i *)A + i, ya[i]);
-	}
-}
-
 /* see sha3.h */
 void
 shake_x4_flip(shake_x4_context *scx4, const shake_context *sc)
 {
-	/*
-	 * We interleave the four contexts.
-	 */
 	for (int i = 0; i < 4; i ++) {
-		for (int j = 0; j < 25; j ++) {
-			scx4->A[i + (j << 2)] = sc[i].A[j];
-		}
-		unsigned v = (unsigned)sc[i].dptr;
-		scx4->A[i + ((v >> 3) << 2)] ^=
-			(uint64_t)0x1F << ((v & 7) << 3);
-		v = (unsigned)sc[i].rate - 1;
-		scx4->A[i + ((v >> 3) << 2)] ^=
-			(uint64_t)0x80 << ((v & 7) << 3);
+		shake_context sct = sc[i];
+		shake_flip(&sct);
+		memcpy(scx4->A + (i * 25), sct.A, 25 * sizeof(uint64_t));
 	}
 	scx4->dptr = scx4->rate = sc[0].rate;
 }
@@ -1431,23 +1154,22 @@ shake_x4_flip(shake_x4_context *scx4, const shake_context *sc)
 void
 shake_x4_extract_words(shake_x4_context *scx4, uint64_t *dst, size_t num_x4)
 {
-	size_t wptr = scx4->dptr >> 3;
-	size_t wrate = scx4->rate >> 3;
-	while (num_x4 > 0) {
-		if (wptr == wrate) {
-			process_block_x4(scx4->A);
-			wptr = 0;
+	size_t dptr = scx4->dptr;
+	size_t rate = scx4->rate;
+	while (num_x4 -- > 0) {
+		if (dptr == rate) {
+			for (int i = 0; i < 4; i ++) {
+				process_block(scx4->A + (i * 25));
+			}
+			dptr = 0;
 		}
-		size_t cnum = wrate - wptr;
-		if (cnum > num_x4) {
-			cnum = num_x4;
+		for (int i = 0; i < 4; i ++) {
+			dst[i] = scx4->A[(i * 25) + (dptr >> 3)];
 		}
-		memcpy(dst, scx4->A + (wptr << 2), cnum << 5);
-		wptr += cnum;
-		dst += cnum << 2;
-		num_x4 -= cnum;
+		dptr += 8;
+		dst += 4;
 	}
-	scx4->dptr = (unsigned)(wptr << 3);
+	scx4->dptr = (unsigned)dptr;
 }
 
 /* see sha3.h */

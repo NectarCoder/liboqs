@@ -59,142 +59,112 @@ static const uint16_t gauss_Hawk_1024[] = {
 };
 #endif
 
-TARGET_AVX2
 static void
 regen_fg_8(int8_t *restrict f, int8_t *restrict g, const void *seed)
 {
 	size_t seed_len = 16;
-	/*
-	 * Initialize the four SHAKE256 instances, to run them in parallel.
-	 */
-	shake_context sc[4];
-	for (int i = 0; i < 4; i ++) {
-		shake_init(&sc[i], 256);
-		shake_inject(&sc[i], seed, seed_len);
-		uint8_t ix = (uint8_t)i;
-		shake_inject(&sc[i], &ix, 1);
-	}
-	shake_x4_context scx4;
-	shake_x4_flip(&scx4, sc);
-	__m256i ym4 = _mm256_set1_epi8(0x0F);
-	__m256i ytt = _mm256_setr_epi8(
-		-2, -1, -1, 0, -1, 0, 0, 1, -1, 0, 0, 1, 0, 1, 1, 2,
-		-2, -1, -1, 0, -1, 0, 0, 1, -1, 0, 0, 1, 0, 1, 1, 2);
-	for (size_t u = 0; u < 512; u += 64) {
-		union {
-			__m256i y;
-			uint64_t q[4];
-		} buf;
-		shake_x4_extract_words(&scx4, buf.q, 1);
-		__m256i y0 = _mm256_and_si256(buf.y, ym4);
-		__m256i y1 = _mm256_and_si256(_mm256_srli_epi16(buf.y, 4), ym4);
-		y0 = _mm256_shuffle_epi8(ytt, y0);
-		y1 = _mm256_shuffle_epi8(ytt, y1);
-		__m256i yv0 = _mm256_unpacklo_epi8(y0, y1);
-		__m256i yv1 = _mm256_unpackhi_epi8(y0, y1);
-		__m256i yd0 = _mm256_permute2x128_si256(yv0, yv1, 0x20);
-		__m256i yd1 = _mm256_permute2x128_si256(yv0, yv1, 0x31);
-		if (u < 256) {
-			_mm256_storeu_si256((__m256i *)(f + u +   0), yd0);
-			_mm256_storeu_si256((__m256i *)(f + u +  32), yd1);
-		} else {
-			_mm256_storeu_si256((__m256i *)(g + u - 256), yd0);
-			_mm256_storeu_si256((__m256i *)(g + u - 224), yd1);
+	for (size_t j = 0; j < 4; j ++) {
+		shake_context sc;
+		shake_init(&sc, 256);
+		shake_inject(&sc, seed, seed_len);
+		uint8_t jx = (uint8_t)j;
+		shake_inject(&sc, &jx, 1);
+		shake_flip(&sc);
+		for (size_t u = 0; u < 512; u += 64) {
+			uint8_t qb[8];
+			shake_extract(&sc, qb, 8);
+			uint64_t q = dec64le(qb);
+			q = (q & (uint64_t)0x5555555555555555)
+				+ ((q >> 1) & (uint64_t)0x5555555555555555);
+			q = (q & (uint64_t)0x3333333333333333)
+				+ ((q >> 2) & (uint64_t)0x3333333333333333);
+			int8_t vv[16];
+			for (int i = 0; i < 16; i ++) {
+				vv[i] = (int)(q & 0x0F) - 2;
+				q >>= 4;
+			}
+			if (u < 256) {
+				memcpy(f + u + (j << 4), vv, 16);
+			} else {
+				memcpy(g + (u - 256) + (j << 4), vv, 16);
+			}
 		}
 	}
 }
 
-TARGET_AVX2
 static void
 regen_fg_9(int8_t *restrict f, int8_t *restrict g, const void *seed)
 {
 	size_t seed_len = 24;
-	/*
-	 * Initialize the four SHAKE256 instances, to run them in parallel.
-	 */
-	shake_context sc[4];
-	for (int i = 0; i < 4; i ++) {
-		shake_init(&sc[i], 256);
-		shake_inject(&sc[i], seed, seed_len);
-		uint8_t ix = (uint8_t)i;
-		shake_inject(&sc[i], &ix, 1);
-	}
-	shake_x4_context scx4;
-	shake_x4_flip(&scx4, sc);
-	__m256i ym4 = _mm256_set1_epi8(0x0F);
-	__m256i ytt = _mm256_setr_epi8(
-		-2, -1, -1, 0, -1, 0, 0, 1, -1, 0, 0, 1, 0, 1, 1, 2,
-		-2, -1, -1, 0, -1, 0, 0, 1, -1, 0, 0, 1, 0, 1, 1, 2);
-	for (size_t u = 0; u < 1024; u += 32) {
-		union {
-			__m256i y;
-			uint64_t q[4];
-		} buf;
-		shake_x4_extract_words(&scx4, buf.q, 1);
-		__m256i y0 = _mm256_and_si256(buf.y, ym4);
-		__m256i y1 = _mm256_and_si256(_mm256_srli_epi16(buf.y, 4), ym4);
-		y0 = _mm256_shuffle_epi8(ytt, y0);
-		y1 = _mm256_shuffle_epi8(ytt, y1);
-		__m256i yv = _mm256_add_epi8(y0, y1);
-		if (u < 512) {
-			_mm256_storeu_si256((__m256i *)(f + u +   0), yv);
-		} else {
-			_mm256_storeu_si256((__m256i *)(g + u - 512), yv);
+	for (size_t j = 0; j < 4; j ++) {
+		shake_context sc;
+		shake_init(&sc, 256);
+		shake_inject(&sc, seed, seed_len);
+		uint8_t jx = (uint8_t)j;
+		shake_inject(&sc, &jx, 1);
+		shake_flip(&sc);
+		for (size_t u = 0; u < 1024; u += 32) {
+			uint8_t qb[8];
+			shake_extract(&sc, qb, 8);
+			uint64_t q = dec64le(qb);
+			q = (q & (uint64_t)0x5555555555555555)
+				+ ((q >> 1) & (uint64_t)0x5555555555555555);
+			q = (q & (uint64_t)0x3333333333333333)
+				+ ((q >> 2) & (uint64_t)0x3333333333333333);
+			q = (q & (uint64_t)0x0F0F0F0F0F0F0F0F)
+				+ ((q >> 4) & (uint64_t)0x0F0F0F0F0F0F0F0F);
+			int8_t vv[8];
+			for (int i = 0; i < 8; i ++) {
+				vv[i] = (int)(q & 0xFF) - 4;
+				q >>= 8;
+			}
+			if (u < 512) {
+				memcpy(f + u + (j << 3), vv, 8);
+			} else {
+				memcpy(g + (u - 512) + (j << 3), vv, 8);
+			}
 		}
 	}
 }
 
-TARGET_AVX2
 static void
 regen_fg_10(int8_t *restrict f, int8_t *restrict g, const void *seed)
 {
 	size_t seed_len = 40;
-	/*
-	 * Initialize the four SHAKE256 instances, to run them in parallel.
-	 */
-	shake_context sc[4];
-	for (int i = 0; i < 4; i ++) {
-		shake_init(&sc[i], 256);
-		shake_inject(&sc[i], seed, seed_len);
-		uint8_t ix = (uint8_t)i;
-		shake_inject(&sc[i], &ix, 1);
-	}
-	shake_x4_context scx4;
-	shake_x4_flip(&scx4, sc);
-	__m256i ym4 = _mm256_set1_epi8(0x0F);
-	__m256i ytt = _mm256_setr_epi8(
-		-2, -1, -1, 0, -1, 0, 0, 1, -1, 0, 0, 1, 0, 1, 1, 2,
-		-2, -1, -1, 0, -1, 0, 0, 1, -1, 0, 0, 1, 0, 1, 1, 2);
-	__m256i ys = _mm256_setr_epi8(
-		0, 2, 4, 6, 8, 10, 12, 14,
-		-1, -1, -1, -1, -1, -1, -1, -1,
-		0, 2, 4, 6, 8, 10, 12, 14,
-		-1, -1, -1, -1, -1, -1, -1, -1);
-	for (size_t u = 0; u < 2048; u += 16) {
-		union {
-			__m256i y;
-			uint64_t q[4];
-		} buf;
-		shake_x4_extract_words(&scx4, buf.q, 1);
-		__m256i y0 = _mm256_and_si256(buf.y, ym4);
-		__m256i y1 = _mm256_and_si256(_mm256_srli_epi16(buf.y, 4), ym4);
-		y0 = _mm256_shuffle_epi8(ytt, y0);
-		y1 = _mm256_shuffle_epi8(ytt, y1);
-		__m256i yv = _mm256_add_epi8(y0, y1);
-		yv = _mm256_add_epi8(yv, _mm256_srli_epi16(yv, 8));
-		yv = _mm256_shuffle_epi8(yv, ys);
-		yv = _mm256_permute4x64_epi64(yv, 0xD8);
-		__m128i xv = _mm256_castsi256_si128(yv);
-		if (u < 1024) {
-			_mm_storeu_si128((__m128i *)(f + u +    0), xv);
-		} else {
-			_mm_storeu_si128((__m128i *)(g + u - 1024), xv);
+	for (size_t j = 0; j < 4; j ++) {
+		shake_context sc;
+		shake_init(&sc, 256);
+		shake_inject(&sc, seed, seed_len);
+		uint8_t jx = (uint8_t)j;
+		shake_inject(&sc, &jx, 1);
+		shake_flip(&sc);
+		for (size_t u = 0; u < 2048; u += 16) {
+			uint8_t qb[8];
+			shake_extract(&sc, qb, 8);
+			uint64_t q = dec64le(qb);
+			q = (q & (uint64_t)0x5555555555555555)
+				+ ((q >> 1) & (uint64_t)0x5555555555555555);
+			q = (q & (uint64_t)0x3333333333333333)
+				+ ((q >> 2) & (uint64_t)0x3333333333333333);
+			q = (q & (uint64_t)0x0F0F0F0F0F0F0F0F)
+				+ ((q >> 4) & (uint64_t)0x0F0F0F0F0F0F0F0F);
+			q = (q & (uint64_t)0x00FF00FF00FF00FF)
+				+ ((q >> 8) & (uint64_t)0x00FF00FF00FF00FF);
+			int8_t vv[4];
+			for (int i = 0; i < 4; i ++) {
+				vv[i] = (int)(q & 0xFFFF) - 8;
+				q >>= 16;
+			}
+			if (u < 1024) {
+				memcpy(f + u + (j << 2), vv, 4);
+			} else {
+				memcpy(g + (u - 1024) + (j << 2), vv, 4);
+			}
 		}
 	}
 }
 
 /* see ntrugen.h */
-TARGET_AVX2
 void
 Hawk_regen_fg(unsigned logn,
 	int8_t *restrict f, int8_t *restrict g, const void *seed)
@@ -222,73 +192,47 @@ Hawk_regen_fg(unsigned logn,
 	size_t kmax = tab[0];
 	size_t seed_len = 8 + ((size_t)1 << (logn - 5));
 
-	/*
-	 * Initialize the four SHAKE256 instances, to run them in parallel.
-	 */
-	shake_context sc[4];
-	for (int i = 0; i < 4; i ++) {
-		shake_init(&sc[i], 256);
-		shake_inject(&sc[i], seed, seed_len);
-		uint8_t ix = (uint8_t)i;
-		shake_inject(&sc[i], &ix, 1);
-	}
-	shake_x4_context scx4;
-	shake_x4_flip(&scx4, sc);
-
-	__m256i ytab[16];
-	for (size_t u = 0; u < (kmax << 1); u ++) {
-		ytab[u] = _mm256_set1_epi16(tab[u + 1]);
-	}
-	__m256i yb = _mm256_set1_epi16(-(int)kmax);
-	__m256i ys = _mm256_setr_epi8(
-		0, 2, 4, 6, 8, 10, 12, 14,
-		-1, -1, -1, -1, -1, -1, -1, -1,
-		0, 2, 4, 6, 8, 10, 12, 14,
-		-1, -1, -1, -1, -1, -1, -1, -1);
-	__m256i y15 = _mm256_set1_epi16(0x7FFF);
-
-	for (size_t u = 0; u < (n << 1); u += 16) {
-		union {
-			__m256i y;
-			uint64_t q[4];
-		} buf;
-		shake_x4_extract_words(&scx4, buf.q, 1);
-		__m256i yr = _mm256_and_si256(buf.y, y15);
-		__m256i yv = yb;
-		for (size_t k = 0; k < (kmax << 1); k ++) {
-			yv = _mm256_sub_epi16(yv,
-				_mm256_cmpgt_epi16(yr, ytab[k]));
-		}
-		yv = _mm256_shuffle_epi8(yv, ys);
-		yv = _mm256_permute4x64_epi64(yv, 0xD8);
-		__m128i xv = _mm256_castsi256_si128(yv);
-		if (u < n) {
-			_mm_storeu_si128((__m128i *)(f + u), xv);
-		} else {
-			_mm_storeu_si128((__m128i *)(g + (u - n)), xv);
+	for (size_t j = 0; j < 4; j ++) {
+		shake_context sc;
+		shake_init(&sc, 256);
+		shake_inject(&sc, seed, seed_len);
+		uint8_t jx = (uint8_t)j;
+		shake_inject(&sc, &jx, 1);
+		shake_flip(&sc);
+		for (size_t u = 0; u < (n << 1); u += 16) {
+			uint8_t qb[8];
+			shake_extract(&sc, qb, 8);
+			uint64_t q = dec64le(qb);
+			int8_t vv[4];
+			for (int i = 0; i < 4; i ++) {
+				uint32_t x = (uint32_t)q & 0x7FFF;
+				q >>= 16;
+				uint32_t v = -(uint32_t)kmax;
+				for (size_t k = 1; k <= (kmax << 1); k ++) {
+					v += ((uint32_t)tab[k] - x) >> 31;
+				}
+				vv[i] = (int8_t)*(int32_t *)&v;
+			}
+			if (u < n) {
+				memcpy(f + u + (j << 2), vv, 4);
+			} else {
+				memcpy(g + (u - n) + (j << 2), vv, 4);
+			}
 		}
 	}
 
 #endif
 }
 
-TARGET_AVX2
 static unsigned
 parity(unsigned logn, int8_t *f)
 {
 	size_t n = (size_t)1 << logn;
-	__m256i yr = _mm256_setzero_si256();
-	for (size_t u = 0; u < n; u += 32) {
-		__m256i y = _mm256_loadu_si256((const __m256i *)(f + u));
-		yr = _mm256_xor_si256(y, yr);
+	unsigned pp = 0;
+	for (size_t u = 0; u < n; u ++) {
+		pp += *(uint8_t *)&f[u];
 	}
-	uint32_t r = (uint32_t)_mm256_movemask_epi8(_mm256_slli_epi16(yr, 7));
-	r ^= (r >> 16);
-	r ^= (r >> 8);
-	r ^= (r >> 4);
-	r ^= (r >> 2);
-	r ^= (r >> 1);
-	return (unsigned)(r & 1);
+	return pp & 1;
 }
 
 /*

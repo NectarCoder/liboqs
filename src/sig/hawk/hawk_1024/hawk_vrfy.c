@@ -20,29 +20,11 @@ mp_add(uint32_t a, uint32_t b, uint32_t p)
 	return d + (p & tbmask(d));
 }
 
-TARGET_AVX2
-static inline __m256i
-mp_add_x8(__m256i ya, __m256i yb, __m256i yp)
-{
-	__m256i yd = _mm256_sub_epi32(_mm256_add_epi32(ya, yb), yp);
-	return _mm256_add_epi32(yd, _mm256_and_si256(yp,
-		_mm256_srai_epi32(yd, 31)));
-}
-
 static inline uint32_t
 mp_sub(uint32_t a, uint32_t b, uint32_t p)
 {
 	uint32_t d = a - b;
 	return d + (p & tbmask(d));
-}
-
-TARGET_AVX2
-static inline __m256i
-mp_sub_x8(__m256i ya, __m256i yb, __m256i yp)
-{
-	return _mm256_add_epi32(
-		_mm256_sub_epi32(ya, yb),
-		_mm256_and_si256(yp, _mm256_cmpgt_epi32(yb, ya)));
 }
 
 static inline uint32_t
@@ -55,101 +37,43 @@ mp_montymul(uint32_t a, uint32_t b, uint32_t p, uint32_t p0i)
 }
 
 /*
- * Input:   a0:--:a1:--:a2:--:a3:--
- *          b0:--:b1:--:b2:--:b3:--
- * Output:  d0:00:d1:00:d2:00:d3:00
+ * Return (u*f - v*g)/R mod p
+ * f and g are provided as uint32_t but there are signed value (at most
+ * 2^30 in absolute value).
  */
-TARGET_AVX2
-static inline __m256i
-mp_montymul_x4(__m256i ya, __m256i yb, __m256i yp, __m256i yp0i)
+static inline uint32_t
+mp_lin(uint32_t u, uint32_t v, uint32_t f, uint32_t g, uint32_t p, uint32_t p0i)
 {
-	__m256i yd = _mm256_mul_epu32(ya, yb);
-	__m256i ye = _mm256_mul_epu32(yd, yp0i);
-	ye = _mm256_mul_epu32(ye, yp);
-	yd = _mm256_srli_epi64(_mm256_add_epi64(yd, ye), 32);
-	yd = _mm256_sub_epi32(yd, yp);
-	return _mm256_add_epi32(yd, _mm256_and_si256(yp,
-		_mm256_srai_epi32(yd, 31)));
-}
+	uint32_t sf = tbmask(f);
+	f = (f ^ sf) - sf;
+	uint32_t sg = tbmask(g);
+	g = (g ^ sg) - sg;
 
-TARGET_AVX2
-static inline __m256i
-mp_montymul_x8(__m256i ya, __m256i yb, __m256i yp, __m256i yp0i)
-{
-	/* yd0 <- a0*b0 : a2*b2 (+high lane) */
-	__m256i yd0 = _mm256_mul_epu32(ya, yb);
-	/* yd1 <- a1*b1 : a3*b3 (+high lane) */
-	__m256i yd1 = _mm256_mul_epu32(
-		_mm256_srli_epi64(ya, 32),
-		_mm256_srli_epi64(yb, 32));
-
-	__m256i ye0 = _mm256_mul_epu32(yd0, yp0i);
-	__m256i ye1 = _mm256_mul_epu32(yd1, yp0i);
-	ye0 = _mm256_mul_epu32(ye0, yp);
-	ye1 = _mm256_mul_epu32(ye1, yp);
-	yd0 = _mm256_add_epi64(yd0, ye0);
-	yd1 = _mm256_add_epi64(yd1, ye1);
-
-	/* yf0 <- lo(d0) : lo(d1) : hi(d0) : hi(d1) (+high lane) */
-	__m256i yf0 = _mm256_unpacklo_epi32(yd0, yd1);
-	/* yf1 <- lo(d2) : lo(d3) : hi(d2) : hi(d3) (+high lane) */
-	__m256i yf1 = _mm256_unpackhi_epi32(yd0, yd1);
-	/* yg <- hi(d0) : hi(d1) : hi(d2) : hi(d3) (+high lane) */
-	__m256i yg = _mm256_unpackhi_epi64(yf0, yf1);
-	/*
-	 * Alternate version (instead of the three unpack above) but it
-	 * seems to be slightly slower.
-	__m256i yg = _mm256_blend_epi32(_mm256_srli_epi64(yd0, 32), yd1, 0xAA);
-	 */
-
-	yg = _mm256_sub_epi32(yg, yp);
-	return _mm256_add_epi32(yg, _mm256_and_si256(yp,
-		_mm256_srai_epi32(yg, 31)));
+	/* We can do a simpler conditional negation because Montgomery
+	   reduction works over values up to p*2^32, so we can allow
+	   intermediate values to go up to p. */
+	u += sf & (p - (u << 1));
+	v += sg & (p - (v << 1));
+	return mp_sub(mp_montymul(u, f, p, p0i), mp_montymul(v, g, p, p0i), p);
 }
 
 /*
- * Return (u*f + v*g)/R.
- * |f| <= 2^30
- * |g| <= 2^30
- */
-TARGET_AVX2
-static inline __m256i
-mp_lin_x8(__m256i yu, __m256i yv, __m256i yf, __m256i yg,
-	__m256i yp, __m256i yp0i)
-{
-	__m256i ysf = _mm256_srai_epi32(yf, 31);
-	yf = _mm256_sub_epi32(_mm256_xor_si256(yf, ysf), ysf);
-	__m256i ysg = _mm256_srai_epi32(yg, 31);
-	yg = _mm256_sub_epi32(_mm256_xor_si256(yg, ysg), ysg);
-
-	yu = _mm256_add_epi32(yu, _mm256_and_si256(ysf,
-		_mm256_sub_epi32(yp, _mm256_add_epi32(yu, yu))));
-	yv = _mm256_add_epi32(yv, _mm256_and_si256(ysg,
-		_mm256_sub_epi32(yp, _mm256_add_epi32(yv, yv))));
-
-	return mp_sub_x8(
-		mp_montymul_x8(yu, yf, yp, yp0i),
-		mp_montymul_x8(yv, yg, yp, yp0i), yp);
-}
-
-/*
- * Division: return num/den mod p.
+ * Division: return x/y mod p.
  * Parameter m16 is the Montgomery representation of 16 (i.e. 16*R mod p).
  */
-TARGET_AVX2
-static __m256i
-mp_div_x8(__m256i ynum, __m256i yden, __m256i yp, __m256i yp0i, __m256i ym16)
+static uint32_t
+mp_div(uint32_t x, uint32_t y, uint32_t p, uint32_t p0i, uint32_t m16)
 {
 	/*
-	 * Binary GCD between den and p:
+	 * Binary GCD between y and p:
 	 * Init:
-	 *    a <- den
+	 *    a <- y
 	 *    b <- p
-	 *    u <- num
+	 *    u <- x
 	 *    v <- 0
 	 * Invariants:
-	 *    a*num = u*den mod p
-	 *    b*num = v*den mod p
+	 *    a*x = u*y mod p
+	 *    b*x = v*y mod p
 	 *    b is odd
 	 * Operations:
 	 *    if a is odd:
@@ -158,57 +82,45 @@ mp_div_x8(__m256i ynum, __m256i yden, __m256i yp, __m256i yp0i, __m256i ym16)
 	 *        (a, u) <- (a - b, u - v mod p)
 	 *    (a, u) <- (a/2, u/2 mod p)
 	 * Since p < 2^31, we always reach b = 1 in at most 60 iterations
-	 * (unless den = 0, in which case b remains equal to p). Then, we
-	 * have v = num/den mod p.
+	 * (unless y = 0, in which case b remains equal to p). Then, we
+	 * have v = x/y mod p.
 	 * Updates to u and v are delayed: they are accumulated in "update
 	 * factors" (f0, g0, f1 and g1) and applied every 30 iterations.
 	 * Moreover, the update factors are themselves held by pairs: we
 	 * can do 15 iterations with f0 and g0 in the same 32-bit variable
 	 * (and the same for f1 and g1).
 	 */
-	__m256i ya = yden;
-	__m256i yb = yp;
-	__m256i yu = ynum;
-	__m256i yv = _mm256_setzero_si256();
-	__m256i yaf0 = _mm256_setzero_si256();
-	__m256i yag0 = _mm256_setzero_si256();
-	__m256i yaf1 = _mm256_setzero_si256();
-	__m256i yag1 = _mm256_setzero_si256();
-	__m256i yc = _mm256_set1_epi32(0x7FFF7FFF);
-	__m256i y1 = _mm256_set1_epi32(1);
-	__m256i y15 = _mm256_set1_epi32(0x7FFF);
-	__m256i y16 = _mm256_set1_epi32(0xFFFF);
+	uint32_t a = y;
+	uint32_t b = p;
+	uint32_t u = x;
+	uint32_t v = 0;
+	uint32_t af0 = 0;
+	uint32_t ag0 = 0;
+	uint32_t af1 = 0;
+	uint32_t ag1 = 0;
 	for (int i = 0; i < 4; i ++) {
-		__m256i yfg0 = y1;
-		__m256i yfg1 = _mm256_set1_epi32(1 << 16);
+		uint32_t fg0 = (uint32_t)1;
+		uint32_t fg1 = (uint32_t)1 << 16;
 		for (int j = 0; j < 15; j ++) {
-			__m256i yaodd = _mm256_sub_epi32(
-				_mm256_setzero_si256(),
-				_mm256_and_si256(ya, y1));
-			__m256i yswap = _mm256_and_si256(yaodd,
-				_mm256_cmpgt_epi32(yb, ya));
-			__m256i yna = _mm256_blendv_epi8(ya, yb, yswap);
-			yb = _mm256_blendv_epi8(yb, ya, yswap);
-			__m256i ynfg0 = _mm256_blendv_epi8(yfg0, yfg1, yswap);
-			yfg1 = _mm256_blendv_epi8(yfg1, yfg0, yswap);
-			ya = _mm256_sub_epi32(yna,
-				_mm256_and_si256(yaodd, yb));
-			yfg0 = _mm256_sub_epi32(ynfg0,
-				_mm256_and_si256(yaodd, yfg1));
-			ya = _mm256_srli_epi32(ya, 1);
-			yfg1 = _mm256_slli_epi32(yfg1, 1);
+			uint32_t a_odd = -(a & 1);
+			uint32_t swap = tbmask(a - b) & a_odd;
+			uint32_t t1 = swap & (a ^ b);
+			a ^= t1;
+			b ^= t1;
+			uint32_t t2 = swap & (fg0 ^ fg1);
+			fg0 ^= t2;
+			fg1 ^= t2;
+			a -= a_odd & b;
+			fg0 -= a_odd & fg1;
+			a >>= 1;
+			fg1 <<= 1;
 		}
-
-		yfg0 = _mm256_add_epi32(yfg0, yc);
-		yfg1 = _mm256_add_epi32(yfg1, yc);
-		__m256i yf0 = _mm256_sub_epi32(
-			_mm256_and_si256(yfg0, y16), y15);
-		__m256i yg0 = _mm256_sub_epi32(
-			y15, _mm256_srli_epi32(yfg0, 16));
-		__m256i yf1 = _mm256_sub_epi32(
-			_mm256_and_si256(yfg1, y16), y15);
-		__m256i yg1 = _mm256_sub_epi32(
-			y15, _mm256_srli_epi32(yfg1, 16));
+		fg0 += 0x7FFF7FFF;
+		fg1 += 0x7FFF7FFF;
+		uint32_t f0 = (fg0 & 0xFFFF) - (uint32_t)0x7FFF;
+		uint32_t g0 = (uint32_t)0x7FFF - (fg0 >> 16);
+		uint32_t f1 = (fg1 & 0xFFFF) - (uint32_t)0x7FFF;
+		uint32_t g1 = (uint32_t)0x7FFF - (fg1 >> 16);
 
 		/*
 		 * We apply update factors only once every two outer
@@ -225,149 +137,64 @@ mp_div_x8(__m256i ynum, __m256i yden, __m256i yp, __m256i yp0i, __m256i ym16)
 		 *    https://eprint.iacr.org/2020/972
 		 * In particular, these factors are at most 2^30 in
 		 * absolute value. Thus, they do not overflow and we can
-		 * use them with mp_lin_x8().
+		 * use them with mp_lin().
 		 */
 
 		if ((i & 1) == 0) {
-			yaf0 = yf0;
-			yag0 = yg0;
-			yaf1 = yf1;
-			yag1 = yg1;
+			af0 = f0;
+			ag0 = g0;
+			af1 = f1;
+			ag1 = g1;
 		} else {
-			__m256i ybf0 = _mm256_sub_epi32(
-				_mm256_mullo_epi32(yaf0, yf0),
-				_mm256_mullo_epi32(yaf1, yg0));
-			__m256i ybg0 = _mm256_sub_epi32(
-				_mm256_mullo_epi32(yag0, yf0),
-				_mm256_mullo_epi32(yag1, yg0));
-			__m256i ybf1 = _mm256_sub_epi32(
-				_mm256_mullo_epi32(yaf0, yf1),
-				_mm256_mullo_epi32(yaf1, yg1));
-			__m256i ybg1 = _mm256_sub_epi32(
-				_mm256_mullo_epi32(yag0, yf1),
-				_mm256_mullo_epi32(yag1, yg1));
-			__m256i ynu = mp_lin_x8(yu, yv, ybf0, ybg0, yp, yp0i);
-			__m256i ynv = mp_lin_x8(yu, yv, ybf1, ybg1, yp, yp0i);
-			yu = ynu;
-			yv = ynv;
+			uint32_t bf0 = af0*f0 - af1*g0;
+			uint32_t bg0 = ag0*f0 - ag1*g0;
+			uint32_t bf1 = af0*f1 - af1*g1;
+			uint32_t bg1 = ag0*f1 - ag1*g1;
+			uint32_t nu = mp_lin(u, v, bf0, bg0, p, p0i);
+			uint32_t nv = mp_lin(u, v, bf1, bg1, p, p0i);
+			u = nu;
+			v = nv;
 		}
 	}
 
 	/*
 	 * Each inner loop computed the update factors with an implicit
 	 * 2^15 factor; two inner iteration lead to a 2^30 factor, but
-	 * mp_lin_x8() divided by R = 2^32. In total, we divided by (2^2)^2,
-	 * which we compensate here.
+	 * mp_lin() divided by R = 2^32. In total, we divided by (2^2)^2,
+	 * which we must compensate here by multiplying by 16.
 	 */
-	yv = mp_montymul_x8(yv, ym16, yp, yp0i);
+	v = mp_montymul(v, m16, p, p0i);
 
 	/* GCD is in b; it is 1 if and only if y was invertible.
 	   Otherwise, the GCD is greater than 1. */
-	return _mm256_and_si256(yv,
-		_mm256_cmpgt_epi32(_mm256_set1_epi32(2), yb));
-}
-
-TARGET_AVX2
-static inline __m256i
-mp_NTT8(__m256i ya, const uint32_t *restrict gm, size_t k,
-	__m256i yp, __m256i yp0i)
-{
-	__m256i yt1, yt2, ya0, ya1;
-
-	/* 0/4, 1/5, 2/6, 3/7 with gm[1] */
-	/* ya <- a0:a1:a4:a5:a2:a3:a6:a7 */
-	ya = _mm256_permute4x64_epi64(ya, 0xD8);
-	/* yt1 <- a0:a4:a1:a5:a2:a6:a3:a7 */
-	yt1 = _mm256_shuffle_epi32(ya, 0xD8);
-	/* yt2 <- a4:a0:a5:a1:a6:a2:a7:a3 */
-	yt2 = _mm256_shuffle_epi32(ya, 0x72);
-	/* yg0 <- g1:g1:g1:g1:g1:g1:g1:g1 */
-	__m256i yg0 = _mm256_set1_epi32(gm[k]);
-	yt2 = mp_montymul_x4(yt2, yg0, yp, yp0i);
-	ya0 = mp_add_x8(yt1, yt2, yp);
-	ya1 = mp_sub_x8(yt1, yt2, yp);
-
-	/* ya0 = a0:--:a1:--:a2:--:a3:--
-	   ya1 = a4:--:a5:--:a6:--:a7:-- */
-
-	/* 0/2, 1/3 with gm[2]; 4/6, 5/7 with gm[3] */
-	/* yt1 <- a0:--:a1:--:a4:--:a5:--
-	   yt2 <- a2:--:a3:--:a6:--:a7:-- */
-	yt1 = _mm256_permute2x128_si256(ya0, ya1, 0x20);
-	yt2 = _mm256_permute2x128_si256(ya0, ya1, 0x31);
-	__m256i yg1 = _mm256_setr_epi32(
-		gm[(k << 1) + 0], gm[(k << 1) + 0],
-		gm[(k << 1) + 0], gm[(k << 1) + 0],
-		gm[(k << 1) + 1], gm[(k << 1) + 1],
-		gm[(k << 1) + 1], gm[(k << 1) + 1]);
-	yt2 = mp_montymul_x4(yt2, yg1, yp, yp0i);
-	ya0 = mp_add_x8(yt1, yt2, yp);
-	ya1 = mp_sub_x8(yt1, yt2, yp);
-
-	/* ya0 = a0:--:a1:--:a4:--:a5:--
-	   ya1 = a2:--:a3:--:a6:--:a7:-- */
-
-	/* 0/1 with gm[4], 2/3 with gm[5], 4/5 with gm[6], 6/7 with gm[7] */
-	/* yt1 <- a0:--:a2:--:a4:--:a6:--
-	   yt2 <- a1:--:a3:--:a5:--:a7:-- */
-	yt1 = _mm256_unpacklo_epi64(ya0, ya1);
-	yt2 = _mm256_unpackhi_epi64(ya0, ya1);
-	__m256i yg2 = _mm256_setr_epi32(
-		gm[(k << 2) + 0], gm[(k << 2) + 0],
-		gm[(k << 2) + 1], gm[(k << 2) + 1],
-		gm[(k << 2) + 2], gm[(k << 2) + 2],
-		gm[(k << 2) + 3], gm[(k << 2) + 3]);
-	yt2 = mp_montymul_x4(yt2, yg2, yp, yp0i);
-	ya0 = mp_add_x8(yt1, yt2, yp);
-	ya1 = mp_sub_x8(yt1, yt2, yp);
-
-	/* ya0 = a0:--:a2:--:a4:--:a6:--
-	   ya1 = a1:--:a3:--:a5:--:a7:-- */
-	ya = _mm256_blend_epi32(ya0, _mm256_slli_epi64(ya1, 32), 0xAA);
-	return ya;
+	return v & tbmask(b - 2);
 }
 
 /*
  * Assumption: logn >= 3
  */
-TARGET_AVX2
 static void
 mp_NTT(unsigned logn, uint32_t *restrict a,
 	const uint32_t *restrict gm, uint32_t p, uint32_t p0i)
 {
-	__m256i yp = _mm256_set1_epi32(p);
-	__m256i yp0i = _mm256_set1_epi32(p0i);
-	size_t n = (size_t)1 << logn;
-	size_t t = n;
-	for (unsigned lm = 0; lm < (logn - 3); lm ++) {
+	size_t t = (size_t)1 << logn;
+	for (unsigned lm = 0; lm < logn; lm ++) {
 		size_t m = (size_t)1 << lm;
 		size_t ht = t >> 1;
 		size_t v0 = 0;
 		for (size_t u = 0; u < m; u ++) {
-			__m256i ys = _mm256_set1_epi32(gm[u + m]);
-			for (size_t v = 0; v < ht; v += 8) {
+			uint32_t s = gm[u + m];
+			for (size_t v = 0; v < ht; v ++) {
 				size_t k1 = v0 + v;
 				size_t k2 = k1 + ht;
-				__m256i *a1 = (__m256i *)(a + k1);
-				__m256i *a2 = (__m256i *)(a + k2);
-				__m256i y1 = _mm256_loadu_si256(a1);
-				__m256i y2 = _mm256_loadu_si256(a2);
-				y2 = mp_montymul_x8(y2, ys, yp, yp0i);
-				_mm256_storeu_si256(a1,
-					mp_add_x8(y1, y2, yp));
-				_mm256_storeu_si256(a2,
-					mp_sub_x8(y1, y2, yp));
+				uint32_t x1 = a[k1];
+				uint32_t x2 = mp_montymul(a[k2], s, p, p0i);
+				a[k1] = mp_add(x1, x2, p);
+				a[k2] = mp_sub(x1, x2, p);
 			}
 			v0 += t;
 		}
 		t = ht;
-	}
-	size_t m = n >> 3;
-	for (size_t u = 0; u < m; u ++) {
-		uint32_t *za = a + (u << 3);
-		__m256i ya = _mm256_loadu_si256((__m256i *)za);
-		ya = mp_NTT8(ya, gm, u + m, yp, yp0i);
-		_mm256_storeu_si256((__m256i *)za, ya);
 	}
 }
 
@@ -378,75 +205,39 @@ mp_NTT(unsigned logn, uint32_t *restrict a,
  *
  * Assumption: logn >= 3
  */
-TARGET_AVX2
 static void
 mp_NTT_autoadj(unsigned logn, uint32_t *restrict a,
 	const uint32_t *restrict gm, uint32_t p, uint32_t p0i)
 {
-	__m256i yp = _mm256_set1_epi32(p);
-	__m256i yp0i = _mm256_set1_epi32(p0i);
 	size_t hn = (size_t)1 << (logn - 1);
-
-	__m256i ys1 = _mm256_set1_epi32(gm[1]);
-	__m256i yrev = _mm256_setr_epi32(7, 6, 5, 4, 3, 2, 1, 0);
+	uint32_t s1 = gm[1];
 	size_t qn = hn >> 1;
-
-	__m256i yt1 = _mm256_loadu_si256((__m256i *)a);
-	__m256i yt2 = _mm256_loadu_si256((__m256i *)(a + (hn - 8)));
-	__m256i yrev7 = _mm256_setr_epi32(0, 7, 6, 5, 4, 3, 2, 1);
-	yt2 = _mm256_permutevar8x32_epi32(yt2, yrev7);
-	__m256i yu1 = mp_sub_x8(yt1, mp_montymul_x8(yt2, ys1, yp, yp0i), yp);
-	__m256i yu2 = mp_sub_x8(yt2, mp_montymul_x8(yt1, ys1, yp, yp0i), yp);
-	yu2 = _mm256_permutevar8x32_epi32(yu2, yrev7);
-	yu1 = _mm256_insert_epi32(yu1, a[0], 0);
-	yu2 = _mm256_insert_epi32(yu2, a[hn - 8], 0);
-	_mm256_storeu_si256((__m256i *)a, yu1);
-	_mm256_storeu_si256((__m256i *)(a + (hn - 8)), yu2);
-
-	for (size_t u = 8; u < qn; u += 8) {
-		__m256i yv1 = _mm256_loadu_si256((__m256i *)(a + u));
-		__m256i yv2 = _mm256_loadu_si256((__m256i *)(a + (hn - 7) - u));
-		yv2 = _mm256_permutevar8x32_epi32(yv2, yrev);
-		__m256i yw1 = mp_sub_x8(yv1,
-			mp_montymul_x8(yv2, ys1, yp, yp0i), yp);
-		__m256i yw2 = mp_sub_x8(yv2,
-			mp_montymul_x8(yv1, ys1, yp, yp0i), yp);
-		yw2 = _mm256_permutevar8x32_epi32(yw2, yrev);
-		_mm256_storeu_si256((__m256i *)(a + u), yw1);
-		_mm256_storeu_si256((__m256i *)(a + (hn - 7) - u), yw2);
+	for (size_t u = 1; u < qn; u ++) {
+		uint32_t x1 = a[u];
+		uint32_t x2 = a[hn - u];
+		a[u] = mp_sub(x1, mp_montymul(x2, s1, p, p0i), p);
+		a[hn - u] = mp_sub(x2, mp_montymul(x1, s1, p, p0i), p);
 	}
-	a[qn] = mp_sub(a[qn], mp_montymul(a[qn], gm[1], p, p0i), p);
+	a[qn] = mp_sub(a[qn], mp_montymul(a[qn], s1, p, p0i), p);
 
-	size_t t = hn;
-	for (unsigned lm = 1; lm < (logn - 3); lm ++) {
+	size_t t = (size_t)1 << (logn - 1);
+	for (unsigned lm = 1; lm < logn; lm ++) {
 		size_t m = (size_t)1 << lm;
 		size_t ht = t >> 1;
 		size_t v0 = 0;
 		for (size_t u = 0; u < (m >> 1); u ++) {
-			__m256i ys = _mm256_set1_epi32(gm[u + m]);
-			for (size_t v = 0; v < ht; v += 8) {
+			uint32_t s = gm[u + m];
+			for (size_t v = 0; v < ht; v ++) {
 				size_t k1 = v0 + v;
 				size_t k2 = k1 + ht;
-				__m256i *a1 = (__m256i *)(a + k1);
-				__m256i *a2 = (__m256i *)(a + k2);
-				__m256i y1 = _mm256_loadu_si256(a1);
-				__m256i y2 = _mm256_loadu_si256(a2);
-				y2 = mp_montymul_x8(y2, ys, yp, yp0i);
-				_mm256_storeu_si256(a1,
-					mp_add_x8(y1, y2, yp));
-				_mm256_storeu_si256(a2,
-					mp_sub_x8(y1, y2, yp));
+				uint32_t x1 = a[k1];
+				uint32_t x2 = mp_montymul(a[k2], s, p, p0i);
+				a[k1] = mp_add(x1, x2, p);
+				a[k2] = mp_sub(x1, x2, p);
 			}
 			v0 += t;
 		}
 		t = ht;
-	}
-	size_t m = hn >> 2;
-	for (size_t u = 0; u < (m >> 1); u ++) {
-		uint32_t *za = a + (u << 3);
-		__m256i ya = _mm256_loadu_si256((__m256i *)za);
-		ya = mp_NTT8(ya, gm, u + m, yp, yp0i);
-		_mm256_storeu_si256((__m256i *)za, ya);
 	}
 }
 
@@ -829,19 +620,14 @@ static const uint32_t GM_p2[] = {
  *
  * Assumption: logn >= 3
  */
-TARGET_AVX2
 static inline void
 mp_poly_to_NTT(unsigned logn, uint32_t *d, const int16_t *a,
 	uint32_t p, uint32_t p0i, const uint32_t *gm)
 {
 	size_t n = (size_t)1 << logn;
-	__m256i yp = _mm256_set1_epi32(p);
-	for (size_t u = 0; u < n; u += 8) {
-		__m128i xa = _mm_loadu_si128((const __m128i *)(a + u));
-		__m256i ya = _mm256_cvtepi16_epi32(xa);
-		ya = _mm256_add_epi32(ya, _mm256_and_si256(yp,
-			_mm256_srai_epi16(ya, 15)));
-		_mm256_storeu_si256((__m256i *)(d + u), ya);
+	for (size_t u = 0; u < n; u ++) {
+		uint32_t x = a[u];
+		d[u] = x + (p & tbmask(x));
 	}
 	mp_NTT(logn, d, gm, p, p0i);
 }
@@ -854,19 +640,14 @@ mp_poly_to_NTT(unsigned logn, uint32_t *d, const int16_t *a,
  *
  * Assumption: logn >= 3
  */
-TARGET_AVX2
 static inline void
 mp_poly_to_NTT_autoadj(unsigned logn, uint32_t *d, const int16_t *a,
 	uint32_t p, uint32_t p0i, const uint32_t *gm)
 {
 	size_t hn = (size_t)1 << (logn - 1);
-	__m256i yp = _mm256_set1_epi32(p);
-	for (size_t u = 0; u < hn; u += 8) {
-		__m128i xa = _mm_loadu_si128((const __m128i *)(a + u));
-		__m256i ya = _mm256_cvtepi16_epi32(xa);
-		ya = _mm256_add_epi32(ya, _mm256_and_si256(yp,
-			_mm256_srai_epi16(ya, 15)));
-		_mm256_storeu_si256((__m256i *)(d + u), ya);
+	for (size_t u = 0; u < hn; u ++) {
+		uint32_t x = a[u];
+		d[u] = x + (p & tbmask(x));
 	}
 	mp_NTT_autoadj(logn, d, gm, p, p0i);
 }
@@ -1234,6 +1015,19 @@ static const int32_t FX32_GM[] = {
   -2147473542,     6588387
 };
 
+static inline uint32_t
+fx32_of(int32_t a, unsigned sh)
+{
+	return *(uint32_t *)&a << sh;
+}
+
+static inline int32_t
+fx32_rint(uint32_t a, unsigned sh)
+{
+	a += (uint32_t)1 << (sh - 1);
+	return *(int32_t *)&a >> sh;
+}
+
 /*
  * FFT algorithm in bit-reveral order formally works as follows:
  *
@@ -1291,252 +1085,48 @@ static const int32_t FX32_GM[] = {
  */
 
 /*
- * Input: yt1_re, yt1_im, yt2_re, yt2_im already aligned (low 32-bit words
- * of each 64-bit component); yg_re and yg_im contain the gm[] factors.
- * Output: ya1_re, ya1_im, ya2_re, ya2_im (same alignment).
- *
- * Variables yt1_re, yt1_im, yt2_re, yt2_im, ya1_re, ya1_im, ya2_re and ya2_im
- * are caller-declared.
- */
-#define FFT_STEP_x8(yg_re, yg_im)   do { \
-		__m256i ytb = _mm256_set1_epi64x((uint64_t)1 << 63); \
-		__m256i yu_re = _mm256_sub_epi64( \
-			_mm256_mul_epi32(yt2_re, yg_re), \
-			_mm256_mul_epi32(yt2_im, yg_im)); \
-		__m256i yu_im = _mm256_add_epi64( \
-			_mm256_mul_epi32(yt2_re, yg_im), \
-			_mm256_mul_epi32(yt2_im, yg_re)); \
-		__m256i yv_re = _mm256_or_si256( \
-			_mm256_andnot_si256(ytb, \
-				_mm256_slli_epi64(yt1_re, 31)), \
-			_mm256_and_si256(ytb, \
-				_mm256_slli_epi64(yt1_re, 32))); \
-		__m256i yv_im = _mm256_or_si256( \
-			_mm256_andnot_si256(ytb, \
-				_mm256_slli_epi64(yt1_im, 31)), \
-			_mm256_and_si256(ytb, \
-				_mm256_slli_epi64(yt1_im, 32))); \
-		ya1_re = _mm256_srli_epi64( \
-			_mm256_add_epi64(yv_re, yu_re), 32); \
-		ya1_im = _mm256_srli_epi64( \
-			_mm256_add_epi64(yv_im, yu_im), 32); \
-		ya2_re = _mm256_srli_epi64( \
-			_mm256_sub_epi64(yv_re, yu_re), 32); \
-		ya2_im = _mm256_srli_epi64( \
-			_mm256_sub_epi64(yv_im, yu_im), 32); \
-	} while (0)
-
-TARGET_AVX2
-static inline void
-fx32_FFT8(__m256i *ya_re, __m256i *ya_im, size_t k)
-{
-	__m256i ya1_re, ya1_im, ya2_re, ya2_im;
-	__m256i yt1_re, yt1_im, yt2_re, yt2_im;
-
-	/* 0/4, 1/5, 2/6, 3/7 with gm[1] */
-	__m256i ypp = _mm256_setr_epi32(0, 4, 1, 5, 2, 6, 3, 7);
-	yt1_re = _mm256_permutevar8x32_epi32(*ya_re, ypp);
-	yt2_re = _mm256_srli_epi64(yt1_re, 32);
-	yt1_im = _mm256_permutevar8x32_epi32(*ya_im, ypp);
-	yt2_im = _mm256_srli_epi64(yt1_im, 32);
-
-	__m256i yg0_re = _mm256_set1_epi64x(((uint64_t *)FX32_GM)[k]);
-	__m256i yg0_im = _mm256_srli_epi64(yg0_re, 32);
-	FFT_STEP_x8(yg0_re, yg0_im);
-
-	/* ya1: 0:-:1:-:2:-:3:-
-	   ya2: 4:-:5:-:6:-:7:- */
-
-	/* 0/2, 1/3 with gm[2]; 4/6, 5/7 with gm[3] */
-	yt1_re = _mm256_permute2x128_si256(ya1_re, ya2_re, 0x20);
-	yt1_im = _mm256_permute2x128_si256(ya1_im, ya2_im, 0x20);
-	yt2_re = _mm256_permute2x128_si256(ya1_re, ya2_re, 0x31);
-	yt2_im = _mm256_permute2x128_si256(ya1_im, ya2_im, 0x31);
-
-	uint64_t g1_0 = ((uint64_t *)FX32_GM)[(k << 1) + 0];
-	uint64_t g1_1 = ((uint64_t *)FX32_GM)[(k << 1) + 1];
-	__m256i yg1_re = _mm256_setr_epi64x(g1_0, g1_0, g1_1, g1_1);
-	__m256i yg1_im = _mm256_srli_epi64(yg1_re, 32);
-	FFT_STEP_x8(yg1_re, yg1_im);
-
-	/* ya1: 0:-:1:-:4:-:5:-
-	   ya2: 2:-:3:-:6:-:7:- */
-
-	/* 0/1, 2/3, 4/5, 6/7 with gm[4..7] */
-	yt1_re = _mm256_unpacklo_epi64(ya1_re, ya2_re);
-	yt1_im = _mm256_unpacklo_epi64(ya1_im, ya2_im);
-	yt2_re = _mm256_unpackhi_epi64(ya1_re, ya2_re);
-	yt2_im = _mm256_unpackhi_epi64(ya1_im, ya2_im);
-
-	__m256i yg2_re = _mm256_loadu_si256(
-		(const __m256i *)((const uint64_t *)FX32_GM + (k << 2)));
-	__m256i yg2_im = _mm256_srli_epi64(yg2_re, 32);
-	FFT_STEP_x8(yg2_re, yg2_im);
-
-	/* ya1: 0:-:2:-:4:-:6:-
-	   ya2: 1:-:3:-:5:-:7:- */
-
-	*ya_re = _mm256_blend_epi32(ya1_re,
-		_mm256_slli_epi64(ya2_re, 32), 0xAA);
-	*ya_im = _mm256_blend_epi32(ya1_im,
-		_mm256_slli_epi64(ya2_im, 32), 0xAA);
-}
-
-/*
- * Input: yt1_re, yt1_im, yt2_re, yt2_im already aligned (low 32-bit words
- * of each 64-bit component); yg_re and yg_im contain the gm[] factors.
- * Output: ya1_re, ya1_im, ya2_re, ya2_im (same alignment).
- *
- * Variables yt1_re, yt1_im, yt2_re, yt2_im, ya1_re, ya1_im, ya2_re and ya2_im
- * are caller-declared.
- */
-#define iFFT_STEP_x8(yg_re, yg_im)   do { \
-		ya1_re = _mm256_srai_epi32( \
-			_mm256_add_epi32(yt1_re, yt2_re), 1); \
-		ya1_im = _mm256_srai_epi32( \
-			_mm256_add_epi32(yt1_im, yt2_im), 1); \
-		yt1_re = _mm256_sub_epi32(yt1_re, yt2_re); \
-		yt1_im = _mm256_sub_epi32(yt1_im, yt2_im); \
-		__m256i yr0 = _mm256_mul_epi32(yt1_re, yg_re); \
-		__m256i yr1 = _mm256_mul_epi32(yt1_im, yg_im); \
-		__m256i yr2 = _mm256_mul_epi32(yt1_re, yg_im); \
-		__m256i yr3 = _mm256_mul_epi32(yt1_im, yg_re); \
-		ya2_re = _mm256_srli_epi64(_mm256_sub_epi64(yr0, yr1), 32); \
-		ya2_im = _mm256_srli_epi64(_mm256_add_epi64(yr2, yr3), 32); \
-	} while (0)
-
-TARGET_AVX2
-static inline void
-fx32_iFFT8(__m256i *ya_re, __m256i *ya_im, size_t k)
-{
-	__m256i ya1_re, ya1_im, ya2_re, ya2_im;
-	__m256i yt1_re, yt1_im, yt2_re, yt2_im;
-
-	/* 0/1, 2/3, 4/5, 6/7 with gm[4..7] */
-	yt1_re = *ya_re;
-	yt1_im = *ya_im;
-	yt2_re = _mm256_srli_epi64(yt1_re, 32);
-	yt2_im = _mm256_srli_epi64(yt1_im, 32);
-
-	__m256i yg2_re = _mm256_loadu_si256(
-		(const __m256i *)((const uint64_t *)FX32_GM + (k << 2)));
-	__m256i yg2_im = _mm256_sub_epi32(
-		_mm256_setzero_si256(), _mm256_srli_epi64(yg2_re, 32));
-	iFFT_STEP_x8(yg2_re, yg2_im);
-
-	/* ya1: 0:-:2:-:4:-:6:-
-	   ya2: 1:-:3:-:5:-:7:- */
-
-	/* 0/2, 1/3 with gm[2]; 4/6, 5/7 with gm[3] */
-	yt1_re = _mm256_unpacklo_epi64(ya1_re, ya2_re);
-	yt1_im = _mm256_unpacklo_epi64(ya1_im, ya2_im);
-	yt2_re = _mm256_unpackhi_epi64(ya1_re, ya2_re);
-	yt2_im = _mm256_unpackhi_epi64(ya1_im, ya2_im);
-
-	uint64_t g1_0 = ((uint64_t *)FX32_GM)[(k << 1) + 0];
-	uint64_t g1_1 = ((uint64_t *)FX32_GM)[(k << 1) + 1];
-	__m256i yg1_re = _mm256_setr_epi64x(g1_0, g1_0, g1_1, g1_1);
-	__m256i yg1_im = _mm256_sub_epi32(
-		_mm256_setzero_si256(), _mm256_srli_epi64(yg1_re, 32));
-	iFFT_STEP_x8(yg1_re, yg1_im);
-
-	/* ya1: 0:-:1:-:4:-:5:-
-	   ya2: 2:-:3:-:6:-:7:- */
-
-	/* 0/4, 1/5, 2/6, 3/7 with gm[1] */
-	yt1_re = _mm256_permute2x128_si256(ya1_re, ya2_re, 0x20);
-	yt1_im = _mm256_permute2x128_si256(ya1_im, ya2_im, 0x20);
-	yt2_re = _mm256_permute2x128_si256(ya1_re, ya2_re, 0x31);
-	yt2_im = _mm256_permute2x128_si256(ya1_im, ya2_im, 0x31);
-
-	__m256i yg0_re = _mm256_set1_epi64x(((uint64_t *)FX32_GM)[k]);
-	__m256i yg0_im = _mm256_sub_epi32(
-		_mm256_setzero_si256(), _mm256_srli_epi64(yg0_re, 32));
-	iFFT_STEP_x8(yg0_re, yg0_im);
-
-	/* ya1: 0:-:1:-:2:-:3:-
-	   ya2: 4:-:5:-:6:-:7:- */
-
-	__m256i yipp = _mm256_setr_epi32(0, 2, 4, 6, 1, 3, 5, 7);
-	yt1_re = _mm256_blend_epi32(ya1_re,
-		_mm256_slli_epi64(ya2_re, 32), 0xAA);
-	yt1_im = _mm256_blend_epi32(ya1_im,
-		_mm256_slli_epi64(ya2_im, 32), 0xAA);
-	*ya_re = _mm256_permutevar8x32_epi32(yt1_re, yipp);
-	*ya_im = _mm256_permutevar8x32_epi32(yt1_im, yipp);
-}
-
-/*
  * Apply the FFT on a given real polynomial.
  *
  * Assumption: logn >= 3
  */
-TARGET_AVX2
 static void
 fx32_FFT(unsigned logn, uint32_t *a)
 {
 	size_t hn = (size_t)1 << (logn - 1);
 	size_t t = hn;
-	__m256i ypc = _mm256_setr_epi32(0, 2, 4, 6, 1, 3, 5, 7);
-	for (unsigned lm = 1; lm < (logn - 3); lm ++) {
+	for (unsigned lm = 1; lm < logn; lm ++) {
 		size_t m = (size_t)1 << lm;
 		size_t ht = t >> 1;
 		size_t j0 = 0;
 		size_t hm = m >> 1;
 		for (size_t i = 0; i < hm; i ++) {
-			__m256i ys_re = _mm256_set1_epi64x(
-				((const uint64_t *)FX32_GM)[i + m]);
-			__m256i ys_im = _mm256_srli_epi64(ys_re, 32);
-			for (size_t j = j0; j < j0 + ht; j += 4) {
-				__m128i xa1_re = _mm_loadu_si128(
-					(__m128i *)(a + j));
-				__m128i xa1_im = _mm_loadu_si128(
-					(__m128i *)(a + j + hn));
-				__m128i xa2_re = _mm_loadu_si128(
-					(__m128i *)(a + j + ht));
-				__m128i xa2_im = _mm_loadu_si128(
-					(__m128i *)(a + j + ht + hn));
-				__m256i yt1_re = _mm256_cvtepi32_epi64(xa1_re);
-				__m256i yt1_im = _mm256_cvtepi32_epi64(xa1_im);
-				__m256i yt2_re = _mm256_cvtepi32_epi64(xa2_re);
-				__m256i yt2_im = _mm256_cvtepi32_epi64(xa2_im);
-				__m256i ya1_re, ya1_im, ya2_re, ya2_im;
-				FFT_STEP_x8(ys_re, ys_im);
-				ya1_re = _mm256_permutevar8x32_epi32(
-					ya1_re, ypc);
-				ya1_im = _mm256_permutevar8x32_epi32(
-					ya1_im, ypc);
-				ya2_re = _mm256_permutevar8x32_epi32(
-					ya2_re, ypc);
-				ya2_im = _mm256_permutevar8x32_epi32(
-					ya2_im, ypc);
-				xa1_re = _mm256_castsi256_si128(ya1_re);
-				xa1_im = _mm256_castsi256_si128(ya1_im);
-				xa2_re = _mm256_castsi256_si128(ya2_re);
-				xa2_im = _mm256_castsi256_si128(ya2_im);
-				_mm_storeu_si128((__m128i *)(a + j),
-					xa1_re);
-				_mm_storeu_si128((__m128i *)(a + j + hn),
-					xa1_im);
-				_mm_storeu_si128((__m128i *)(a + j + ht),
-					xa2_re);
-				_mm_storeu_si128((__m128i *)(a + j + ht + hn),
-					xa2_im);
+			uint32_t s_re = (uint32_t)FX32_GM[((i + m) << 1) + 0];
+			uint32_t s_im = (uint32_t)FX32_GM[((i + m) << 1) + 1];
+			for (size_t j = j0; j < j0 + ht; j ++) {
+				uint32_t x1_re = a[j];
+				uint32_t x1_im = a[j + hn];
+				uint32_t x2_re = a[j + ht];
+				uint32_t x2_im = a[j + ht + hn];
+
+#define M(c, d)   ((uint64_t)((int64_t)*(int32_t *)&(c) \
+                   * (int64_t)*(int32_t *)&(d)))
+#define SSX(c)    ((uint64_t)*(int32_t *)&(c) << 31)
+				/*
+				 * t <- s*x2
+				 * (x1, x2) <- ((x1 + t)/2, (x2 - t)/2)
+				 */
+				uint64_t t_re = M(x2_re, s_re) - M(x2_im, s_im);
+				uint64_t t_im = M(x2_re, s_im) + M(x2_im, s_re);
+				a[j]           = (SSX(x1_re) + t_re) >> 32;
+				a[j + hn]      = (SSX(x1_im) + t_im) >> 32;
+				a[j + ht]      = (SSX(x1_re) - t_re) >> 32;
+				a[j + ht + hn] = (SSX(x1_im) - t_im) >> 32;
+#undef M
+#undef SSX
 			}
 			j0 += t;
 		}
 		t = ht;
-	}
-	size_t m = (size_t)1 << (logn - 3);
-	size_t hm = m >> 1;
-	for (size_t u = 0; u < hm; u ++) {
-		uint32_t *za_re = a + (u << 3);
-		uint32_t *za_im = za_re + hn;
-		__m256i yre = _mm256_loadu_si256((__m256i *)za_re);
-		__m256i yim = _mm256_loadu_si256((__m256i *)za_im);
-		fx32_FFT8(&yre, &yim, u + m);
-		_mm256_storeu_si256((__m256i *)za_re, yre);
-		_mm256_storeu_si256((__m256i *)za_im, yim);
 	}
 }
 
@@ -1545,70 +1135,46 @@ fx32_FFT(unsigned logn, uint32_t *a)
  *
  * Assumption: logn >= 3
  */
-TARGET_AVX2
 static void
 fx32_iFFT(unsigned logn, uint32_t *a)
 {
 	size_t hn = (size_t)1 << (logn - 1);
-	size_t m = (size_t)1 << (logn - 3);
-	size_t hm = m >> 1;
-	for (size_t u = 0; u < hm; u ++) {
-		uint32_t *za_re = a + (u << 3);
-		uint32_t *za_im = za_re + hn;
-		__m256i yre = _mm256_loadu_si256((__m256i *)za_re);
-		__m256i yim = _mm256_loadu_si256((__m256i *)za_im);
-		fx32_iFFT8(&yre, &yim, u + m);
-		_mm256_storeu_si256((__m256i *)za_re, yre);
-		_mm256_storeu_si256((__m256i *)za_im, yim);
-	}
-
-	size_t ht = 8;
-	__m256i ypc = _mm256_setr_epi32(0, 2, 4, 6, 1, 3, 5, 7);
-	for (unsigned lm = logn - 4; lm > 0; lm --) {
-		m = (size_t)1 << lm;
+	size_t ht = 1;
+	for (unsigned lm = logn - 1; lm > 0; lm --) {
+		size_t m = (size_t)1 << lm;
 		size_t t = ht << 1;
 		size_t j0 = 0;
-		hm = m >> 1;
+		size_t hm = m >> 1;
 		for (size_t i = 0; i < hm; i ++) {
-			__m256i ys_re = _mm256_set1_epi64x(
-				((const uint64_t *)FX32_GM)[i + m]);
-			__m256i ys_im = _mm256_sub_epi32(_mm256_setzero_si256(),
-				_mm256_srli_epi64(ys_re, 32));
-			for (size_t j = j0; j < j0 + ht; j += 4) {
-				__m128i xa1_re = _mm_loadu_si128(
-					(__m128i *)(a + j));
-				__m128i xa1_im = _mm_loadu_si128(
-					(__m128i *)(a + j + hn));
-				__m128i xa2_re = _mm_loadu_si128(
-					(__m128i *)(a + j + ht));
-				__m128i xa2_im = _mm_loadu_si128(
-					(__m128i *)(a + j + ht + hn));
-				__m256i yt1_re = _mm256_cvtepi32_epi64(xa1_re);
-				__m256i yt1_im = _mm256_cvtepi32_epi64(xa1_im);
-				__m256i yt2_re = _mm256_cvtepi32_epi64(xa2_re);
-				__m256i yt2_im = _mm256_cvtepi32_epi64(xa2_im);
-				__m256i ya1_re, ya1_im, ya2_re, ya2_im;
-				iFFT_STEP_x8(ys_re, ys_im);
-				ya1_re = _mm256_permutevar8x32_epi32(
-					ya1_re, ypc);
-				ya1_im = _mm256_permutevar8x32_epi32(
-					ya1_im, ypc);
-				ya2_re = _mm256_permutevar8x32_epi32(
-					ya2_re, ypc);
-				ya2_im = _mm256_permutevar8x32_epi32(
-					ya2_im, ypc);
-				xa1_re = _mm256_castsi256_si128(ya1_re);
-				xa1_im = _mm256_castsi256_si128(ya1_im);
-				xa2_re = _mm256_castsi256_si128(ya2_re);
-				xa2_im = _mm256_castsi256_si128(ya2_im);
-				_mm_storeu_si128((__m128i *)(a + j),
-					xa1_re);
-				_mm_storeu_si128((__m128i *)(a + j + hn),
-					xa1_im);
-				_mm_storeu_si128((__m128i *)(a + j + ht),
-					xa2_re);
-				_mm_storeu_si128((__m128i *)(a + j + ht + hn),
-					xa2_im);
+			uint32_t s_re = (uint32_t)FX32_GM[((i + m) << 1) + 0];
+			uint32_t s_im = -(uint32_t)FX32_GM[((i + m) << 1) + 1];
+			for (size_t j = j0; j < j0 + ht; j ++) {
+				uint32_t x1_re = a[j];
+				uint32_t x1_im = a[j + hn];
+				uint32_t x2_re = a[j + ht];
+				uint32_t x2_im = a[j + ht + hn];
+
+#define M(c, d)   ((uint64_t)((int64_t)*(int32_t *)&(c) \
+                   * (int64_t)*(int32_t *)&(d)))
+#define H(c)       ((uint32_t)(*(int32_t *)&(c) >> 1))
+				/*
+				 * t1 <- x1 + x2
+				 * t2 <- s*(x1 - x2)
+				 * (x1, x2) <- (t1/2, t2/2)
+				 */
+				uint32_t t1_re = x1_re + x2_re;
+				uint32_t t1_im = x1_im + x2_im;
+				uint32_t t2_re = x1_re - x2_re;
+				uint32_t t2_im = x1_im - x2_im;
+
+				a[j]           = H(t1_re);
+				a[j + hn]      = H(t1_im);
+				a[j + ht]      = (M(t2_re, s_re)
+				                 - M(t2_im, s_im)) >> 32;
+				a[j + ht + hn] = (M(t2_re, s_im)
+				                 + M(t2_im, s_re)) >> 32;
+#undef M
+#undef H
 			}
 			j0 += t;
 		}
@@ -1636,553 +1202,136 @@ static const int8_t bits_lims1[11] = {
 };
 
 /*
- * Decode the variable-sized part of a Golomb-Rice encoded polynomial.
- * Exactly n = 2^logn values are decoded. Output is d[]. buf/buf_len
- * designates that variable part. Values written in d[] are scaled by 2^low
- * (i.e. left-shifted by low bits); if any value is greater than or equal
- * to 2^lim_bits, then an error is reported.
+ * Decode n = 2^logn values into d from a provided buffer, using
+ * Golomb-Rice coding. The sign, fixed part ('low' bits) and
+ * variable part (high bits) are segregated.
  *
- * Returned value is the actual encoded length (in bytes), with the number of
- * ignored bits in the last byte written into *num_ignored. On error (value
- * is out of range, or input buffer is too short), 0 is returned.
+ * Values are verified to be such that -2^lim_bits <= d[i] < +2^lim_bits.
+ * The number of ignored bits in the last byte is written into *num_ignored
+ * (unless num_ignored == NULL). Total size (in bytes) is returned.
  *
- * Assumption: low < lim_bits <= low + 4
+ * ASSUMPTION: lim_bits <= low + 4
  */
-TARGET_AVX2
 static size_t
-decode_gr_vpart(unsigned logn, int16_t *d, const uint8_t *buf, size_t buf_len,
+decode_gr(unsigned logn, int16_t *d, const uint8_t *buf, size_t buf_len,
 	int low, int lim_bits, int *num_ignored)
 {
 	size_t n = (size_t)1 << logn;
-	size_t voff = 0;
-
-	/*
-	 * Invariants:
-	 *
-	 *   - acc may contain acc_len bits, in its bottommost indexes. The
-	 *     remaining 64 - acc_len bits are all zero.
-	 *   - acc_len < 8
-	 *   - buffered bits end at a byte boundary
-	 *   - voff points to the next unbuffered byte.
-	 */
-	uint64_t acc = 0;
-	unsigned acc_len = 0;
-	size_t du;
-	__m128i xlim = _mm_set1_epi16((1 << (lim_bits - low)) - 1);
-	__m128i xlow = _mm_cvtsi32_si128(low);
-	for (du = 0; du < n; du += 8) {
-		if (voff + 8 > buf_len) {
-			break;
-		}
-
-#if defined __x86_64__ || defined _M_X64
-		/*
-		 * Ensure that we have at least 56 bits.
-		 */
-		uint64_t x = *(uint64_t *)(buf + voff);
-		acc |= x << acc_len;
-		if (acc == 0) {
-			return 0;
-		}
-
-		/*
-		 * Fast path: assume that the next 8 values will fit in
-		 * 48+acc_len bits. We put 8 guard bits to ensure that
-		 * all shift counts will be lower than 64.
-		 */
-		x = acc | (uint64_t)0xFF00000000000000;
-		unsigned k0 = _tzcnt_u64(x);
-		x >>= k0 + 1;
-		unsigned k1 = _tzcnt_u64(x);
-		x >>= k1 + 1;
-		unsigned k2 = _tzcnt_u64(x);
-		x >>= k2 + 1;
-		unsigned k3 = _tzcnt_u64(x);
-		x >>= k3 + 1;
-		unsigned k4 = _tzcnt_u64(x);
-		x >>= k4 + 1;
-		unsigned k5 = _tzcnt_u64(x);
-		x >>= k5 + 1;
-		unsigned k6 = _tzcnt_u64(x);
-		x >>= k6 + 1;
-		unsigned k7 = _tzcnt_u64(x);
-#else
-		/*
-		 * The 32-bit version only has access to _tzcnt_u32().
-		 */
-		uint32_t x0 = *(uint32_t *)(buf + voff);
-		uint32_t x1 = *(uint32_t *)(buf + voff + 4);
-		uint64_t x = ((uint64_t)x1 << 32) | (uint64_t)x0;
-		acc |= x << acc_len;
-		if (acc == 0) {
-			return 0;
-		}
-
-		x = acc;
-
-#define GR_STEP(kk)   do { \
-		uint32_t x_lo = (uint32_t)x; \
-		if (x_lo == 0) { \
-			return 0; \
-		} \
-		(kk) = _tzcnt_u32(x_lo); \
-		x >>= (kk) + 1; \
-	} while (0)
-
-		unsigned k0, k1, k2, k3, k4, k5, k6, k7;
-		GR_STEP(k0);
-		GR_STEP(k1);
-		GR_STEP(k2);
-		GR_STEP(k3);
-		GR_STEP(k4);
-		GR_STEP(k5);
-		GR_STEP(k6);
-		GR_STEP(k7);
-
-#undef GR_STEP
-
-#endif
-
-		/*
-		 * Compute the number of actually consumed bits.
-		 */
-		unsigned lgb = 8 + k0 + k1 + k2 + k3 + k4 + k5 + k6 + k7;
-		if (lgb <= 48 + acc_len) {
-			/*
-			 * We consumed exactly lgb bits from acc. We
-			 * update acc_len and voff accordingly, keeping
-			 * at most 7 bits. Since acc_len < 8, and we
-			 * consumed at least 8 bits, we know that
-			 * lgb > acc_len. We need to reach the next byte
-			 * boundary.
-			 */
-			acc >>= lgb;
-			unsigned lgn = (lgb - acc_len + 7) & ~7u;
-			voff += lgn >> 3;
-			acc_len += lgn - lgb;
-			acc &= ~((uint64_t)-1 << acc_len);
-
-			/*
-			 * Assemble the 8 values; also check that they are
-			 * all in the allowed range.
-			 */
-			__m128i xd = _mm_setr_epi16(
-				k0, k1, k2, k3, k4, k5, k6, k7);
-			if (_mm_movemask_epi8(_mm_cmpgt_epi16(xd, xlim)) != 0) {
-				return 0;
-			}
-			xd = _mm_sll_epi16(xd, xlow);
-			_mm_storeu_si128((__m128i *)(d + du), xd);
-			continue;
-		}
-
-		/*
-		 * Slow path: we process values and bytes one
-		 * by one. This branch is rarely taken.
-		 */
-		acc &= ~((uint64_t)-1 << acc_len);
-		for (size_t v = 0; v < 8; v ++) {
-			while (acc == 0) {
-				if (acc_len > 15) {
-					return 0;
-				}
-				if (voff >= buf_len) {
-					return 0;
-				}
-				acc |= (uint64_t)buf[voff ++] << acc_len;
-				acc_len += 8;
-			}
-#if defined __x86_64__ || defined _M_X64
-			unsigned k = _tzcnt_u64(acc);
-#else
-			unsigned k = _tzcnt_u32((uint32_t)acc);
-#endif
-			if (k > 15) {
-				return 0;
-			}
-			acc >>= k + 1;
-			acc_len -= k + 1;
-			d[du + v] = k << low;
-		}
+	if (buf_len < ((uint32_t)(low + 1) << (logn - 3))) {
+		return 0;
 	}
+	size_t voff = (size_t)(low + 1) << (logn - 3);
 
 	/*
-	 * Final values: we do not have enough source bytes to keep reading
-	 * with 8 bytes of look-ahead, so we handle bytes one by one.
+	 * Precomputed table for the number of trailing zeros in an
+	 * 8-bit value.
 	 */
-	while (du < n) {
+	static const uint8_t ntz[256] = {
+		8, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0,
+		4, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0,
+		5, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0,
+		4, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0,
+		6, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0,
+		4, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0,
+		5, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0,
+		4, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0,
+		7, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0,
+		4, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0,
+		5, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0,
+		4, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0,
+		6, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0,
+		4, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0,
+		5, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0,
+		4, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0
+	};
+
+	/*
+	 * Variable part.
+	 */
+	uint32_t acc = 0;
+	int acc_off = 0;
+	int lim_hi = 1 << (lim_bits - low);
+	for (size_t u = 0; u < n; u ++) {
 		while (acc == 0) {
-			if (acc_len > 15) {
+			if (acc_off >= lim_hi) {
 				return 0;
 			}
 			if (voff >= buf_len) {
 				return 0;
 			}
-			acc |= (uint64_t)buf[voff ++] << acc_len;
-			acc_len += 8;
+			acc |= (uint32_t)buf[voff ++] << acc_off;
+			acc_off += 8;
 		}
-#if defined __x86_64__ || defined _M_X64
-		unsigned k = _tzcnt_u64(acc);
-#else
-		unsigned k = _tzcnt_u32((uint32_t)acc);
-#endif
-		if (k > 15) {
-			return 0;
+		int k = ntz[acc & 0xFF];
+		if (k == 8) {
+			k += ntz[(acc >> 8) & 0xFF];
+			if (k >= lim_hi) {
+				return 0;
+			}
 		}
+		d[u] = k << low;
 		acc >>= k + 1;
-		acc_len -= k + 1;
-		d[du ++] = k << low;
+		acc_off -= k + 1;
 	}
-
 	if (num_ignored != NULL) {
-		*num_ignored = (int)acc_len;
-	}
-	return voff;
-}
-
-TARGET_AVX2
-static size_t
-decode_gr_5_9(unsigned logn, int16_t *d, const uint8_t *buf, size_t buf_len,
-	int *num_ignored)
-{
-	const int low = 5;
-	const int lim_bits = 9;
-	size_t n = (size_t)1 << logn;
-
-	/*
-	 * At least low+2 bits per input.
-	 */
-	if (buf_len < (size_t)(low + 2) << (logn - 3)) {
-		return 0;
+		*num_ignored = acc_off;
 	}
 
 	/*
-	 * Decode variable parts first.
-	 */
-	size_t voff = (size_t)(low + 1) << (logn - 3);
-	size_t vlen = decode_gr_vpart(logn, d, buf + voff, buf_len - voff,
-		low, lim_bits, num_ignored);
-	if (vlen == 0) {
-		return 0;
-	}
-	voff += vlen;
-
-	/*
-	 * Fixed-size elements.
+	 * Sign bits and fixed-width parts.
 	 */
 	size_t loff = (size_t)1 << (logn - 3);
-	__m256i ybs = _mm256_setr_epi32(15, 13, 11, 9, 7, 5, 3, 1);
-	__m128i xsf1 = _mm_setr_epi8(
-		0, 1, 2, 3, 4, -1, -1, -1,
-		5, 6, 7, 8, 9, -1, -1, -1);
-	__m128i xm1 = _mm_setr_epi8(
-		0x00, 0x00, 0xF0, 0xFF, 0xFF, 0x00, 0x00, 0x00,
-		0x00, 0x00, 0xF0, 0xFF, 0xFF, 0x00, 0x00, 0x00);
-	__m128i xm2 = _mm_setr_epi8(
-		0x00, 0xFC, 0x0F, 0x00, 0x00, 0xFC, 0x0F, 0x00,
-		0x00, 0xFC, 0x0F, 0x00, 0x00, 0xFC, 0x0F, 0x00);
-	__m128i xm3 = _mm_setr_epi8(
-		0xE0, 0x03, 0xE0, 0x03, 0xE0, 0x03, 0xE0, 0x03,
-		0xE0, 0x03, 0xE0, 0x03, 0xE0, 0x03, 0xE0, 0x03);
-	for (size_t u = 0; u < n; u += 16) {
-		uint32_t wbb = *(uint16_t *)(buf + (u >> 3));
-		wbb |= (wbb >> 1) << 16;
-		__m256i ybb = _mm256_sllv_epi32(_mm256_set1_epi32(wbb), ybs);
-
-		__m128i xlp = _mm_loadu_si128((__m128i *)(buf + loff));
-		loff += 10;
-		xlp = _mm_shuffle_epi8(xlp, xsf1);
-		xlp = _mm_or_si128(
-			_mm_andnot_si128(xm1, xlp),
-			_mm_slli_epi64(_mm_and_si128(xm1, xlp), 12));
-		xlp = _mm_or_si128(
-			_mm_andnot_si128(xm2, xlp),
-			_mm_slli_epi64(_mm_and_si128(xm2, xlp), 6));
-		xlp = _mm_or_si128(
-			_mm_andnot_si128(xm3, xlp),
-			_mm_slli_epi64(_mm_and_si128(xm3, xlp), 3));
-		__m256i ylp = _mm256_cvtepu8_epi16(xlp);
-
-		ylp = _mm256_xor_si256(_mm256_srai_epi16(ybb, 15), ylp);
-		__m256i yd = _mm256_loadu_si256((__m256i *)(d + u));
-		yd = _mm256_xor_si256(yd, ylp);
-		_mm256_storeu_si256((__m256i *)(d + u), yd);
+	uint32_t lmask = ((uint32_t)1 << low) - 1;
+	if (low <= 8) {
+		for (size_t u = 0; u < n; u += 8) {
+			uint32_t sbb = buf[u >> 3];
+			uint64_t lpp = 0;
+			for (int j = 0; j < (low << 3); j += 8) {
+				lpp |= (uint64_t)buf[loff ++] << j;
+			}
+			for (int i = 0, j = 0; i < 8; i ++, j += low) {
+				uint32_t lp = (uint32_t)(lpp >> j) & lmask;
+				uint32_t sm = -((sbb >> i) & 1);
+				((uint16_t *)d)[u + (size_t)i] ^= sm ^ lp;
+			}
+		}
+	} else {
+		for (size_t u = 0; u < n; u += 8) {
+			uint32_t sbb = buf[u >> 3];
+			uint32_t lpp0 = dec32le(buf + loff);
+			loff += 4;
+			uint64_t lpp1 = 0;
+			for (int j = 4, k = 0; j < low; j ++, k += 8) {
+				lpp1 |= (uint64_t)buf[loff ++] << k;
+			}
+			for (int i = 0, j = 0; i < 3; i ++, j += low) {
+				uint32_t lp = (lpp0 >> j) & lmask;
+				uint32_t sm = -((sbb >> i) & 1);
+				((uint16_t *)d)[u + (size_t)i] ^= sm ^ lp;
+			}
+			lpp1 = (lpp1 << (32 - 3 * low))
+				| (uint64_t)(lpp0 >> (3 * low));
+			for (int i = 3, j = 0; i < 8; i ++, j += low) {
+				uint32_t lp = (uint32_t)(lpp1 >> j) & lmask;
+				uint32_t sm = -((sbb >> i) & 1);
+				((uint16_t *)d)[u + (size_t)i] ^= sm ^ lp;
+			}
+		}
 	}
 
 	return voff;
 }
 
-TARGET_AVX2
-static size_t
-decode_gr_6_10(unsigned logn, int16_t *d, const uint8_t *buf, size_t buf_len,
-	int *num_ignored)
-{
-	const int low = 6;
-	const int lim_bits = 10;
-	size_t n = (size_t)1 << logn;
-
-	/*
-	 * At least low+2 bits per input.
-	 */
-	if (buf_len < (size_t)(low + 2) << (logn - 3)) {
-		return 0;
-	}
-
-	/*
-	 * Decode variable parts first.
-	 */
-	size_t voff = (size_t)(low + 1) << (logn - 3);
-	size_t vlen = decode_gr_vpart(logn, d, buf + voff, buf_len - voff,
-		low, lim_bits, num_ignored);
-	if (vlen == 0) {
-		return 0;
-	}
-	voff += vlen;
-
-	/*
-	 * Fixed-size elements.
-	 */
-	size_t loff = (size_t)1 << (logn - 3);
-	__m256i ybs = _mm256_setr_epi32(15, 13, 11, 9, 7, 5, 3, 1);
-	__m128i xsf1 = _mm_setr_epi8(
-		0, 1, 2, -1, 3, 4, 5, -1,
-		6, 7, 8, -1, 9, 10, 11, -1);
-	__m128i xm1 = _mm_setr_epi8(
-		0x00, 0xF0, 0xFF, 0x00, 0x00, 0xF0, 0xFF, 0x00,
-		0x00, 0xF0, 0xFF, 0x00, 0x00, 0xF0, 0xFF, 0x00);
-	__m128i xm2 = _mm_setr_epi8(
-		0xC0, 0x0F, 0xC0, 0x0F, 0xC0, 0x0F, 0xC0, 0x0F,
-		0xC0, 0x0F, 0xC0, 0x0F, 0xC0, 0x0F, 0xC0, 0x0F);
-	for (size_t u = 0; u < n; u += 16) {
-		uint32_t wbb = *(uint16_t *)(buf + (u >> 3));
-		wbb |= (wbb >> 1) << 16;
-		__m256i ybb = _mm256_sllv_epi32(_mm256_set1_epi32(wbb), ybs);
-
-		__m128i xlp = _mm_loadu_si128((__m128i *)(buf + loff));
-		loff += 12;
-		xlp = _mm_shuffle_epi8(xlp, xsf1);
-		xlp = _mm_or_si128(
-			_mm_andnot_si128(xm1, xlp),
-			_mm_slli_epi64(_mm_and_si128(xm1, xlp), 4));
-		xlp = _mm_or_si128(
-			_mm_andnot_si128(xm2, xlp),
-			_mm_slli_epi64(_mm_and_si128(xm2, xlp), 2));
-		__m256i ylp = _mm256_cvtepu8_epi16(xlp);
-
-		ylp = _mm256_xor_si256(_mm256_srai_epi16(ybb, 15), ylp);
-		__m256i yd = _mm256_loadu_si256((__m256i *)(d + u));
-		yd = _mm256_xor_si256(yd, ylp);
-		_mm256_storeu_si256((__m256i *)(d + u), yd);
-	}
-
-	return voff;
-}
-
-TARGET_AVX2
-static size_t
-decode_gr_8_11(unsigned logn, int16_t *d, const uint8_t *buf, size_t buf_len,
-	int *num_ignored)
-{
-	const int low = 8;
-	const int lim_bits = 11;
-	size_t n = (size_t)1 << logn;
-
-	/*
-	 * At least low+2 bits per input.
-	 */
-	if (buf_len < (size_t)(low + 2) << (logn - 3)) {
-		return 0;
-	}
-
-	/*
-	 * Decode variable parts first.
-	 */
-	size_t voff = (size_t)(low + 1) << (logn - 3);
-	size_t vlen = decode_gr_vpart(logn, d, buf + voff, buf_len - voff,
-		low, lim_bits, num_ignored);
-	if (vlen == 0) {
-		return 0;
-	}
-	voff += vlen;
-
-	/*
-	 * Fixed-size elements.
-	 */
-	size_t loff = (size_t)1 << (logn - 3);
-	__m256i ybs = _mm256_setr_epi32(15, 13, 11, 9, 7, 5, 3, 1);
-	for (size_t u = 0; u < n; u += 16) {
-		uint32_t wbb = *(uint16_t *)(buf + (u >> 3));
-		wbb |= (wbb >> 1) << 16;
-		__m256i ybb = _mm256_sllv_epi32(_mm256_set1_epi32(wbb), ybs);
-
-		__m128i xlp = _mm_loadu_si128((__m128i *)(buf + loff + u));
-		__m256i ylp = _mm256_cvtepu8_epi16(xlp);
-
-		ylp = _mm256_xor_si256(_mm256_srai_epi16(ybb, 15), ylp);
-		__m256i yd = _mm256_loadu_si256((__m256i *)(d + u));
-		yd = _mm256_xor_si256(yd, ylp);
-		_mm256_storeu_si256((__m256i *)(d + u), yd);
-	}
-
-	return voff;
-}
-
-TARGET_AVX2
-static size_t
-decode_gr_9_12(unsigned logn, int16_t *d, const uint8_t *buf, size_t buf_len,
-	int *num_ignored)
-{
-	const int low = 9;
-	const int lim_bits = 12;
-	size_t n = (size_t)1 << logn;
-
-	/*
-	 * At least low+2 bits per input.
-	 */
-	if (buf_len < (size_t)(low + 2) << (logn - 3)) {
-		return 0;
-	}
-
-	/*
-	 * Decode variable parts first.
-	 */
-	size_t voff = (size_t)(low + 1) << (logn - 3);
-	size_t vlen = decode_gr_vpart(logn, d, buf + voff, buf_len - voff,
-		low, lim_bits, num_ignored);
-	if (vlen == 0) {
-		return 0;
-	}
-	voff += vlen;
-
-	/*
-	 * Fixed-size elements.
-	 */
-	size_t loff = (size_t)1 << (logn - 3);
-	__m256i ybs = _mm256_setr_epi32(15, 13, 11, 9, 7, 5, 3, 1);
-	__m256i ysf1 = _mm256_setr_epi8(
-		0, 1, 2, 3, 4, -1, -1, -1,
-		4, 5, 6, 7, 8, -1, -1, -1,
-		0, 1, 2, 3, 4, -1, -1, -1,
-		4, 5, 6, 7, 8, -1, -1, -1);
-	__m256i ysh4h = _mm256_setr_epi64x(0, 4, 0, 4);
-	__m256i ym0 = _mm256_setr_epi8(
-		0xFF, 0xFF, 0xFF, 0xFF, 0x0F, 0x00, 0x00, 0x00,
-		0xFF, 0xFF, 0xFF, 0xFF, 0x0F, 0x00, 0x00, 0x00,
-		0xFF, 0xFF, 0xFF, 0xFF, 0x0F, 0x00, 0x00, 0x00,
-		0xFF, 0xFF, 0xFF, 0xFF, 0x0F, 0x00, 0x00, 0x00);
-	__m256i ym1 = _mm256_setr_epi8(
-		0x00, 0x00, 0xFC, 0xFF, 0x0F, 0x00, 0x00, 0x00,
-		0x00, 0x00, 0xFC, 0xFF, 0x0F, 0x00, 0x00, 0x00,
-		0x00, 0x00, 0xFC, 0xFF, 0x0F, 0x00, 0x00, 0x00,
-		0x00, 0x00, 0xFC, 0xFF, 0x0F, 0x00, 0x00, 0x00);
-	__m256i ym2 = _mm256_setr_epi8(
-		0x00, 0xFE, 0x03, 0x00, 0x00, 0xFE, 0x03, 0x00,
-		0x00, 0xFE, 0x03, 0x00, 0x00, 0xFE, 0x03, 0x00,
-		0x00, 0xFE, 0x03, 0x00, 0x00, 0xFE, 0x03, 0x00,
-		0x00, 0xFE, 0x03, 0x00, 0x00, 0xFE, 0x03, 0x00);
-	for (size_t u = 0; u < n; u += 16) {
-		uint32_t wbb = *(uint16_t *)(buf + (u >> 3));
-		wbb |= (wbb >> 1) << 16;
-		__m256i ybb = _mm256_sllv_epi32(_mm256_set1_epi32(wbb), ybs);
-
-		__m128i xlp0 = _mm_loadu_si128((__m128i *)(buf + loff));
-		__m128i xlp1 = _mm_loadu_si128((__m128i *)(buf + loff + 9));
-		loff += 18;
-		__m256i ylp = _mm256_setr_m128i(xlp0, xlp1);
-		ylp = _mm256_shuffle_epi8(ylp, ysf1);
-		ylp = _mm256_srlv_epi64(ylp, ysh4h);
-
-		ylp = _mm256_and_si256(ylp, ym0);
-		ylp = _mm256_or_si256(
-			_mm256_andnot_si256(ym1, ylp),
-			_mm256_slli_epi64(_mm256_and_si256(ym1, ylp), 14));
-		ylp = _mm256_or_si256(
-			_mm256_andnot_si256(ym2, ylp),
-			_mm256_slli_epi64(_mm256_and_si256(ym2, ylp), 7));
-
-		ylp = _mm256_xor_si256(_mm256_srai_epi16(ybb, 15), ylp);
-		__m256i yd = _mm256_loadu_si256((__m256i *)(d + u));
-		yd = _mm256_xor_si256(yd, ylp);
-		_mm256_storeu_si256((__m256i *)(d + u), yd);
-	}
-
-	return voff;
-}
-
-TARGET_AVX2
-static size_t
-decode_gr_10_14(unsigned logn, int16_t *d, const uint8_t *buf, size_t buf_len,
-	int *num_ignored)
-{
-	const int low = 10;
-	const int lim_bits = 14;
-	size_t n = (size_t)1 << logn;
-
-	/*
-	 * At least low+2 bits per input.
-	 */
-	if (buf_len < (size_t)(low + 2) << (logn - 3)) {
-		return 0;
-	}
-
-	/*
-	 * Decode variable parts first.
-	 */
-	size_t voff = (size_t)(low + 1) << (logn - 3);
-	size_t vlen = decode_gr_vpart(logn, d, buf + voff, buf_len - voff,
-		low, lim_bits, num_ignored);
-	if (vlen == 0) {
-		return 0;
-	}
-	voff += vlen;
-
-	/*
-	 * Fixed-size elements.
-	 */
-	size_t loff = (size_t)1 << (logn - 3);
-	__m256i ybs = _mm256_setr_epi32(15, 13, 11, 9, 7, 5, 3, 1);
-
-	__m256i ysf1 = _mm256_setr_epi8(
-		0, 1, 2, 3, 4, -1, -1, -1,
-		5, 6, 7, 8, 9, -1, -1, -1,
-		0, 1, 2, 3, 4, -1, -1, -1,
-		5, 6, 7, 8, 9, -1, -1, -1);
-	__m256i ym1 = _mm256_setr_epi8(
-		0x00, 0x00, 0xF0, 0xFF, 0xFF, 0x00, 0x00, 0x00,
-		0x00, 0x00, 0xF0, 0xFF, 0xFF, 0x00, 0x00, 0x00,
-		0x00, 0x00, 0xF0, 0xFF, 0xFF, 0x00, 0x00, 0x00,
-		0x00, 0x00, 0xF0, 0xFF, 0xFF, 0x00, 0x00, 0x00);
-	__m256i ym2 = _mm256_setr_epi8(
-		0x00, 0xFC, 0x0F, 0x00, 0x00, 0xFC, 0x0F, 0x00,
-		0x00, 0xFC, 0x0F, 0x00, 0x00, 0xFC, 0x0F, 0x00,
-		0x00, 0xFC, 0x0F, 0x00, 0x00, 0xFC, 0x0F, 0x00,
-		0x00, 0xFC, 0x0F, 0x00, 0x00, 0xFC, 0x0F, 0x00);
-
-	for (size_t u = 0; u < n; u += 16) {
-		uint32_t wbb = *(uint16_t *)(buf + (u >> 3));
-		wbb |= (wbb >> 1) << 16;
-		__m256i ybb = _mm256_sllv_epi32(_mm256_set1_epi32(wbb), ybs);
-
-		__m128i xlp0 = _mm_loadu_si128((__m128i *)(buf + loff));
-		__m128i xlp1 = _mm_loadu_si128((__m128i *)(buf + loff + 10));
-		loff += 20;
-		__m256i ylp = _mm256_set_m128i(xlp1, xlp0);
-		ylp = _mm256_shuffle_epi8(ylp, ysf1);
-		ylp = _mm256_or_si256(
-			_mm256_andnot_si256(ym1, ylp),
-			_mm256_slli_epi64(_mm256_and_si256(ym1, ylp), 12));
-		ylp = _mm256_or_si256(
-			_mm256_andnot_si256(ym2, ylp),
-			_mm256_slli_epi64(_mm256_and_si256(ym2, ylp), 6));
-
-		ylp = _mm256_xor_si256(_mm256_srai_epi16(ybb, 15), ylp);
-		__m256i yd = _mm256_loadu_si256((__m256i *)(d + u));
-		yd = _mm256_xor_si256(yd, ylp);
-		_mm256_storeu_si256((__m256i *)(d + u), yd);
-	}
-
-	return voff;
-}
+#define decode_gr_5_9(logn, d, buf, buf_len, pni) \
+	decode_gr(logn, d, buf, buf_len, 5, 9, pni)
+#define decode_gr_6_10(logn, d, buf, buf_len, pni) \
+	decode_gr(logn, d, buf, buf_len, 6, 10, pni)
+#define decode_gr_8_11(logn, d, buf, buf_len, pni) \
+	decode_gr(logn, d, buf, buf_len, 8, 11, pni)
+#define decode_gr_9_12(logn, d, buf, buf_len, pni) \
+	decode_gr(logn, d, buf, buf_len, 9, 12, pni)
+#define decode_gr_10_14(logn, d, buf, buf_len, pni) \
+	decode_gr(logn, d, buf, buf_len, 10, 14, pni)
 
 /*
  * Decode q00 from the source public key. The provided 'buf' must point to
@@ -2412,22 +1561,17 @@ Zh(decode_signature)(unsigned logn, int16_t *s1_and_salt,
 /*
  * Decode s1 and recompute t1, given h1.
  */
-TARGET_AVX2
 static inline void
 make_t1(unsigned logn, int16_t *d, const uint8_t *h1)
 {
 	size_t n = (size_t)1 << logn;
-	__m256i ys = _mm256_setr_epi32(0, 2, 4, 6, 8, 10, 12, 14);
-	__m256i y1 = _mm256_set1_epi16(1);
-	for (size_t u = 0; u < n; u += 16) {
-		uint32_t w = (uint32_t)h1[(u >> 3) + 0]
-			| ((uint32_t)h1[(u >> 3) + 1] << 8);
-		w |= (w & 0xFFFE) << 15;
-		__m256i yh = _mm256_set1_epi32(w);
-		yh = _mm256_and_si256(_mm256_srlv_epi32(yh, ys), y1);
-		__m256i yd = _mm256_loadu_si256((const __m256i *)(d + u));
-		yd = _mm256_sub_epi16(yh, _mm256_add_epi16(yd, yd));
-		_mm256_storeu_si256((__m256i *)(d + u), yd);
+	for (size_t u = 0; u < n; u += 8) {
+		uint32_t h1b = h1[u >> 3];
+		for (size_t v = 0; v < 8; v ++, h1b >>= 1) {
+			uint32_t x = d[u + v];
+			x = (h1b & 1) - (x << 1);
+			d[u + v] = (int16_t)*(int32_t *)&x;
+		}
 	}
 }
 
@@ -2438,7 +1582,6 @@ make_t1(unsigned logn, int16_t *d, const uint8_t *h1)
  * and tnorm2 (s0 and s1 are int16_t[n] each, tnorm1 and tnorm2 are
  * uint32_t).
  */
-TARGET_AVX2_ONLY
 int
 Zh(verify_inner)(unsigned logn,
 	const void *restrict sig, size_t sig_len,
@@ -2582,44 +1725,24 @@ Zh(verify_inner)(unsigned logn,
 	 * Compute t1 = h1 - 2*s1 and convert to fx32 format + FFT.
 	 * We also check that sym-break(h1 - 2*s1) is true.
 	 */
-	__m128i xone = _mm_set1_epi16(1);
-	__m128i xsh_h = _mm_setr_epi32(0, 2, 4, 6);
-	__m256i ysh_t1 = _mm256_set1_epi32(sh_t1);
-	uint32_t rp = 0, rn = 0, csb = 0xFFFF;
+	uint32_t csb = 0xFFFFFFFF;
 	for (size_t u = 0; u < n; u += 8) {
-		uint32_t w = (uint32_t)h[(n >> 3) + (u >> 3)];
-		w |= (w & 0xFFFE) << 15;
-		__m128i xh = _mm_set1_epi32(w);
-		xh = _mm_and_si128(xone, _mm_srlv_epi32(xh, xsh_h));
-		__m128i xs1 = _mm_loadu_si128((__m128i *)(s1 + u));
-		__m128i xt1 = _mm_sub_epi16(xh, _mm_add_epi16(xs1, xs1));
-		__m256i yt1 = _mm256_cvtepi16_epi32(xt1);
-		_mm256_storeu_si256((__m256i *)(ft1 + u),
-			_mm256_sllv_epi32(yt1, ysh_t1));
-
-		__m128i xp = _mm_cmpgt_epi16(xt1, _mm_setzero_si128());
-		__m128i xn = _mm_cmpgt_epi16(_mm_setzero_si128(), xt1);
-		uint32_t mp = _mm_movemask_epi8(xp);
-		uint32_t mn = _mm_movemask_epi8(xn);
-		rp |= csb & mp;
-		rn |= csb & mn;
-		csb &= ((rp | rn) - 1) >> 16;
+		uint32_t hb = h[(n >> 3) + (u >> 3)];
+		for (size_t v = 0; v < 8; v ++, hb >>= 1) {
+			uint32_t w = (uint32_t)s1[u + v];
+			w = (hb & 1) - (w << 1);
+			ft1[u + v] = fx32_of(*(int32_t *)&w, sh_t1);
+			if ((csb & w) >> 31) {
+				/* First non-zero value is negative. */
+				return 0;
+			}
+			csb &= ~tbmask(-w);
+		}
 	}
-	/*
-	 * rp and rn contain the positive/negative masks for the lowest
-	 * group which contained a non-zero value.
-	 */
-#if defined _MSC_VER
-	unsigned long k;
-	(void)_BitScanForward(&k, rp | rn | 0x80000000);
-	if (((rp >> k) & 1) == 0) {
+	if (csb) {
+		/* t1 is entirely 0, this is not valid */
 		return 0;
 	}
-#else
-	if (((rp >> _bit_scan_forward(rp | rn | 0x80000000)) & 1) == 0) {
-		return 0;
-	}
-#endif
 	fx32_FFT(logn, ft1);
 
 #if HAWK_DEBUG
@@ -2673,29 +1796,13 @@ Zh(verify_inner)(unsigned logn,
 	 * avoid overflow; it will become a corrective value later on.
 	 */
 	int32_t cstq00 = q00[0];
-	__m128i xrevmv = _mm_setr_epi8(
-		-1, -1, 14, 15, 12, 13, 10, 11, 8, 9, 6, 7, 4, 5, 2, 3);
-	__m256i ysh_q00 = _mm256_set1_epi32(sh_q00);
-	__m128i xi1 = _mm_loadu_si128((__m128i *)q00);
-	__m128i xdelay = _mm_shuffle_epi8(xi1, xrevmv);
-	__m256i yi1 = _mm256_sllv_epi32(_mm256_cvtepi16_epi32(xi1), ysh_q00);
-	_mm256_storeu_si256((__m256i *)fq00, yi1);
-	for (size_t u = 8; u < hn; u += 8) {
-		__m128i x1 = _mm_loadu_si128((__m128i *)(q00 + u));
-		__m128i x2 = _mm_blend_epi16(x1, xdelay, 0xFE);
-		xdelay = _mm_shuffle_epi8(x1, xrevmv);
-		x2 = _mm_sub_epi16(_mm_setzero_si128(), x2);
-		__m256i y1 = _mm256_sllv_epi32(
-			_mm256_cvtepi16_epi32(x1), ysh_q00);
-		__m256i y2 = _mm256_sllv_epi32(
-			_mm256_cvtepi16_epi32(x2), ysh_q00);
-		_mm256_storeu_si256((__m256i *)(fq00 + u), y1);
-		_mm256_storeu_si256((__m256i *)(fq00 + n - u), y2);
-	}
-	__m128i xi2 = _mm_sub_epi16(_mm_setzero_si128(), xdelay);
-	__m256i yi2 = _mm256_sllv_epi32(_mm256_cvtepi16_epi32(xi2), ysh_q00);
-	_mm256_storeu_si256((__m256i *)(fq00 + hn), yi2);
 	fq00[0] = 0;
+	fq00[hn] = 0;
+	for (size_t u = 1; u < hn; u ++) {
+		uint32_t z = fx32_of(q00[u], sh_q00);
+		fq00[u] = z;
+		fq00[n - u] = -z;
+	}
 	fx32_FFT(logn, fq00);
 
 #if HAWK_DEBUG
@@ -2731,12 +1838,8 @@ Zh(verify_inner)(unsigned logn,
 	print_i16(logn, "q01", q01);
 #endif
 
-	__m256i ysh_q01 = _mm256_set1_epi32(sh_q01);
-	for (size_t u = 0; u < n; u += 8) {
-		__m128i x = _mm_loadu_si128((__m128i *)(q01 + u));
-		__m256i y = _mm256_cvtepi16_epi32(x);
-		y = _mm256_sllv_epi32(y, ysh_q01);
-		_mm256_storeu_si256((__m256i *)(fq01 + u), y);
+	for (size_t u = 0; u < n; u ++) {
+		fq01[u] = fx32_of(q01[u], sh_q01);
 	}
 	fx32_FFT(logn, fq01);
 
@@ -2748,46 +1851,6 @@ Zh(verify_inner)(unsigned logn,
 	/*
 	 * fq01 <- (q01*t1)/q00
 	 */
-	/*
-	 * Potential replacement for the division step, using AVX2 with
-	 * floating-point instructions. It is slightly faster, but since
-	 * it does not compute things with the same precision as the
-	 * integer code, it may yield a result that rounds to the s0
-	 * value differently, and ultimately lead to a different
-	 * signature validation outcome (presumably, the signer would
-	 * have to make it so on purpose, it will not happen in practice
-	 * with an honest signer). This can break consensus protocols
-	 * that rely on all parties always agreeing on the validity of a
-	 * given pkey+msg+sig.
-	 */
-	/*
-	uint64_t cstup = (uint64_t)cstq00 << (sh_q00 - (logn - 1));
-	__m256d ycstup = _mm256_set1_pd((double)*(int64_t *)&cstup);
-	for (size_t u = 0; u < hn; u += 4) {
-		__m128i xq00 = _mm_loadu_si128((__m128i *)(fq00 + u));
-		__m128i xq01_re = _mm_loadu_si128((__m128i *)(fq01 + u));
-		__m128i xq01_im = _mm_loadu_si128((__m128i *)(fq01 + u + hn));
-		__m128i xt1_re = _mm_loadu_si128((__m128i *)(ft1 + u));
-		__m128i xt1_im = _mm_loadu_si128((__m128i *)(ft1 + u + hn));
-		__m256d yq00 = _mm256_add_pd(ycstup, _mm256_cvtepi32_pd(xq00));
-		__m256d yq01_re = _mm256_cvtepi32_pd(xq01_re);
-		__m256d yq01_im = _mm256_cvtepi32_pd(xq01_im);
-		__m256d yt1_re = _mm256_cvtepi32_pd(xt1_re);
-		__m256d yt1_im = _mm256_cvtepi32_pd(xt1_im);
-		__m256d y_re = _mm256_sub_pd(
-			_mm256_mul_pd(yq01_re, yt1_re),
-			_mm256_mul_pd(yq01_im, yt1_im));
-		__m256d y_im = _mm256_add_pd(
-			_mm256_mul_pd(yq01_re, yt1_im),
-			_mm256_mul_pd(yq01_im, yt1_re));
-		y_re = _mm256_div_pd(y_re, yq00);
-		y_im = _mm256_div_pd(y_im, yq00);
-		xq01_re = _mm256_cvtpd_epi32(y_re);
-		xq01_im = _mm256_cvtpd_epi32(y_im);
-		_mm_storeu_si128((__m128i *)(fq01 + u), xq01_re);
-		_mm_storeu_si128((__m128i *)(fq01 + u + hn), xq01_im);
-	}
-	*/
 
 	/*
 	 * We inject back q00[0] here; in FFT representation, it must be
@@ -2859,43 +1922,8 @@ Zh(verify_inner)(unsigned logn,
 			   with a valid signature. */
 			return 0;
 		}
-		/*
-		 * When using AVX2, the rest of the signature verification
-		 * is fast enough that it is worthwhile to optimize this
-		 * step with an inline assembly 'div' opcode. We can use
-		 * the 64/32 variant, since we know that the quotient will
-		 * fit in 32 bits.
-		 */
-#if defined __GNUC__ || defined __clang__
-		/*
-		 * x86 in 32-bit or 64-bit with GCC syntax.
-		 */
-		uint32_t y_re = x_re_lo;
-		__asm__ ("divl %2" : "=a" (y_re), "=d" (x_re_hi)
-		                   : "r" (w00), "0" (y_re), "1" (x_re_hi));
-		uint32_t y_im = x_im_lo;
-		__asm__ ("divl %2" : "=a" (y_im), "=d" (x_im_hi)
-		                   : "r" (w00), "0" (y_im), "1" (x_im_hi));
-#elif defined _MSC_VER && defined _M_IX86
-		/*
-		 * MSVC supports inline assembly on 32-bit x86 only.
-		 */
-		uint32_t y_re, y_im;
-		__asm {
-			mov ecx, w00
-			mov edx, x_re_hi
-			mov eax, x_re_lo
-			div ecx
-			mov y_re, eax
-			mov edx, x_im_hi
-			mov eax, x_im_lo
-			div ecx
-			mov y_im, eax
-		}
-#else
 		uint32_t y_re = (((uint64_t)x_re_hi << 32) | x_re_lo) / w00;
 		uint32_t y_im = (((uint64_t)x_im_hi << 32) | x_im_lo) / w00;
-#endif
 
 		fq01[u]      = (y_re ^ (uint32_t)sx_re) - (uint32_t)sx_re;
 		fq01[u + hn] = (y_im ^ (uint32_t)sx_im) - (uint32_t)sx_im;
@@ -2920,41 +1948,21 @@ Zh(verify_inner)(unsigned logn,
 	int16_t *t0 = (int16_t *)tt32;
 	int sh_s0 = sh_t1 + sh_q01 - sh_q00 - (logn - 1);
 	int32_t lims0 = (int32_t)1 << bits_lims0[logn];
-	__m256i ysb = _mm256_setr_epi32(0, 1, 2, 3, 4, 5, 6, 7);
-	__m256i ymb = _mm256_set1_epi32((uint32_t)1 << sh_s0);
-	__m256i yst = _mm256_set1_epi32(sh_s0 + 1);
-	__m256i ylimp = _mm256_set1_epi32(lims0);
-	__m256i ylimn = _mm256_set1_epi32(-lims0 - 1);
-	__m256i ylc = _mm256_set1_epi32(-1);
-	__m256i ypw = _mm256_setr_epi8(
-		0, 1, 4, 5, 8, 9, 12, 13, -1, -1, -1, -1, -1, -1, -1, -1,
-		0, 1, 4, 5, 8, 9, 12, 13, -1, -1, -1, -1, -1, -1, -1, -1);
 	for (size_t u = 0; u < n; u += 8) {
-		uint32_t w1 = (uint32_t)h[u >> 3];
-		uint32_t w2 = w1 | (w1 << 15);
-		__m128i xh = _mm_set1_epi32(w2);
-		xh = _mm_and_si128(xone, _mm_srlv_epi32(xh, xsh_h));
-		w1 <<= sh_s0;
-		__m256i yh = _mm256_and_si256(
-			_mm256_srlv_epi32(_mm256_set1_epi32(w1), ysb), ymb);
-		__m256i yz = _mm256_loadu_si256((__m256i *)(fq01 + u));
-		yz = _mm256_add_epi32(_mm256_add_epi32(yh, yz), ymb);
-		yz = _mm256_srav_epi32(yz, yst);
-		ylc = _mm256_and_si256(ylc, _mm256_and_si256(
-			_mm256_cmpgt_epi32(ylimp, yz),
-			_mm256_cmpgt_epi32(yz, ylimn)));
-		yz = _mm256_permute4x64_epi64(
-			_mm256_shuffle_epi8(yz, ypw), 0xD8);
-		__m128i xz = _mm256_castsi256_si128(yz);
-		if (ss != NULL) {
-			_mm_storeu_si128(
-				(__m128i *)((uint8_t *)ss + (u << 1)), xz);
+		uint32_t h0b = h[u >> 3];
+		for (size_t v = 0; v < 8; v ++, h0b >>= 1) {
+			uint32_t w = fx32_of(h0b & 1, sh_s0) + fq01[u + v];
+			int32_t z = fx32_rint(w, sh_s0 + 1);
+			if (z < -lims0 || z >= lims0) {
+				return 0;
+			}
+			if (ss != NULL) {
+				int16_t zz = (int16_t)z;
+				memcpy((uint8_t *)ss + ((u + v) << 1), &zz, 2);
+			}
+			w = (h0b & 1) - ((uint32_t)z << 1);
+			t0[u + v] = (int16_t)*(int32_t *)&w;
 		}
-		xz = _mm_sub_epi16(xh, _mm_add_epi16(xz, xz));
-		_mm_storeu_si128((__m128i *)(t0 + u), xz);
-	}
-	if (_mm256_movemask_epi8(ylc) != -1) {
-		return 0;
 	}
 
 #if HAWK_DEBUG
@@ -3004,11 +2012,6 @@ Zh(verify_inner)(unsigned logn,
 		uint32_t R3 = (i == 0) ? P1_R3 : P2_R3;
 		uint32_t m16 = (i == 0) ? P1_m16 : P2_m16;
 		const uint32_t *gm = (i == 0) ? GM_p1 : GM_p2;
-		__m256i yp = _mm256_set1_epi32(p);
-		__m256i yp0i = _mm256_set1_epi32(p0i);
-		__m256i ym16 = _mm256_set1_epi32(m16);
-		__m256i yone = _mm256_set1_epi32(1);
-		__m256i yR3 = _mm256_set1_epi32(R3);
 
 		/* c2 <- t1 */
 		if (sig_len == (size_t)-1) {
@@ -3039,48 +2042,33 @@ Zh(verify_inner)(unsigned logn,
 		 * This requires some temporary storage, but the upper
 		 * half of c1[] is free at this point.
 		 */
-		__m256i ybx = _mm256_loadu_si256((const __m256i *)c1);
-		_mm256_storeu_si256((__m256i *)(c1 + hn), ybx);
-		for (size_t u = 8; u < hn; u += 8) {
-			__m256i yc = _mm256_loadu_si256((__m256i *)(c1 + u));
-			ybx = mp_montymul_x8(ybx, yc, yp, yp0i);
-			_mm256_storeu_si256((__m256i *)(c1 + u + hn), ybx);
+		uint32_t bx = c1[0];
+		c1[hn] = bx;
+		for (size_t u = 1; u < hn; u ++) {
+			bx = mp_montymul(bx, c1[u], p, p0i);
+			c1[u + hn] = bx;
 		}
-		ybx = mp_div_x8(yone, ybx, yp, yp0i, ym16);
-		for (size_t u = hn - 8; u > 0; u -= 8) {
-			__m256i yi = _mm256_loadu_si256(
-				(const __m256i *)(c1 + u + hn - 8));
-			__m256i yj = _mm256_loadu_si256((__m256i *)(c1 + u));
-			yi = mp_montymul_x8(ybx, yi, yp, yp0i);
-			ybx = mp_montymul_x8(ybx, yj, yp, yp0i);
-			_mm256_storeu_si256((__m256i *)(c1 + u), yi);
+		bx = mp_div(1, bx, p, p0i, m16);
+		for (size_t u = hn - 1; u > 0; u --) {
+			uint32_t ix = mp_montymul(bx, c1[u + hn - 1], p, p0i);
+			bx = mp_montymul(bx, c1[u], p, p0i);
+			c1[u] = ix;
 		}
-		_mm256_storeu_si256((__m256i *)c1, ybx);
+		c1[0] = bx;
 
 		/* c2 <- c2*c1 = t1/q00
 		   nnacc = Tr_p(t1*adj(t1)/q00) */
-		__m256i yacc = _mm256_setzero_si256();
-		__m256i yrev = _mm256_setr_epi32(7, 6, 5, 4, 3, 2, 1, 0);
-		for (size_t u = 0; u < hn; u += 8) {
-			__m256i y1 = _mm256_loadu_si256(
-				(const __m256i *)(c2 + u));
-			__m256i y2 = _mm256_loadu_si256(
-				(const __m256i *)(c2 + (n - 8) - u));
-			__m256i yq = _mm256_loadu_si256(
-				(const __m256i *)(c1 + u));
-			y2 = _mm256_permutevar8x32_epi32(y2, yrev);
-			y1 = mp_montymul_x8(y1, yq, yp, yp0i);
-			yacc = mp_add_x8(yacc,
-				mp_montymul_x8(y1, y2, yp, yp0i), yp);
-			y2 = mp_montymul_x8(y2, yq, yp, yp0i);
-			y2 = _mm256_permutevar8x32_epi32(y2, yrev);
-			_mm256_storeu_si256((__m256i *)(c2 + u), y1);
-			_mm256_storeu_si256((__m256i *)(c2 + (n - 8) - u), y2);
+		uint32_t nnacc = 0;
+		for (size_t u = 0; u < hn; u ++) {
+			uint32_t x1 = c2[u];
+			uint32_t x2 = c2[(n - 1) - u];
+			uint32_t qx = c1[u];
+			x1 = mp_montymul(x1, qx, p, p0i);
+			nnacc = mp_add(nnacc, mp_montymul(x1, x2, p, p0i), p);
+			x2 = mp_montymul(x2, qx, p, p0i);
+			c2[u] = x1;
+			c2[(n - 1) - u] = x2;
 		}
-		yacc = mp_add_x8(yacc, _mm256_srli_epi64(yacc, 32), yp);
-		yacc = mp_add_x8(yacc, _mm256_bsrli_epi128(yacc, 8), yp);
-		uint32_t nnacc = _mm256_cvtsi256_si32(yacc);
-		nnacc = mp_add(nnacc, _mm256_extract_epi32(yacc, 4), p);
 		/* nnacc is in double-anti-Montgomery representation
 		   (i.e. divided by R = 2^64) */
 
@@ -3092,23 +2080,17 @@ Zh(verify_inner)(unsigned logn,
 		mp_poly_to_NTT(logn, c1, q01, p, p0i, gm);
 
 		/* c1 <- c1*c2 = q01*t1/q00 */
-		for (size_t u = 0; u < n; u += 8) {
-			__m256i y1 = _mm256_loadu_si256((__m256i *)(c1 + u));
-			__m256i y2 = _mm256_loadu_si256((__m256i *)(c2 + u));
-			y1 = mp_montymul_x8(y1, y2, yp, yp0i);
-			y1 = mp_montymul_x8(y1, yR3, yp, yp0i);
-			_mm256_storeu_si256((__m256i *)(c1 + u), y1);
+		for (size_t u = 0; u < n; u ++) {
+			c1[u] = mp_montymul(
+				mp_montymul(c1[u], c2[u], p, p0i), R3, p, p0i);
 		}
 
 		/* c2 <- t0 */
 		mp_poly_to_NTT(logn, c2, t0, p, p0i, gm);
 
 		/* c2 <- c2 + c1 = t0 + q01*t1/q00 = e */
-		for (size_t u = 0; u < n; u += 8) {
-			__m256i y1 = _mm256_loadu_si256((__m256i *)(c1 + u));
-			__m256i y2 = _mm256_loadu_si256((__m256i *)(c2 + u));
-			y2 = mp_add_x8(y1, y2, yp);
-			_mm256_storeu_si256((__m256i *)(c2 + u), y2);
+		for (size_t u = 0; u < n; u ++) {
+			c2[u] = mp_add(c2[u], c1[u], p);
 		}
 
 		/* c1 <- q00 (auto-adjoint) */
@@ -3119,24 +2101,13 @@ Zh(verify_inner)(unsigned logn,
 		mp_poly_to_NTT_autoadj(logn, c1, q00, p, p0i, gm);
 
 		/* nnacc <- nnacc + Tr_p(c1*c2*adj(c2) = q00*e*adj(e)) */
-		yacc = _mm256_setzero_si256();
-		for (size_t u = 0; u < hn; u += 8) {
-			__m256i y1 = _mm256_loadu_si256(
-				(const __m256i *)(c2 + u));
-			__m256i y2 = _mm256_loadu_si256(
-				(const __m256i *)(c2 + (n - 8) - u));
-			__m256i yq = _mm256_loadu_si256(
-				(const __m256i *)(c1 + u));
-			y2 = _mm256_permutevar8x32_epi32(y2, yrev);
-			yacc = mp_add_x8(yacc,
-				mp_montymul_x8(yq,
-					mp_montymul_x8(y1, y2, yp, yp0i),
-					yp, yp0i), yp);
+		for (size_t u = 0; u < hn; u ++) {
+			uint32_t x1 = c2[u];
+			uint32_t x2 = c2[(n - 1) - u];
+			uint32_t qx = c1[u];
+			nnacc = mp_add(nnacc, mp_montymul(qx,
+				mp_montymul(x1, x2, p, p0i), p, p0i), p);
 		}
-		yacc = mp_add_x8(yacc, _mm256_srli_epi64(yacc, 32), yp);
-		yacc = mp_add_x8(yacc, _mm256_bsrli_epi128(yacc, 8), yp);
-		nnacc = mp_add(nnacc, _mm256_cvtsi256_si32(yacc), p);
-		nnacc = mp_add(nnacc, _mm256_extract_epi32(yacc, 4), p);
 
 		/* nnacc is in double-anti-Montgomery representation;
 		   convert it to normal representation */

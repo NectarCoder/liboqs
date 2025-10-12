@@ -20,26 +20,6 @@
 
 /* ==================================================================== */
 
-/*
- * This implementation uses AVX2 intrinsics.
- */
-#include <immintrin.h>
-#if defined __GNUC__ || defined __clang__
-#include <x86intrin.h>
-#endif
-#ifndef NTRUGEN_LE
-#define NTRUGEN_LE   1
-#endif
-#ifndef NTRUGEN_UNALIGNED
-#define NTRUGEN_UNALIGNED   1
-#endif
-#if defined __GNUC__
-#define TARGET_AVX2    __attribute__((target("avx2,lzcnt,pclmul")))
-#define ALIGNED_AVX2   __attribute__((aligned(32)))
-#elif defined _MSC_VER && _MSC_VER
-#pragma warning( disable : 4752 )
-#endif
-
 #ifndef TARGET_AVX2
 #define TARGET_AVX2
 #endif
@@ -386,14 +366,6 @@ mp_set(int32_t v, uint32_t p)
 	return w + (p & tbmask(w));
 }
 
-TARGET_AVX2
-static inline __m256i
-mp_set_x8(__m256i yv, __m256i yp)
-{
-	return _mm256_add_epi32(yv, _mm256_and_si256(yp,
-		_mm256_srai_epi32(yv, 31)));
-}
-
 /*
  * Get the signed normalized value of x mod p.
  */
@@ -402,14 +374,6 @@ mp_norm(uint32_t x, uint32_t p)
 {
 	uint32_t w = x - (p & tbmask((p >> 1) - x));
 	return *(int32_t *)&w;
-}
-
-TARGET_AVX2
-static inline __m256i
-mp_norm_x8(__m256i yv, __m256i yp, __m256i yhp)
-{
-	return _mm256_sub_epi32(yv, _mm256_and_si256(yp,
-		_mm256_cmpgt_epi32(yv, yhp)));
 }
 
 #if 0 /* unused */
@@ -462,15 +426,6 @@ mp_add(uint32_t a, uint32_t b, uint32_t p)
 	return d + (p & tbmask(d));
 }
 
-TARGET_AVX2
-static inline __m256i
-mp_add_x8(__m256i ya, __m256i yb, __m256i yp)
-{
-	__m256i yd = _mm256_sub_epi32(_mm256_add_epi32(ya, yb), yp);
-	return _mm256_add_epi32(yd, _mm256_and_si256(yp,
-		_mm256_srai_epi32(yd, 31)));
-}
-
 /*
  * Subtraction modulo p.
  */
@@ -481,15 +436,6 @@ mp_sub(uint32_t a, uint32_t b, uint32_t p)
 	return d + (p & tbmask(d));
 }
 
-TARGET_AVX2
-static inline __m256i
-mp_sub_x8(__m256i ya, __m256i yb, __m256i yp)
-{
-	__m256i yd = _mm256_sub_epi32(ya, yb);
-	return _mm256_add_epi32(yd, _mm256_and_si256(yp,
-		_mm256_srai_epi32(yd, 31)));
-}
-
 /*
  * Halving modulo p.
  */
@@ -497,16 +443,6 @@ static inline uint32_t
 mp_half(uint32_t a, uint32_t p)
 {
 	return (a + (p & -(a & 1))) >> 1;
-}
-
-TARGET_AVX2
-static inline __m256i
-mp_half_x8(__m256i ya, __m256i yp)
-{
-	return _mm256_srli_epi32(
-		_mm256_add_epi32(ya, _mm256_and_si256(yp,
-			_mm256_sub_epi32(_mm256_setzero_si256(),
-			_mm256_and_si256(ya, _mm256_set1_epi32(1))))), 1);
 }
 
 /*
@@ -528,61 +464,6 @@ mp_montymul(uint32_t a, uint32_t b, uint32_t p, uint32_t p0i)
 	uint32_t w = (uint32_t)z * p0i;
 	uint32_t d = (uint32_t)((z + (uint64_t)w * (uint64_t)p) >> 32) - p;
 	return d + (p & tbmask(d));
-}
-
-/*
- * Input:
- *    ya = a0 : XX : a1 : XX : a2 : XX : a3 : XX
- *    yb = b0 : XX : b1 : XX : b2 : XX : b3 : XX
- * Output:
- *    mm(a0,b0) : 00 : mm(a1,b1) : 00 : mm(a2,b2) : 00 : mm(a3,b3) : 00
- */
-TARGET_AVX2
-static inline __m256i
-mp_montymul_x4(__m256i ya, __m256i yb, __m256i yp, __m256i yp0i)
-{
-	__m256i yd = _mm256_mul_epu32(ya, yb);
-	__m256i ye = _mm256_mul_epu32(yd, yp0i);
-	ye = _mm256_mul_epu32(ye, yp);
-	yd = _mm256_srli_epi64(_mm256_add_epi64(yd, ye), 32);
-	yd = _mm256_sub_epi32(yd, yp);
-	return _mm256_add_epi32(yd, _mm256_and_si256(yp,
-		_mm256_srai_epi32(yd, 31)));
-}
-
-TARGET_AVX2
-static inline __m256i
-mp_montymul_x8(__m256i ya, __m256i yb, __m256i yp, __m256i yp0i)
-{
-	/* yd0 <- a0*b0 : a2*b2 (+high lane) */
-	__m256i yd0 = _mm256_mul_epu32(ya, yb);
-	/* yd1 <- a1*b1 : a3*b3 (+high lane) */
-	__m256i yd1 = _mm256_mul_epu32(
-		_mm256_srli_epi64(ya, 32),
-		_mm256_srli_epi64(yb, 32));
-
-	__m256i ye0 = _mm256_mul_epu32(yd0, yp0i);
-	__m256i ye1 = _mm256_mul_epu32(yd1, yp0i);
-	ye0 = _mm256_mul_epu32(ye0, yp);
-	ye1 = _mm256_mul_epu32(ye1, yp);
-	yd0 = _mm256_add_epi64(yd0, ye0);
-	yd1 = _mm256_add_epi64(yd1, ye1);
-
-	/* yf0 <- lo(d0) : lo(d1) : hi(d0) : hi(d1) (+high lane) */
-	__m256i yf0 = _mm256_unpacklo_epi32(yd0, yd1);
-	/* yf1 <- lo(d2) : lo(d3) : hi(d2) : hi(d3) (+high lane) */
-	__m256i yf1 = _mm256_unpackhi_epi32(yd0, yd1);
-	/* yg <- hi(d0) : hi(d1) : hi(d2) : hi(d3) (+high lane) */
-	__m256i yg = _mm256_unpackhi_epi64(yf0, yf1);
-	/*
-	 * Alternate version (instead of the three unpack above) but it
-	 * seems to be slightly slower.
-	__m256i yg = _mm256_blend_epi32(_mm256_srli_epi64(yd0, 32), yd1, 0xAA);
-	 */
-
-	yg = _mm256_sub_epi32(yg, yp);
-	return _mm256_add_epi32(yg, _mm256_and_si256(yp,
-		_mm256_srai_epi32(yg, 31)));
 }
 
 /*
@@ -718,12 +599,6 @@ uint32_t zint_mul_small(uint32_t *m, size_t len, uint32_t x);
 uint32_t zint_mod_small_unsigned(const uint32_t *d, size_t len, size_t stride,
 	uint32_t p, uint32_t p0i, uint32_t R2);
 
-#define zint_mod_small_unsigned_x8 Zn(zint_mod_small_unsigned_x8)
-TARGET_AVX2
-__m256i zint_mod_small_unsigned_x8(
-	const uint32_t *d, size_t len, size_t stride,
-	__m256i yp, __m256i yp0i, __m256i yR2);
-
 /*
  * Similar to zint_mod_small_unsigned(), except that d may be signed.
  * Extra parameter is Rx = 2^(31*len) mod p.
@@ -740,22 +615,6 @@ zint_mod_small_signed(const uint32_t *d, size_t len, size_t stride,
 	return z;
 }
 
-TARGET_AVX2
-static inline __m256i
-zint_mod_small_signed_x8(const uint32_t *d, size_t len, size_t stride,
-	__m256i yp, __m256i yp0i, __m256i yR2, __m256i yRx)
-{
-	if (len == 0) {
-		return _mm256_setzero_si256();
-	}
-	__m256i yz = zint_mod_small_unsigned_x8(d, len, stride, yp, yp0i, yR2);
-	__m256i yl = _mm256_loadu_si256((__m256i *)(d + (len - 1) * stride));
-	__m256i ym = _mm256_sub_epi32(_mm256_setzero_si256(),
-		_mm256_srli_epi32(yl, 30));
-	yz = mp_sub_x8(yz, _mm256_and_si256(yRx, ym), yp);
-	return yz;
-}
-
 /*
  * Add s*a to d. d and a initially have length 'len' words; the new d
  * has length 'len+1' words. 's' must fit on 31 bits. d[] and a[] must
@@ -764,19 +623,6 @@ zint_mod_small_signed_x8(const uint32_t *d, size_t len, size_t stride,
 #define zint_add_mul_small   Zn(zint_add_mul_small)
 void zint_add_mul_small(uint32_t *restrict d, size_t len, size_t dstride,
 	const uint32_t *restrict a, uint32_t s);
-
-/*
- * Like zint_add_mul_small(), except that it handles eight integers in
- * parallel:
- *    d0 <- d0 + s0*a
- *    d1 <- d1 + s1*a
- *     ...
- *    d7 <- d7 + s7*a
- */
-#define zint_add_mul_small_x8   Zn(zint_add_mul_small_x8)
-TARGET_AVX2
-void zint_add_mul_small_x8(uint32_t *restrict d, size_t len, size_t dstride,
-	const uint32_t *restrict a, __m256i ys);
 
 /*
  * Normalize a modular integer around 0: if x > p/2, then x is replaced
@@ -817,14 +663,31 @@ void zint_negate(uint32_t *a, size_t len, uint32_t ctl);
 /*
  * Get the number of leading zeros in a 32-bit value.
  */
-TARGET_AVX2
 static inline unsigned
 lzcnt(uint32_t x)
 {
+	uint32_t m = tbmask((x >> 16) - 1);
+	uint32_t s = m & 16;
+	x = (x >> 16) ^ (m & (x ^ (x >> 16)));
+	m = tbmask((x >>  8) - 1);
+	s |= m &  8;
+	x = (x >>  8) ^ (m & (x ^ (x >>  8)));
+	m = tbmask((x >>  4) - 1);
+	s |= m &  4;
+	x = (x >>  4) ^ (m & (x ^ (x >>  4)));
+	m = tbmask((x >>  2) - 1);
+	s |= m &  2;
+	x = (x >>  2) ^ (m & (x ^ (x >>  2)));
+
 	/*
-	 * All AVX2-capable CPUs have lzcnt.
+	 * At this point, x fits on 2 bits. Number of leading zeros is
+	 * then:
+	 *    x = 0   -> 2
+	 *    x = 1   -> 1
+	 *    x = 2   -> 0
+	 *    x = 3   -> 0
 	 */
-	return _lzcnt_u32(x);
+	return (unsigned)(s + ((2 - x) & tbmask(x - 3)));
 }
 
 /*
@@ -979,29 +842,6 @@ fxr_mul(fxr x, fxr y)
 #endif
 }
 
-TARGET_AVX2
-static inline __m256i
-fxr_mul_x4(__m256i ya, __m256i yb)
-{
-	__m256i ya_hi = _mm256_srli_epi64(ya, 32);
-	__m256i yb_hi = _mm256_srli_epi64(yb, 32);
-	__m256i y1 = _mm256_mul_epu32(ya, yb);
-	__m256i y2 = _mm256_mul_epu32(ya, yb_hi);
-	__m256i y3 = _mm256_mul_epu32(ya_hi, yb);
-	__m256i y4 = _mm256_mul_epu32(ya_hi, yb_hi);
-	y1 = _mm256_srli_epi64(y1, 32);
-	y4 = _mm256_slli_epi64(y4, 32);
-	__m256i y5 = _mm256_add_epi64(
-		_mm256_add_epi64(y1, y2),
-		_mm256_add_epi64(y3, y4));
-	__m256i yna = _mm256_srai_epi32(ya, 31);
-	__m256i ynb = _mm256_srai_epi32(yb, 31);
-	return _mm256_sub_epi64(y5,
-		_mm256_add_epi64(
-			_mm256_and_si256(_mm256_slli_epi64(yb, 32), yna),
-			_mm256_and_si256(_mm256_slli_epi64(ya, 32), ynb)));
-}
-
 static inline fxr
 fxr_sqr(fxr x)
 {
@@ -1028,23 +868,6 @@ fxr_sqr(fxr x)
 #endif
 }
 
-TARGET_AVX2
-static inline __m256i
-fxr_sqr_x4(__m256i ya)
-{
-	__m256i ya_hi = _mm256_srli_epi64(ya, 32);
-	__m256i y1 = _mm256_mul_epu32(ya, ya);
-	__m256i y2 = _mm256_mul_epu32(ya, ya_hi);
-	__m256i y3 = _mm256_mul_epu32(ya_hi, ya_hi);
-	y1 = _mm256_srli_epi64(y1, 32);
-	y2 = _mm256_add_epi64(y2, y2);
-	y3 = _mm256_slli_epi64(y3, 32);
-	__m256i y4 = _mm256_add_epi64(_mm256_add_epi64(y1, y2), y3);
-	return _mm256_sub_epi64(y4,
-		_mm256_and_si256(_mm256_slli_epi64(ya, 33),
-		_mm256_srai_epi32(ya, 31)));
-}
-
 static inline int32_t
 fxr_round(fxr x)
 {
@@ -1060,18 +883,6 @@ fxr_div2e(fxr x, unsigned n)
 	v = *(int64_t *)&x.v;
 	x.v = (uint64_t)((v + (((int64_t)1 << n) >> 1)) >> n);
 	return x;
-}
-
-TARGET_AVX2
-static inline __m256i
-fxr_half_x4(__m256i ya)
-{
-	const __m256i y1 = _mm256_set1_epi64x(1);
-	const __m256i yh = _mm256_set1_epi64x((uint64_t)1 << 63);
-	ya = _mm256_add_epi64(ya, y1);
-	return _mm256_or_si256(
-		_mm256_srli_epi64(ya, 1),
-		_mm256_and_si256(ya, yh));
 }
 
 static inline fxr
@@ -1096,29 +907,6 @@ fxr_div(fxr x, fxr y)
 {
 	x.v = inner_fxr_div(x.v, y.v);
 	return x;
-}
-
-#define fxr_div_x4   Zn(fxr_div_x4)
-TARGET_AVX2 __m256i fxr_div_x4(__m256i yn, __m256i yd);
-
-/*
- * Divide four values (n0..n3) by the same divisor (d).
- */
-TARGET_AVX2
-static inline void
-fxr_div_x4_1(fxr *n0, fxr *n1, fxr *n2, fxr *n3, fxr d)
-{
-	__m256i yn = _mm256_setr_epi64x(n0->v, n1->v, n2->v, n3->v);
-	__m256i yd = _mm256_set1_epi64x(d.v);
-	union {
-		__m256i y;
-		uint64_t q[4];
-	} z;
-	z.y = fxr_div_x4(yn, yd);
-	n0->v = z.q[0];
-	n1->v = z.q[1];
-	n2->v = z.q[2];
-	n3->v = z.q[3];
 }
 
 static inline int
@@ -1185,20 +973,6 @@ fxc_mul(fxc x, fxc y)
 	z.re = fxr_sub(z0, z1);
 	z.im = fxr_sub(z2, fxr_add(z0, z1));
 	return z;
-}
-
-TARGET_AVX2
-static inline void
-fxc_mul_x4(__m256i *yd_re, __m256i *yd_im,
-	__m256i ya_re, __m256i ya_im, __m256i yb_re, __m256i yb_im)
-{
-	__m256i y0 = fxr_mul_x4(ya_re, yb_re);
-	__m256i y1 = fxr_mul_x4(ya_im, yb_im);
-	__m256i y2 = fxr_mul_x4(
-		_mm256_add_epi64(ya_re, ya_im),
-		_mm256_add_epi64(yb_re, yb_im));
-	*yd_re = _mm256_sub_epi64(y0, y1);
-	*yd_im = _mm256_sub_epi64(y2, _mm256_add_epi64(y0, y1));
 }
 
 static inline fxc
