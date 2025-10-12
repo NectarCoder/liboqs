@@ -173,7 +173,12 @@ int32_t field_get_degree(const field_t e) {
     int8_t mask = 0;
 
     for(uint8_t i = 0 ; i < RYDE_FIELD_WORDS ; i++) {
-        __asm__ volatile("bsr %1,%0;" : "=r"(index) : "r"(e[i]));
+        /* Portable MSB lookup: avoid x86 'bsr' inline asm. */
+        // Old code:
+        // __asm__ volatile("bsr %1,%0;" : "=r"(index) : "r"(e[i]));
+        if (e[i]) {
+            index = 63 - (int64_t)__builtin_clzll((unsigned long long)e[i]);
+        }
         mask = is_nonzero_u64(e[i]);
         cmove_u64(&result, mask, index + 64 * i, result);
     }

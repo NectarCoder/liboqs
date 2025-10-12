@@ -173,7 +173,15 @@ int32_t field_get_degree(const field_t e) {
     int8_t mask = 0;
 
     for(uint8_t i = 0 ; i < RYDE_FIELD_WORDS ; i++) {
-        __asm__ volatile("bsr %1,%0;" : "=r"(index) : "r"(e[i]));
+        /* Find index of most-significant set bit in e[i].
+         * Replace x86-specific 'bsr' inline asm with portable builtin.
+         * __builtin_clzll is undefined for 0, so only call it when e[i] != 0.
+         */
+        // Old code:
+        //__asm__ volatile("bsr %1,%0;" : "=r"(index) : "r"(e[i]));
+        if (e[i]) {
+            index = 63 - (int64_t)__builtin_clzll((unsigned long long)e[i]);
+        }
         mask = is_nonzero_u64(e[i]);
         cmove_u64(&result, mask, index + 64 * i, result);
     }

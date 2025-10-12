@@ -53,12 +53,11 @@ if(CMAKE_C_COMPILER_ID MATCHES "Clang|GNU")
             # setting to z10 as sensible default.
             set(OQS_OPT_FLAG "-march=z10")
         else()
-            # Assume sensible default like -march=x86-64, -march=armv8-a, etc.
-	    if(ARCH_ARM64v8)
-                set(OQS_OPT_FLAG "-march=armv8-a+crypto")
-    	    else()
-		set(OQS_OPT_FLAG "")
-	    endif()
+            # For 'generic' builds we intentionally avoid adding architecture-
+            # specific '-march' or '-mcpu' flags so the same source tree is
+            # compiled without ISA-specific extensions. Keep OQS_OPT_FLAG
+            # empty to enforce generic compilation.
+            set(OQS_OPT_FLAG "")
         endif()
     elseif(OQS_OPT_TARGET STREQUAL "auto")
       if(ARCH_X86_64)

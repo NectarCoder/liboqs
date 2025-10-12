@@ -20,6 +20,8 @@ if(OQS_ENABLE_SIG_hawk_512)
     )
 
     add_library(hawk_512 OBJECT ${HAWK_512_SOURCES})
+    set(HAWK_512_NAMESPACE_HEADER ${CMAKE_CURRENT_LIST_DIR}/hawk_512/namespace_hawk_512.h)
+    target_compile_options(hawk_512 PRIVATE "-include" ${HAWK_512_NAMESPACE_HEADER})
 
     set(HAWK_512_API_DEFINES
         crypto_sign=hawk_512_crypto_sign
@@ -36,6 +38,7 @@ if(OQS_ENABLE_SIG_hawk_512)
     target_include_directories(hawk_512_glue PRIVATE ${CMAKE_CURRENT_LIST_DIR})
     target_include_directories(hawk_512_glue PRIVATE ${CMAKE_CURRENT_LIST_DIR}/hawk_512)
     target_compile_definitions(hawk_512_glue PRIVATE ${HAWK_512_API_DEFINES})
+    target_compile_options(hawk_512_glue PRIVATE "-include" ${HAWK_512_NAMESPACE_HEADER})
     
     set(_HAWK_OBJS ${_HAWK_OBJS} $<TARGET_OBJECTS:hawk_512> $<TARGET_OBJECTS:hawk_512_glue>)
 endif()
@@ -58,6 +61,8 @@ if(OQS_ENABLE_SIG_hawk_1024)
     )
 
     add_library(hawk_1024 OBJECT ${HAWK_1024_SOURCES})
+    set(HAWK_1024_NAMESPACE_HEADER ${CMAKE_CURRENT_LIST_DIR}/hawk_1024/namespace_hawk_1024.h)
+    target_compile_options(hawk_1024 PRIVATE "-include" ${HAWK_1024_NAMESPACE_HEADER})
 
     set(HAWK_1024_API_DEFINES
         crypto_sign=hawk_1024_crypto_sign
@@ -74,6 +79,7 @@ if(OQS_ENABLE_SIG_hawk_1024)
     target_include_directories(hawk_1024_glue PRIVATE ${CMAKE_CURRENT_LIST_DIR})
     target_include_directories(hawk_1024_glue PRIVATE ${CMAKE_CURRENT_LIST_DIR}/hawk_1024)
     target_compile_definitions(hawk_1024_glue PRIVATE ${HAWK_1024_API_DEFINES})
+    target_compile_options(hawk_1024_glue PRIVATE "-include" ${HAWK_1024_NAMESPACE_HEADER})
     
     set(_HAWK_OBJS ${_HAWK_OBJS} $<TARGET_OBJECTS:hawk_1024> $<TARGET_OBJECTS:hawk_1024_glue>)
 endif()
