@@ -27,7 +27,7 @@
 
 #pragma once
 
-#include "parameters.h"
+#include "less_2.h"
 #include "LESS.h"
 
 #define CRYPTO_ALGNAME "LESS"

@@ -81,7 +81,7 @@ OQS_API OQS_STATUS OQS_SIG_less_252_45_verify(const uint8_t *message, size_t mes
 		return OQS_ERROR;
 	}
 
-	size_t signed_message_len = signature_len + message_len;
+	size_t signed_message_len = signature_len;
 	uint8_t *signed_message = malloc(signed_message_len);
 	uint8_t *recovered_message = malloc(message_len > 0 ? message_len : 1);
 	printf("ML2: %zu\n",message_len);
@@ -92,8 +92,6 @@ OQS_API OQS_STATUS OQS_SIG_less_252_45_verify(const uint8_t *message, size_t mes
 		free(recovered_message);
 		return OQS_ERROR;
 	}
-	memcpy(signed_message, message, message_len);
-	memcpy(signed_message + message_len, signature, signature_len);
 
 	unsigned long long recovered_len = 0;
 	int ret = LESS_252_45_crypto_sign_open(recovered_message, &recovered_len, signed_message,

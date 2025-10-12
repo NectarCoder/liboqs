@@ -218,12 +218,14 @@ extern "C" {
 #define OQS_SIG_alg_sdith_cat3_short "SDitH-CAT3-SHORT"
 /** Algorithm identifier for SDitH-CAT5-SHORT */
 #define OQS_SIG_alg_sdith_cat5_short "SDitH-CAT5-SHORT"
+/** Algorithm identifier for less-252-45 */
+#define OQS_SIG_alg_less_252_45 "Less-252-45"
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALG_IDENTIFIER_END
 // EDIT-WHEN-ADDING-SIG
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALGS_LENGTH_START
 
 /** Number of algorithm identifiers above. */
-#define OQS_SIG_algs_length 105
+#define OQS_SIG_algs_length 106
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALGS_LENGTH_END
 
 /**
@@ -513,6 +515,9 @@ OQS_API bool OQS_SIG_supports_ctx_str(const char *alg_name);
 #ifdef OQS_ENABLE_SIG_SDITH
 #include <oqs/sig_sdith.h>
 #endif /* OQS_ENABLE_SIG_SDITH */
+#ifdef OQS_ENABLE_SIG_LESS
+#include <oqs/sig_less.h>
+#endif /* OQS_ENABLE_SIG_LESS */
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_INCLUDE_END
 // EDIT-WHEN-ADDING-SIG
 
