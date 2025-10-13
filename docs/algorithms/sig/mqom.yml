@@ -45,3 +45,67 @@ parameter-sets:
     no-secret-dependent-branching-claimed: false
     no-secret-dependent-branching-checked-by-valgrind: false
     large-stack-usage: true
+- name: MQOM2-CAT1-GF16-SHORT-R3
+  claimed-nist-level: 1
+  claimed-security: EUF-CMA
+  length-public-key: 60
+  length-secret-key: 88
+  length-signature: 3060
+  implementations-switch-on-runtime-cpu-features: false
+  implementations:
+  - upstream: primary-upstream
+    upstream-id: ref
+    supported-platforms: all
+    common-crypto:
+    - SHAKE128: upstream
+    no-secret-dependent-branching-claimed: false
+    no-secret-dependent-branching-checked-by-valgrind: false
+    large-stack-usage: true
+- name: MQOM2-CAT1-GF16-SHORT-R5
+  claimed-nist-level: 1
+  claimed-security: EUF-CMA
+  length-public-key: 60
+  length-secret-key: 88
+  length-signature: 2916
+  implementations-switch-on-runtime-cpu-features: false
+  implementations:
+  - upstream: primary-upstream
+    upstream-id: ref
+    supported-platforms: all
+    common-crypto:
+    - SHAKE128: upstream
+    no-secret-dependent-branching-claimed: false
+    no-secret-dependent-branching-checked-by-valgrind: false
+    large-stack-usage: true
+- name: MQOM2-CAT1-GF256-SHORT-R3
+  claimed-nist-level: 1
+  claimed-security: EUF-CMA
+  length-public-key: 80
+  length-secret-key: 128
+  length-signature: 3540
+  implementations-switch-on-runtime-cpu-features: false
+  implementations:
+  - upstream: primary-upstream
+    upstream-id: ref
+    supported-platforms: all
+    common-crypto:
+    - SHAKE128: upstream
+    no-secret-dependent-branching-claimed: false
+    no-secret-dependent-branching-checked-by-valgrind: false
+    large-stack-usage: true
+- name: MQOM2-CAT1-GF256-SHORT-R5
+  claimed-nist-level: 1
+  claimed-security: EUF-CMA
+  length-public-key: 80
+  length-secret-key: 128
+  length-signature: 3156
+  implementations-switch-on-runtime-cpu-features: false
+  implementations:
+  - upstream: primary-upstream
+    upstream-id: ref
+    supported-platforms: all
+    common-crypto:
+    - SHAKE128: upstream
+    no-secret-dependent-branching-claimed: false
+    no-secret-dependent-branching-checked-by-valgrind: false
+    large-stack-usage: true

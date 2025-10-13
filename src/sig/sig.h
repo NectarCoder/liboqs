@@ -222,6 +222,14 @@ extern "C" {
 #define OQS_SIG_alg_mqom2_cat1_gf2_short_r3 "MQOM2-CAT1-GF2-SHORT-R3"
 /** Algorithm identifier for MQOM2-CAT1-GF2-SHORT-R5 */
 #define OQS_SIG_alg_mqom2_cat1_gf2_short_r5 "MQOM2-CAT1-GF2-SHORT-R5"
+/** Algorithm identifier for MQOM2-CAT1-GF16-SHORT-R3 */
+#define OQS_SIG_alg_mqom2_cat1_gf16_short_r3 "MQOM2-CAT1-GF16-SHORT-R3"
+/** Algorithm identifier for MQOM2-CAT1-GF16-SHORT-R5 */
+#define OQS_SIG_alg_mqom2_cat1_gf16_short_r5 "MQOM2-CAT1-GF16-SHORT-R5"
+/** Algorithm identifier for MQOM2-CAT1-GF256-SHORT-R3 */
+#define OQS_SIG_alg_mqom2_cat1_gf256_short_r3 "MQOM2-CAT1-GF256-SHORT-R3"
+/** Algorithm identifier for MQOM2-CAT1-GF256-SHORT-R5 */
+#define OQS_SIG_alg_mqom2_cat1_gf256_short_r5 "MQOM2-CAT1-GF256-SHORT-R5"
 /** Algorithm identifier for less-252-45 */
 #define OQS_SIG_alg_less_252_45 "Less-252-45"
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALG_IDENTIFIER_END
@@ -229,7 +237,7 @@ extern "C" {
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALGS_LENGTH_START
 
 /** Number of algorithm identifiers above. */
-#define OQS_SIG_algs_length 108
+#define OQS_SIG_algs_length 112
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALGS_LENGTH_END
 
 /**

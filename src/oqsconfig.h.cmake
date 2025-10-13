@@ -371,6 +371,10 @@
 #cmakedefine OQS_ENABLE_SIG_MQOM 1
 #cmakedefine OQS_ENABLE_SIG_mqom2_cat1_gf2_short_r3 1
 #cmakedefine OQS_ENABLE_SIG_mqom2_cat1_gf2_short_r5 1
+#cmakedefine OQS_ENABLE_SIG_mqom2_cat1_gf16_short_r3 1
+#cmakedefine OQS_ENABLE_SIG_mqom2_cat1_gf16_short_r5 1
+#cmakedefine OQS_ENABLE_SIG_mqom2_cat1_gf256_short_r3 1
+#cmakedefine OQS_ENABLE_SIG_mqom2_cat1_gf256_short_r5 1
 
 #cmakedefine OQS_ENABLE_SIG_LESS 1
 #cmakedefine OQS_ENABLE_SIG_less_252_45 1
