@@ -1,2 +1,6 @@
-#define CATEGORY 400
-#define TARGET 220
+#ifndef CATEGORY
+#define CATEGORY 2
+#endif
+#ifndef TARGET
+#define TARGET 1
+#endif
