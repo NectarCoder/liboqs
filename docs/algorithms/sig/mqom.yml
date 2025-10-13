@@ -109,3 +109,195 @@ parameter-sets:
     no-secret-dependent-branching-claimed: false
     no-secret-dependent-branching-checked-by-valgrind: false
     large-stack-usage: true
+- name: MQOM2-CAT3-GF2-SHORT-R3
+  claimed-nist-level: 3
+  claimed-security: EUF-CMA
+  length-public-key: 78
+  length-secret-key: 108
+  length-signature: 6388
+  implementations-switch-on-runtime-cpu-features: false
+  implementations:
+  - upstream: primary-upstream
+    upstream-id: ref
+    supported-platforms: all
+    common-crypto:
+    - SHAKE128: upstream
+    no-secret-dependent-branching-claimed: false
+    no-secret-dependent-branching-checked-by-valgrind: false
+    large-stack-usage: true
+- name: MQOM2-CAT3-GF2-SHORT-R5
+  claimed-nist-level: 3
+  claimed-security: EUF-CMA
+  length-public-key: 78
+  length-secret-key: 108
+  length-signature: 6280
+  implementations-switch-on-runtime-cpu-features: false
+  implementations:
+  - upstream: primary-upstream
+    upstream-id: ref
+    supported-platforms: all
+    common-crypto:
+    - SHAKE128: upstream
+    no-secret-dependent-branching-claimed: false
+    no-secret-dependent-branching-checked-by-valgrind: false
+    large-stack-usage: true
+- name: MQOM2-CAT3-GF16-SHORT-R3
+  claimed-nist-level: 3
+  claimed-security: EUF-CMA
+  length-public-key: 90
+  length-secret-key: 132
+  length-signature: 6820
+  implementations-switch-on-runtime-cpu-features: false
+  implementations:
+  - upstream: primary-upstream
+    upstream-id: ref
+    supported-platforms: all
+    common-crypto:
+    - SHAKE128: upstream
+    no-secret-dependent-branching-claimed: false
+    no-secret-dependent-branching-checked-by-valgrind: false
+    large-stack-usage: true
+- name: MQOM2-CAT3-GF16-SHORT-R5
+  claimed-nist-level: 3
+  claimed-security: EUF-CMA
+  length-public-key: 90
+  length-secret-key: 132
+  length-signature: 6496
+  implementations-switch-on-runtime-cpu-features: false
+  implementations:
+  - upstream: primary-upstream
+    upstream-id: ref
+    supported-platforms: all
+    common-crypto:
+    - SHAKE128: upstream
+    no-secret-dependent-branching-claimed: false
+    no-secret-dependent-branching-checked-by-valgrind: false
+    large-stack-usage: true
+- name: MQOM2-CAT3-GF256-SHORT-R3
+  claimed-nist-level: 3
+  claimed-security: EUF-CMA
+  length-public-key: 120
+  length-secret-key: 192
+  length-signature: 7900
+  implementations-switch-on-runtime-cpu-features: false
+  implementations:
+  - upstream: primary-upstream
+    upstream-id: ref
+    supported-platforms: all
+    common-crypto:
+    - SHAKE128: upstream
+    no-secret-dependent-branching-claimed: false
+    no-secret-dependent-branching-checked-by-valgrind: false
+    large-stack-usage: true
+- name: MQOM2-CAT3-GF256-SHORT-R5
+  claimed-nist-level: 3
+  claimed-security: EUF-CMA
+  length-public-key: 120
+  length-secret-key: 192
+  length-signature: 7036
+  implementations-switch-on-runtime-cpu-features: false
+  implementations:
+  - upstream: primary-upstream
+    upstream-id: ref
+    supported-platforms: all
+    common-crypto:
+    - SHAKE128: upstream
+    no-secret-dependent-branching-claimed: false
+    no-secret-dependent-branching-checked-by-valgrind: false
+    large-stack-usage: true
+- name: MQOM2-CAT5-GF2-SHORT-R3
+  claimed-nist-level: 5
+  claimed-security: EUF-CMA
+  length-public-key: 104
+  length-secret-key: 144
+  length-signature: 11764
+  implementations-switch-on-runtime-cpu-features: false
+  implementations:
+  - upstream: primary-upstream
+    upstream-id: ref
+    supported-platforms: all
+    common-crypto:
+    - SHAKE128: upstream
+    no-secret-dependent-branching-claimed: false
+    no-secret-dependent-branching-checked-by-valgrind: false
+    large-stack-usage: true
+- name: MQOM2-CAT5-GF2-SHORT-R5
+  claimed-nist-level: 5
+  claimed-security: EUF-CMA
+  length-public-key: 104
+  length-secret-key: 144
+  length-signature: 11564
+  implementations-switch-on-runtime-cpu-features: false
+  implementations:
+  - upstream: primary-upstream
+    upstream-id: ref
+    supported-platforms: all
+    common-crypto:
+    - SHAKE128: upstream
+    no-secret-dependent-branching-claimed: false
+    no-secret-dependent-branching-checked-by-valgrind: false
+    large-stack-usage: true
+- name: MQOM2-CAT5-GF16-SHORT-R3
+  claimed-nist-level: 5
+  claimed-security: EUF-CMA
+  length-public-key: 122
+  length-secret-key: 180
+  length-signature: 12664
+  implementations-switch-on-runtime-cpu-features: false
+  implementations:
+  - upstream: primary-upstream
+    upstream-id: ref
+    supported-platforms: all
+    common-crypto:
+    - SHAKE128: upstream
+    no-secret-dependent-branching-claimed: false
+    no-secret-dependent-branching-checked-by-valgrind: false
+    large-stack-usage: true
+- name: MQOM2-CAT5-GF16-SHORT-R5
+  claimed-nist-level: 5
+  claimed-security: EUF-CMA
+  length-public-key: 122
+  length-secret-key: 180
+  length-signature: 12014
+  implementations-switch-on-runtime-cpu-features: false
+  implementations:
+  - upstream: primary-upstream
+    upstream-id: ref
+    supported-platforms: all
+    common-crypto:
+    - SHAKE128: upstream
+    no-secret-dependent-branching-claimed: false
+    no-secret-dependent-branching-checked-by-valgrind: false
+    large-stack-usage: true
+- name: MQOM2-CAT5-GF256-SHORT-R3
+  claimed-nist-level: 5
+  claimed-security: EUF-CMA
+  length-public-key: 160
+  length-secret-key: 256
+  length-signature: 14564
+  implementations-switch-on-runtime-cpu-features: false
+  implementations:
+  - upstream: primary-upstream
+    upstream-id: ref
+    supported-platforms: all
+    common-crypto:
+    - SHAKE128: upstream
+    no-secret-dependent-branching-claimed: false
+    no-secret-dependent-branching-checked-by-valgrind: false
+    large-stack-usage: true
+- name: MQOM2-CAT5-GF256-SHORT-R5
+  claimed-nist-level: 5
+  claimed-security: EUF-CMA
+  length-public-key: 160
+  length-secret-key: 256
+  length-signature: 12964
+  implementations-switch-on-runtime-cpu-features: false
+  implementations:
+  - upstream: primary-upstream
+    upstream-id: ref
+    supported-platforms: all
+    common-crypto:
+    - SHAKE128: upstream
+    no-secret-dependent-branching-claimed: false
+    no-secret-dependent-branching-checked-by-valgrind: false
+    large-stack-usage: true
