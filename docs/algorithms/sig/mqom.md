@@ -14,8 +14,15 @@
 | Parameter set                | Parameter set alias | Security model | Claimed NIST Level | Public key size (bytes) | Secret key size (bytes) | Signature size (bytes) |
 |:-----------------------------|:--------------------|:---------------|--------------------:|------------------------:|------------------------:|-----------------------:|
 | MQOM2-CAT1-GF2-SHORT-R3      | NA                  | EUF-CMA        |                   1 |                      52 |                      72 |                  2868 |
+| MQOM2-CAT1-GF2-SHORT-R5      | NA                  | EUF-CMA        |                   1 |                      52 |                      72 |                  2820 |
 
 ## MQOM2-CAT1-GF2-SHORT-R3 implementation characteristics
+
+|       Implementation source       | Identifier in upstream   | Supported architecture(s)   | Supported operating system(s)   | CPU extension(s) used   | No branching-on-secrets claimed?   | No branching-on-secrets checked by valgrind?   | Large stack usage?   |
+|:---------------------------------:|:-------------------------|:----------------------------|:--------------------------------|:------------------------|:-----------------------------------|:-----------------------------------------------|:---------------------|
+| [Primary Source](#primary-source) | ref                      | All                         | All                             | None                    | False                              | False                                             | True                |
+
+## MQOM2-CAT1-GF2-SHORT-R5 implementation characteristics
 
 |       Implementation source       | Identifier in upstream   | Supported architecture(s)   | Supported operating system(s)   | CPU extension(s) used   | No branching-on-secrets claimed?   | No branching-on-secrets checked by valgrind?   | Large stack usage?   |
 |:---------------------------------:|:-------------------------|:----------------------------|:--------------------------------|:------------------------|:-----------------------------------|:-----------------------------------------------|:---------------------|

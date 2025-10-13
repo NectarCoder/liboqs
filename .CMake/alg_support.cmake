@@ -262,6 +262,7 @@ cmake_dependent_option(OQS_ENABLE_SIG_sdith_cat5_short "" ON "OQS_ENABLE_SIG_SDI
 
 option(OQS_ENABLE_SIG_MQOM "Enable mqom algorithm family" ON)
 cmake_dependent_option(OQS_ENABLE_SIG_mqom2_cat1_gf2_short_r3 "" ON "OQS_ENABLE_SIG_MQOM" OFF)
+cmake_dependent_option(OQS_ENABLE_SIG_mqom2_cat1_gf2_short_r5 "" ON "OQS_ENABLE_SIG_MQOM" OFF)
 
 option(OQS_ENABLE_SIG_LESS "Enable less algorithm family" ON)
 cmake_dependent_option(OQS_ENABLE_SIG_less_252_45 "" ON "OQS_ENABLE_SIG_LESS" OFF)
