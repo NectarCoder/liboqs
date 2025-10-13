@@ -17,10 +17,7 @@ All the instructions in this document are tailored specifically to integrating n
 ```bash
 # From project root - MUST BE RUN IN ORDER:
 ./SETUP_DEPS.sh          # Install system dependencies (if in doubt run a command to check if all dependencies are installed, but they mostly should be)
-./SETUP.sh               # Build with all algorithms (may fail with Mirath)
-
-# If build fails with mirath error use this to build (current known issue):
-CMAKE_PARAMS='-DOQS_ENABLE_SIG_MIRATH=OFF -DOQS_ENABLE_SIG_mirath_tcith_1a_fast=OFF' ./SETUP.sh
+./SETUP.sh               # Build with all algorithms
 
 # Test specific algorithms:
 cd test_sig
