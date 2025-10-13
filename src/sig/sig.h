@@ -254,26 +254,14 @@ extern "C" {
 #define OQS_SIG_alg_mqom2_cat5_gf256_short_r3 "MQOM2-CAT5-GF256-SHORT-R3"
 /** Algorithm identifier for MQOM2-CAT5-GF256-SHORT-R5 */
 #define OQS_SIG_alg_mqom2_cat5_gf256_short_r5 "MQOM2-CAT5-GF256-SHORT-R5"
-/** Algorithm identifier for LESS-252-192 */
-#define OQS_SIG_alg_less_LESS_252_192 "LESS-252-192"
-/** Algorithm identifier for LESS-252-68 */
-#define OQS_SIG_alg_less_LESS_252_68 "LESS-252-68"
-/** Algorithm identifier for LESS-252-45 */
-#define OQS_SIG_alg_less_LESS_252_45 "LESS-252-45"
-/** Algorithm identifier for LESS-400-220 */
-#define OQS_SIG_alg_less_LESS_400_220 "LESS-400-220"
-/** Algorithm identifier for LESS-400-102 */
-#define OQS_SIG_alg_less_LESS_400_102 "LESS-400-102"
-/** Algorithm identifier for LESS-548-345 */
-#define OQS_SIG_alg_less_LESS_548_345 "LESS-548-345"
-/** Algorithm identifier for LESS-548-137 */
-#define OQS_SIG_alg_less_LESS_548_137 "LESS-548-137"
+/** Algorithm identifier for less-252-45 */
+#define OQS_SIG_alg_less_252_45 "Less-252-45"
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALG_IDENTIFIER_END
 // EDIT-WHEN-ADDING-SIG
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALGS_LENGTH_START
 
 /** Number of algorithm identifiers above. */
-#define OQS_SIG_algs_length 130
+#define OQS_SIG_algs_length 124
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALGS_LENGTH_END
 
 /**

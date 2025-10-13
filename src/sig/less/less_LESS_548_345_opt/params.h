@@ -1,2 +1,0 @@
-#define CATEGORY 548
-#define TARGET 345
