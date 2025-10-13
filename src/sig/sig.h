@@ -254,14 +254,12 @@ extern "C" {
 #define OQS_SIG_alg_mqom2_cat5_gf256_short_r3 "MQOM2-CAT5-GF256-SHORT-R3"
 /** Algorithm identifier for MQOM2-CAT5-GF256-SHORT-R5 */
 #define OQS_SIG_alg_mqom2_cat5_gf256_short_r5 "MQOM2-CAT5-GF256-SHORT-R5"
-/** Algorithm identifier for less-252-45 */
-#define OQS_SIG_alg_less_252_45 "Less-252-45"
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALG_IDENTIFIER_END
 // EDIT-WHEN-ADDING-SIG
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALGS_LENGTH_START
 
 /** Number of algorithm identifiers above. */
-#define OQS_SIG_algs_length 124
+#define OQS_SIG_algs_length 123
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALGS_LENGTH_END
 
 /**
@@ -554,9 +552,6 @@ OQS_API bool OQS_SIG_supports_ctx_str(const char *alg_name);
 #ifdef OQS_ENABLE_SIG_MQOM
 #include <oqs/sig_mqom.h>
 #endif /* OQS_ENABLE_SIG_MQOM */
-#ifdef OQS_ENABLE_SIG_LESS
-#include <oqs/sig_less.h>
-#endif /* OQS_ENABLE_SIG_LESS */
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_INCLUDE_END
 // EDIT-WHEN-ADDING-SIG
 

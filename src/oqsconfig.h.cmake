@@ -388,8 +388,6 @@
 #cmakedefine OQS_ENABLE_SIG_mqom2_cat5_gf256_short_r3 1
 #cmakedefine OQS_ENABLE_SIG_mqom2_cat5_gf256_short_r5 1
 
-#cmakedefine OQS_ENABLE_SIG_LESS 1
-#cmakedefine OQS_ENABLE_SIG_less_252_45 1
 
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ADD_ALG_ENABLE_DEFINES_END
 
