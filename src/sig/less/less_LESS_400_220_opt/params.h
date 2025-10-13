@@ -1,0 +1,2 @@
+#define CATEGORY 400
+#define TARGET 220
