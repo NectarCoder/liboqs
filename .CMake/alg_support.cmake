@@ -225,6 +225,15 @@ cmake_dependent_option(OQS_ENABLE_SIG_snova_SNOVA_66_15_3 "" ON "OQS_ENABLE_SIG_
 cmake_dependent_option(OQS_ENABLE_SIG_snova_SNOVA_75_33_2 "" ON "OQS_ENABLE_SIG_SNOVA" OFF)
 cmake_dependent_option(OQS_ENABLE_SIG_snova_SNOVA_29_6_5 "" ON "OQS_ENABLE_SIG_SNOVA" OFF)
 
+option(OQS_ENABLE_SIG_LESS "Enable less algorithm family" ON)
+cmake_dependent_option(OQS_ENABLE_SIG_less_252_192 "" ON "OQS_ENABLE_SIG_LESS" OFF)
+cmake_dependent_option(OQS_ENABLE_SIG_less_252_68 "" ON "OQS_ENABLE_SIG_LESS" OFF)
+cmake_dependent_option(OQS_ENABLE_SIG_less_252_45 "" ON "OQS_ENABLE_SIG_LESS" OFF)
+cmake_dependent_option(OQS_ENABLE_SIG_less_400_220 "" ON "OQS_ENABLE_SIG_LESS" OFF)
+cmake_dependent_option(OQS_ENABLE_SIG_less_400_102 "" ON "OQS_ENABLE_SIG_LESS" OFF)
+cmake_dependent_option(OQS_ENABLE_SIG_less_548_345 "" ON "OQS_ENABLE_SIG_LESS" OFF)
+cmake_dependent_option(OQS_ENABLE_SIG_less_548_137 "" ON "OQS_ENABLE_SIG_LESS" OFF)
+
 option(OQS_ENABLE_SIG_HAWK "Enable hawk algorithm family" ON)
 cmake_dependent_option(OQS_ENABLE_SIG_hawk_512 "" ON "OQS_ENABLE_SIG_HAWK" OFF)
 cmake_dependent_option(OQS_ENABLE_SIG_hawk_1024 "" ON "OQS_ENABLE_SIG_HAWK" OFF)

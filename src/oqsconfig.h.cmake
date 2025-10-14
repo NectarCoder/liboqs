@@ -333,6 +333,15 @@
 #cmakedefine OQS_ENABLE_SIG_snova_SNOVA_29_6_5_avx2 1
 #cmakedefine OQS_ENABLE_SIG_snova_SNOVA_29_6_5_neon 1
 
+#cmakedefine OQS_ENABLE_SIG_LESS 1
+#cmakedefine OQS_ENABLE_SIG_less_252_192 1
+#cmakedefine OQS_ENABLE_SIG_less_252_68 1
+#cmakedefine OQS_ENABLE_SIG_less_252_45 1
+#cmakedefine OQS_ENABLE_SIG_less_400_220 1
+#cmakedefine OQS_ENABLE_SIG_less_400_102 1
+#cmakedefine OQS_ENABLE_SIG_less_548_345 1
+#cmakedefine OQS_ENABLE_SIG_less_548_137 1
+
 #cmakedefine OQS_ENABLE_SIG_HAWK 1
 #cmakedefine OQS_ENABLE_SIG_hawk_512 1
 #cmakedefine OQS_ENABLE_SIG_hawk_1024 1
