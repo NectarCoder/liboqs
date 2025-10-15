@@ -58,10 +58,12 @@ int main(int argc, char *argv[]) {
     printf("Keys generated successfully!\n");
 
     // Prepare messages
+    // Small message is "Hello Quantum World!"
     const char *small_message = "Hello Quantum World!";
     size_t small_message_len = strlen(small_message);
     printf("Small message length: %zu bytes\n", small_message_len);
 
+    // Large message is 256 repetitions of the small message (pretty big!)
     const size_t repeats = 256;
     size_t large_message_len = small_message_len * repeats;
     large_message = malloc(large_message_len);

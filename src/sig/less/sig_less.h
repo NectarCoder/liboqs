@@ -8,7 +8,7 @@
 #if defined(OQS_ENABLE_SIG_less_252_192)
 #define OQS_SIG_less_252_192_length_public_key 13940
 #define OQS_SIG_less_252_192_length_secret_key 32
-#define OQS_SIG_less_252_192_length_signature 2609
+#define OQS_SIG_less_252_192_length_signature 2625
 
 OQS_SIG *OQS_SIG_less_252_192_new(void);
 OQS_API OQS_STATUS OQS_SIG_less_252_192_keypair(uint8_t *public_key, uint8_t *secret_key);
@@ -47,7 +47,7 @@ OQS_API OQS_STATUS OQS_SIG_less_252_45_verify_with_ctx_str(const uint8_t *messag
 #if defined(OQS_ENABLE_SIG_less_400_220)
 #define OQS_SIG_less_400_220_length_public_key 35074
 #define OQS_SIG_less_400_220_length_secret_key 48
-#define OQS_SIG_less_400_220_length_signature 6353
+#define OQS_SIG_less_400_220_length_signature 6329
 
 OQS_SIG *OQS_SIG_less_400_220_new(void);
 OQS_API OQS_STATUS OQS_SIG_less_400_220_keypair(uint8_t *public_key, uint8_t *secret_key);
@@ -73,7 +73,7 @@ OQS_API OQS_STATUS OQS_SIG_less_400_102_verify_with_ctx_str(const uint8_t *messa
 #if defined(OQS_ENABLE_SIG_less_548_345)
 #define OQS_SIG_less_548_345_length_public_key 65793
 #define OQS_SIG_less_548_345_length_secret_key 64
-#define OQS_SIG_less_548_345_length_signature 10712
+#define OQS_SIG_less_548_345_length_signature 10680
 
 OQS_SIG *OQS_SIG_less_548_345_new(void);
 OQS_API OQS_STATUS OQS_SIG_less_548_345_keypair(uint8_t *public_key, uint8_t *secret_key);

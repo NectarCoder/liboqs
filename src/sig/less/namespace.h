@@ -4,7 +4,11 @@
 #define OQS_SIG_LESS_NAMESPACE_H
 
 #ifndef LESS_NAMESPACE_PREFIX
-#error "LESS_NAMESPACE_PREFIX must be defined"
+/* Provide a sane default namespace prefix to avoid build failure when the
+ * including build system or CMakeLists did not define LESS_NAMESPACE_PREFIX.
+ * This can still be overridden by defining LESS_NAMESPACE_PREFIX before
+ * including this header (for example via compiler -DLESS_NAMESPACE_PREFIX=...). */
+#define LESS_NAMESPACE_PREFIX oqs_sig_less_
 #endif
 
 #define LESS_NAMESPACE_CONCAT_(prefix, name) prefix##name

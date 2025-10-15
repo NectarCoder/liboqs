@@ -31,6 +31,8 @@
 #include "parameters.h"
 #include "monomial_mat.h"
 
+#include "namespace.h"
+
 typedef struct {  /* Generator matrix, stored explicitly */
    FQ_ELEM values[K][N_pad] __attribute__((aligned(32)));
 } generator_mat_t;

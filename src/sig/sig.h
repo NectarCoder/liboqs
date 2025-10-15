@@ -545,9 +545,6 @@ OQS_API bool OQS_SIG_supports_ctx_str(const char *alg_name);
 #ifdef OQS_ENABLE_SIG_SNOVA
 #include <oqs/sig_snova.h>
 #endif /* OQS_ENABLE_SIG_SNOVA */
-#ifdef OQS_ENABLE_SIG_LESS
-#include <oqs/sig_less.h>
-#endif /* OQS_ENABLE_SIG_LESS */
 #ifdef OQS_ENABLE_SIG_HAWK
 #include <oqs/sig_hawk.h>
 #endif /* OQS_ENABLE_SIG_HAWK */
@@ -569,6 +566,9 @@ OQS_API bool OQS_SIG_supports_ctx_str(const char *alg_name);
 #ifdef OQS_ENABLE_SIG_MQOM
 #include <oqs/sig_mqom.h>
 #endif /* OQS_ENABLE_SIG_MQOM */
+#ifdef OQS_ENABLE_SIG_LESS
+#include <oqs/sig_less.h>
+#endif /* OQS_ENABLE_SIG_LESS */
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_INCLUDE_END
 // EDIT-WHEN-ADDING-SIG
 

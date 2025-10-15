@@ -24,6 +24,8 @@
 #pragma once
 #include <stdint.h>
 
+#include "namespace.h"
+
 #if defined(USE_AVX2) || defined(USE_NEON)
 
 /// transposes a 32x32 matrix
