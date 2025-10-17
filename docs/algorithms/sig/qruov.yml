@@ -1,0 +1,204 @@
+name: QR-UOV
+type: signature
+principal-submitters:
+- TODO
+crypto-assumption: TODO
+website: TODO
+nist-round: TODO
+spec-version: TODO
+primary-upstream:
+  source: TODO
+  spdx-license-identifier: TODO
+parameter-sets:
+- name: qruov1q127L3v156m54
+  claimed-nist-level: 1
+  claimed-security: EUF-CMA
+  length-public-key: 24256
+  length-secret-key: 32
+  length-signature: 200
+  implementations-switch-on-runtime-cpu-features: false
+  implementations:
+  - upstream: primary-upstream
+    upstream-id: ref
+    supported-platforms: TODO
+    common-crypto:
+    - TODO
+    no-secret-dependent-branching-claimed: TODO
+    no-secret-dependent-branching-checked-by-valgrind: TODO
+    large-stack-usage: TODO
+- name: qruov1q7L10v740m100
+  claimed-nist-level: 1
+  claimed-security: EUF-CMA
+  length-public-key: 20641
+  length-secret-key: 32
+  length-signature: 331
+  implementations-switch-on-runtime-cpu-features: false
+  implementations:
+  - upstream: primary-upstream
+    upstream-id: ref
+    supported-platforms: TODO
+    common-crypto:
+    - TODO
+    no-secret-dependent-branching-claimed: TODO
+    no-secret-dependent-branching-checked-by-valgrind: TODO
+    large-stack-usage: TODO
+- name: qruov1q31L3v165m60
+  claimed-nist-level: 1
+  claimed-security: EUF-CMA
+  length-public-key: 23641
+  length-secret-key: 32
+  length-signature: 157
+  implementations-switch-on-runtime-cpu-features: false
+  implementations:
+  - upstream: primary-upstream
+    upstream-id: ref
+    supported-platforms: TODO
+    common-crypto:
+    - TODO
+    no-secret-dependent-branching-claimed: TODO
+    no-secret-dependent-branching-checked-by-valgrind: TODO
+    large-stack-usage: TODO
+- name: qruov1q31L10v600m70
+  claimed-nist-level: 1
+  claimed-security: EUF-CMA
+  length-public-key: 12266
+  length-secret-key: 32
+  length-signature: 435
+  implementations-switch-on-runtime-cpu-features: false
+  implementations:
+  - upstream: primary-upstream
+    upstream-id: ref
+    supported-platforms: TODO
+    common-crypto:
+    - TODO
+    no-secret-dependent-branching-claimed: TODO
+    no-secret-dependent-branching-checked-by-valgrind: TODO
+    large-stack-usage: TODO
+- name: qruov3q127L3v228m78
+  claimed-nist-level: 3
+  claimed-security: EUF-CMA
+  length-public-key: 71892
+  length-secret-key: 48
+  length-signature: 292
+  implementations-switch-on-runtime-cpu-features: false
+  implementations:
+  - upstream: primary-upstream
+    upstream-id: ref
+    supported-platforms: TODO
+    common-crypto:
+    - TODO
+    no-secret-dependent-branching-claimed: TODO
+    no-secret-dependent-branching-checked-by-valgrind: TODO
+    large-stack-usage: TODO
+- name: qruov3q7L10v1100m140
+  claimed-nist-level: 3
+  claimed-security: EUF-CMA
+  length-public-key: 55149
+  length-secret-key: 48
+  length-signature: 489
+  implementations-switch-on-runtime-cpu-features: false
+  implementations:
+  - upstream: primary-upstream
+    upstream-id: ref
+    supported-platforms: TODO
+    common-crypto:
+    - TODO
+    no-secret-dependent-branching-claimed: TODO
+    no-secret-dependent-branching-checked-by-valgrind: TODO
+    large-stack-usage: TODO
+- name: qruov3q31L3v246m87
+  claimed-nist-level: 3
+  claimed-security: EUF-CMA
+  length-public-key: 70984
+  length-secret-key: 48
+  length-signature: 233
+  implementations-switch-on-runtime-cpu-features: false
+  implementations:
+  - upstream: primary-upstream
+    upstream-id: ref
+    supported-platforms: TODO
+    common-crypto:
+    - TODO
+    no-secret-dependent-branching-claimed: TODO
+    no-secret-dependent-branching-checked-by-valgrind: TODO
+    large-stack-usage: TODO
+- name: qruov3q31L10v890m100
+  claimed-nist-level: 3
+  claimed-security: EUF-CMA
+  length-public-key: 34399
+  length-secret-key: 48
+  length-signature: 643
+  implementations-switch-on-runtime-cpu-features: false
+  implementations:
+  - upstream: primary-upstream
+    upstream-id: ref
+    supported-platforms: TODO
+    common-crypto:
+    - TODO
+    no-secret-dependent-branching-claimed: TODO
+    no-secret-dependent-branching-checked-by-valgrind: TODO
+    large-stack-usage: TODO
+- name: qruov5q127L3v306m105
+  claimed-nist-level: 5
+  claimed-security: EUF-CMA
+  length-public-key: 173676
+  length-secret-key: 64
+  length-signature: 392
+  implementations-switch-on-runtime-cpu-features: false
+  implementations:
+  - upstream: primary-upstream
+    upstream-id: ref
+    supported-platforms: TODO
+    common-crypto:
+    - TODO
+    no-secret-dependent-branching-claimed: TODO
+    no-secret-dependent-branching-checked-by-valgrind: TODO
+    large-stack-usage: TODO
+- name: qruov5q7L10v1490m190
+  claimed-nist-level: 5
+  claimed-security: EUF-CMA
+  length-public-key: 135407
+  length-secret-key: 64
+  length-signature: 662
+  implementations-switch-on-runtime-cpu-features: false
+  implementations:
+  - upstream: primary-upstream
+    upstream-id: ref
+    supported-platforms: TODO
+    common-crypto:
+    - TODO
+    no-secret-dependent-branching-claimed: TODO
+    no-secret-dependent-branching-checked-by-valgrind: TODO
+    large-stack-usage: TODO
+- name: qruov5q31L3v324m114
+  claimed-nist-level: 5
+  claimed-security: EUF-CMA
+  length-public-key: 158421
+  length-secret-key: 64
+  length-signature: 306
+  implementations-switch-on-runtime-cpu-features: false
+  implementations:
+  - upstream: primary-upstream
+    upstream-id: ref
+    supported-platforms: TODO
+    common-crypto:
+    - TODO
+    no-secret-dependent-branching-claimed: TODO
+    no-secret-dependent-branching-checked-by-valgrind: TODO
+    large-stack-usage: TODO
+- name: qruov5q31L10v1120m120
+  claimed-nist-level: 5
+  claimed-security: EUF-CMA
+  length-public-key: 58532
+  length-secret-key: 64
+  length-signature: 807
+  implementations-switch-on-runtime-cpu-features: false
+  implementations:
+  - upstream: primary-upstream
+    upstream-id: ref
+    supported-platforms: TODO
+    common-crypto:
+    - TODO
+    no-secret-dependent-branching-claimed: TODO
+    no-secret-dependent-branching-checked-by-valgrind: TODO
+    large-stack-usage: TODO
