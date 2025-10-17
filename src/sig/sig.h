@@ -268,12 +268,36 @@ extern "C" {
 #define OQS_SIG_alg_less_548_345 "LESS-548-345"
 /** Algorithm identifier for LESS-548-137 */
 #define OQS_SIG_alg_less_548_137 "LESS-548-137"
+/** Algorithm identifier for qruov1q127L3v156m54 */
+#define OQS_SIG_alg_qruov1q127L3v156m54 "qruov1q127L3v156m54"
+/** Algorithm identifier for qruov1q7L10v740m100 */
+#define OQS_SIG_alg_qruov1q7L10v740m100 "qruov1q7L10v740m100"
+/** Algorithm identifier for qruov1q31L3v165m60 */
+#define OQS_SIG_alg_qruov1q31L3v165m60 "qruov1q31L3v165m60"
+/** Algorithm identifier for qruov1q31L10v600m70 */
+#define OQS_SIG_alg_qruov1q31L10v600m70 "qruov1q31L10v600m70"
+/** Algorithm identifier for qruov3q127L3v228m78 */
+#define OQS_SIG_alg_qruov3q127L3v228m78 "qruov3q127L3v228m78"
+/** Algorithm identifier for qruov3q7L10v1100m140 */
+#define OQS_SIG_alg_qruov3q7L10v1100m140 "qruov3q7L10v1100m140"
+/** Algorithm identifier for qruov3q31L3v246m87 */
+#define OQS_SIG_alg_qruov3q31L3v246m87 "qruov3q31L3v246m87"
+/** Algorithm identifier for qruov3q31L10v890m100 */
+#define OQS_SIG_alg_qruov3q31L10v890m100 "qruov3q31L10v890m100"
+/** Algorithm identifier for qruov5q127L3v306m105 */
+#define OQS_SIG_alg_qruov5q127L3v306m105 "qruov5q127L3v306m105"
+/** Algorithm identifier for qruov5q7L10v1490m190 */
+#define OQS_SIG_alg_qruov5q7L10v1490m190 "qruov5q7L10v1490m190"
+/** Algorithm identifier for qruov5q31L3v324m114 */
+#define OQS_SIG_alg_qruov5q31L3v324m114 "qruov5q31L3v324m114"
+/** Algorithm identifier for qruov5q31L10v1120m120 */
+#define OQS_SIG_alg_qruov5q31L10v1120m120 "qruov5q31L10v1120m120"
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALG_IDENTIFIER_END
 // EDIT-WHEN-ADDING-SIG
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALGS_LENGTH_START
 
 /** Number of algorithm identifiers above. */
-#define OQS_SIG_algs_length 130
+#define OQS_SIG_algs_length 142
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALGS_LENGTH_END
 
 /**
@@ -569,6 +593,9 @@ OQS_API bool OQS_SIG_supports_ctx_str(const char *alg_name);
 #ifdef OQS_ENABLE_SIG_LESS
 #include <oqs/sig_less.h>
 #endif /* OQS_ENABLE_SIG_LESS */
+#ifdef OQS_ENABLE_SIG_QRUOV
+#include <oqs/sig_qruov.h>
+#endif /* OQS_ENABLE_SIG_QRUOV */
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_INCLUDE_END
 // EDIT-WHEN-ADDING-SIG
 

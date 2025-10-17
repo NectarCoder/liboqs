@@ -289,6 +289,20 @@ cmake_dependent_option(OQS_ENABLE_SIG_less_400_102 "" ON "OQS_ENABLE_SIG_LESS" O
 cmake_dependent_option(OQS_ENABLE_SIG_less_548_345 "" ON "OQS_ENABLE_SIG_LESS" OFF)
 cmake_dependent_option(OQS_ENABLE_SIG_less_548_137 "" ON "OQS_ENABLE_SIG_LESS" OFF)
 
+option(OQS_ENABLE_SIG_QRUOV "Enable qruov algorithm family" ON)
+cmake_dependent_option(OQS_ENABLE_SIG_qruov1q127L3v156m54 "" ON "OQS_ENABLE_SIG_QRUOV" OFF)
+cmake_dependent_option(OQS_ENABLE_SIG_qruov1q7L10v740m100 "" ON "OQS_ENABLE_SIG_QRUOV" OFF)
+cmake_dependent_option(OQS_ENABLE_SIG_qruov1q31L3v165m60 "" ON "OQS_ENABLE_SIG_QRUOV" OFF)
+cmake_dependent_option(OQS_ENABLE_SIG_qruov1q31L10v600m70 "" ON "OQS_ENABLE_SIG_QRUOV" OFF)
+cmake_dependent_option(OQS_ENABLE_SIG_qruov3q127L3v228m78 "" ON "OQS_ENABLE_SIG_QRUOV" OFF)
+cmake_dependent_option(OQS_ENABLE_SIG_qruov3q7L10v1100m140 "" ON "OQS_ENABLE_SIG_QRUOV" OFF)
+cmake_dependent_option(OQS_ENABLE_SIG_qruov3q31L3v246m87 "" ON "OQS_ENABLE_SIG_QRUOV" OFF)
+cmake_dependent_option(OQS_ENABLE_SIG_qruov3q31L10v890m100 "" ON "OQS_ENABLE_SIG_QRUOV" OFF)
+cmake_dependent_option(OQS_ENABLE_SIG_qruov5q127L3v306m105 "" ON "OQS_ENABLE_SIG_QRUOV" OFF)
+cmake_dependent_option(OQS_ENABLE_SIG_qruov5q7L10v1490m190 "" ON "OQS_ENABLE_SIG_QRUOV" OFF)
+cmake_dependent_option(OQS_ENABLE_SIG_qruov5q31L3v324m114 "" ON "OQS_ENABLE_SIG_QRUOV" OFF)
+cmake_dependent_option(OQS_ENABLE_SIG_qruov5q31L10v1120m120 "" ON "OQS_ENABLE_SIG_QRUOV" OFF)
+
 ##### OQS_COPY_FROM_UPSTREAM_FRAGMENT_ADD_ENABLE_BY_ALG_END
 
 ##### OQS_COPY_FROM_LIBJADE_FRAGMENT_ADD_ENABLE_BY_ALG_START

@@ -103,6 +103,10 @@ if(OQS_ENABLE_SIG_LESS)
     add_subdirectory(sig/less)
     set(SIG_OBJS ${SIG_OBJS} ${LESS_OBJS})
 endif()
+if(OQS_ENABLE_SIG_QRUOV)
+    add_subdirectory(sig/qruov)
+    set(SIG_OBJS ${SIG_OBJS} ${QRUOV_OBJS})
+endif()
 ##### OQS_COPY_FROM_UPSTREAM_FRAGMENT_ADD_ALG_OBJECTS_END
 
 if(OQS_ENABLE_SIG_STFL_XMSS)

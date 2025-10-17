@@ -942,6 +942,27 @@ OQS_STATUS combine_message_signature(uint8_t **signed_msg, size_t *signed_msg_le
 		memcpy(*signed_msg, signature, signature_len);
 		memcpy(*signed_msg + signature_len, msg, msg_len);
 		return OQS_SUCCESS;
+	} else if (0 == strcmp(sig->method_name, "qruov1q127L3v156m54") ||
+	           0 == strcmp(sig->method_name, "qruov1q7L10v740m100") ||
+	           0 == strcmp(sig->method_name, "qruov1q31L3v165m60") ||
+	           0 == strcmp(sig->method_name, "qruov1q31L10v600m70") ||
+	           0 == strcmp(sig->method_name, "qruov3q127L3v228m78") ||
+	           0 == strcmp(sig->method_name, "qruov3q7L10v1100m140") ||
+	           0 == strcmp(sig->method_name, "qruov3q31L3v246m87") ||
+	           0 == strcmp(sig->method_name, "qruov3q31L10v890m100") ||
+	           0 == strcmp(sig->method_name, "qruov5q127L3v306m105") ||
+	           0 == strcmp(sig->method_name, "qruov5q7L10v1490m190") ||
+	           0 == strcmp(sig->method_name, "qruov5q31L3v324m114") ||
+	           0 == strcmp(sig->method_name, "qruov5q31L10v1120m120")) {
+		// signed_msg = signature || msg
+		*signed_msg_len = signature_len + msg_len;
+		*signed_msg = OQS_MEM_malloc(*signed_msg_len);
+		if (*signed_msg == NULL) {
+			return OQS_ERROR;
+		}
+		memcpy(*signed_msg, signature, signature_len);
+		memcpy(*signed_msg + signature_len, msg, msg_len);
+		return OQS_SUCCESS;
 	} else if (0 == strcmp(sig->method_name, "FAEST-128s") ||
 	           0 == strcmp(sig->method_name, "FAEST-192s") ||
 	           0 == strcmp(sig->method_name, "FAEST-256s") ||
