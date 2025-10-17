@@ -12,6 +12,7 @@ tags
 
 # CMake & testing
 /build*
+/build
 /tmp*
 
 # MSVC
