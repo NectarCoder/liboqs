@@ -292,12 +292,18 @@ extern "C" {
 #define OQS_SIG_alg_qruov5q31L3v324m114 "qruov5q31L3v324m114"
 /** Algorithm identifier for qruov5q31L10v1120m120 */
 #define OQS_SIG_alg_qruov5q31L10v1120m120 "qruov5q31L10v1120m120"
+/** Algorithm identifier for SQIsign-353 */
+#define OQS_SIG_alg_sqisign_353 "SQIsign-353"
+/** Algorithm identifier for SQIsign-529 */
+#define OQS_SIG_alg_sqisign_529 "SQIsign-529"
+/** Algorithm identifier for SQIsign-701 */
+#define OQS_SIG_alg_sqisign_701 "SQIsign-701"
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALG_IDENTIFIER_END
 // EDIT-WHEN-ADDING-SIG
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALGS_LENGTH_START
 
 /** Number of algorithm identifiers above. */
-#define OQS_SIG_algs_length 142
+#define OQS_SIG_algs_length 145
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALGS_LENGTH_END
 
 /**
@@ -596,6 +602,9 @@ OQS_API bool OQS_SIG_supports_ctx_str(const char *alg_name);
 #ifdef OQS_ENABLE_SIG_QRUOV
 #include <oqs/sig_qruov.h>
 #endif /* OQS_ENABLE_SIG_QRUOV */
+#ifdef OQS_ENABLE_SIG_SQISIGN
+#include <oqs/sig_sqisign.h>
+#endif /* OQS_ENABLE_SIG_SQISIGN */
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_INCLUDE_END
 // EDIT-WHEN-ADDING-SIG
 

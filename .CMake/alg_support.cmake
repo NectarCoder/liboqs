@@ -303,6 +303,10 @@ cmake_dependent_option(OQS_ENABLE_SIG_qruov5q7L10v1490m190 "" ON "OQS_ENABLE_SIG
 cmake_dependent_option(OQS_ENABLE_SIG_qruov5q31L3v324m114 "" ON "OQS_ENABLE_SIG_QRUOV" OFF)
 cmake_dependent_option(OQS_ENABLE_SIG_qruov5q31L10v1120m120 "" ON "OQS_ENABLE_SIG_QRUOV" OFF)
 
+option(OQS_ENABLE_SIG_SQISIGN "Enable SQIsign algorithm family" ON)
+cmake_dependent_option(OQS_ENABLE_SIG_sqisign_353 "" ON "OQS_ENABLE_SIG_SQISIGN" OFF)
+cmake_dependent_option(OQS_ENABLE_SIG_sqisign_529 "" ON "OQS_ENABLE_SIG_SQISIGN" OFF)
+cmake_dependent_option(OQS_ENABLE_SIG_sqisign_701 "" ON "OQS_ENABLE_SIG_SQISIGN" OFF)
 ##### OQS_COPY_FROM_UPSTREAM_FRAGMENT_ADD_ENABLE_BY_ALG_END
 
 ##### OQS_COPY_FROM_LIBJADE_FRAGMENT_ADD_ENABLE_BY_ALG_START

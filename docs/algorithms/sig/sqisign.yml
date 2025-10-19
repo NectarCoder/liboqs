@@ -1,0 +1,63 @@
+name: SQIsign
+type: signature
+principal-submitters:
+  - Luca De Feo
+  - Antonin Leroux
+  - Pierrick Dartois
+  - Javier Silva
+  - Christophe Petit
+crypto-assumption: isogeny-based (SIDH-related)
+nist-round: 2
+spec-version: 2.0
+primary-upstream:
+  source: https://github.com/SQISign/sqisign-framework
+  spdx-license-identifier: Apache-2.0
+parameter-sets:
+  - name: SQIsign-353
+    claimed-nist-level: 1
+    claimed-security: IND-CPA
+    length-public-key: 65
+    length-secret-key: 353
+    length-signature: 148
+    implementations-switch-on-runtime-cpu-features: false
+    implementations:
+      - upstream: ref
+        upstream-id: lvl1
+        supported-platforms: all
+        common-crypto:
+          - SHA3: liboqs
+        no-secret-dependent-branching-claimed: false
+        no-secret-dependent-branching-checked-by-valgrind: false
+        large-stack-usage: false
+  - name: SQIsign-529
+    claimed-nist-level: 3
+    claimed-security: IND-CPA
+    length-public-key: 97
+    length-secret-key: 529
+    length-signature: 224
+    implementations-switch-on-runtime-cpu-features: false
+    implementations:
+      - upstream: ref
+        upstream-id: lvl3
+        supported-platforms: all
+        common-crypto:
+          - SHA3: liboqs
+        no-secret-dependent-branching-claimed: false
+        no-secret-dependent-branching-checked-by-valgrind: false
+        large-stack-usage: false
+  - name: SQIsign-701
+    claimed-nist-level: 5
+    claimed-security: IND-CPA
+    length-public-key: 129
+    length-secret-key: 701
+    length-signature: 292
+    implementations-switch-on-runtime-cpu-features: false
+    implementations:
+      - upstream: ref
+        upstream-id: lvl5
+        supported-platforms: all
+        common-crypto:
+          - SHA3: liboqs
+        no-secret-dependent-branching-claimed: false
+        no-secret-dependent-branching-checked-by-valgrind: false
+        large-stack-usage: false
