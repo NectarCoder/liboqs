@@ -1,63 +1,60 @@
 name: SQIsign
 type: signature
 principal-submitters:
-- SQIsign team
-crypto-assumption: Supersingular isogeny-based (SQI assumption)
-website: https://sqisign.org/
-nist-round: NIST Round 2 Additional Signatures
-spec-version: 2025-07-07
+- TODO
+crypto-assumption: Isogeny
+website: TODO
+nist-round: 2
+spec-version: TODO
 primary-upstream:
-	source: sqisign-ref-impl
-	spdx-license-identifier: Apache-2.0
+  source: TODO
+  spdx-license-identifier: TODO
 parameter-sets:
 - name: SQIsign-353
   claimed-nist-level: 1
-	claimed-security: EUF-CMA
-	length-public-key: 65
-	length-secret-key: 353
-	length-signature: 148
-	implementations-switch-on-runtime-cpu-features: false
-	implementations:
-	- upstream: primary-upstream
-		upstream-id: ref
-		supported-platforms:
-		- generic-64-bit
-		common-crypto:
-		- SHAKE256
-		no-secret-dependent-branching-claimed: null
-		no-secret-dependent-branching-checked-by-valgrind: null
-		large-stack-usage: null
+  claimed-security: EUF-CMA
+  length-public-key: 65
+  length-secret-key: 353
+  length-signature: 148
+  implementations-switch-on-runtime-cpu-features: false
+  implementations:
+  - upstream: primary-upstream
+    upstream-id: ref
+    supported-platforms: TODO
+    common-crypto:
+    - TODO
+    no-secret-dependent-branching-claimed: TODO
+    no-secret-dependent-branching-checked-by-valgrind: TODO
+    large-stack-usage: TODO
 - name: SQIsign-529
-	claimed-nist-level: 3
-	claimed-security: EUF-CMA
-	length-public-key: 97
-	length-secret-key: 529
-	length-signature: 224
-	implementations-switch-on-runtime-cpu-features: false
-	implementations:
-	- upstream: primary-upstream
-		upstream-id: ref
-		supported-platforms:
-		- generic-64-bit
-		common-crypto:
-		- SHAKE256
-		no-secret-dependent-branching-claimed: null
-		no-secret-dependent-branching-checked-by-valgrind: null
-		large-stack-usage: null
+  claimed-nist-level: 3
+  claimed-security: EUF-CMA
+  length-public-key: 97
+  length-secret-key: 529
+  length-signature: 224
+  implementations-switch-on-runtime-cpu-features: false
+  implementations:
+  - upstream: primary-upstream
+    upstream-id: ref
+    supported-platforms: TODO
+    common-crypto:
+    - TODO
+    no-secret-dependent-branching-claimed: TODO
+    no-secret-dependent-branching-checked-by-valgrind: TODO
+    large-stack-usage: TODO
 - name: SQIsign-701
-	claimed-nist-level: 5
-	claimed-security: EUF-CMA
-	length-public-key: 129
-	length-secret-key: 701
-	length-signature: 292
-	implementations-switch-on-runtime-cpu-features: false
-	implementations:
-	- upstream: primary-upstream
-		upstream-id: ref
-		supported-platforms:
-		- generic-64-bit
-		common-crypto:
-		- SHAKE256
-		no-secret-dependent-branching-claimed: null
-		no-secret-dependent-branching-checked-by-valgrind: null
-		large-stack-usage: null
+  claimed-nist-level: 5
+  claimed-security: EUF-CMA
+  length-public-key: 129
+  length-secret-key: 701
+  length-signature: 292
+  implementations-switch-on-runtime-cpu-features: false
+  implementations:
+  - upstream: primary-upstream
+    upstream-id: ref
+    supported-platforms: TODO
+    common-crypto:
+    - TODO
+    no-secret-dependent-branching-claimed: TODO
+    no-secret-dependent-branching-checked-by-valgrind: TODO
+    large-stack-usage: TODO

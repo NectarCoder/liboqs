@@ -218,12 +218,6 @@ extern "C" {
 #define OQS_SIG_alg_sdith_cat3_short "SDitH-CAT3-SHORT"
 /** Algorithm identifier for SDitH-CAT5-SHORT */
 #define OQS_SIG_alg_sdith_cat5_short "SDitH-CAT5-SHORT"
-/** Algorithm identifier for SQIsign-353 */
-#define OQS_SIG_alg_sqisign_353 "SQIsign-353"
-/** Algorithm identifier for SQIsign-529 */
-#define OQS_SIG_alg_sqisign_529 "SQIsign-529"
-/** Algorithm identifier for SQIsign-701 */
-#define OQS_SIG_alg_sqisign_701 "SQIsign-701"
 /** Algorithm identifier for MQOM2-CAT1-GF2-SHORT-R3 */
 #define OQS_SIG_alg_mqom2_cat1_gf2_short_r3 "MQOM2-CAT1-GF2-SHORT-R3"
 /** Algorithm identifier for MQOM2-CAT1-GF2-SHORT-R5 */
