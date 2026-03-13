@@ -17,7 +17,7 @@ Run `./SETUP.sh` to build liboqs with all algorithms enabled.
 
 > [!NOTE]
 > For the purpose of benchmarking we set some CMAKE parameters to set the optimization level to generic.  
-Hence, there will be no AVX or ARM/Neon optmizations when running `SETUP.sh`.  
+> Hence, there will be no AVX or ARM/Neon optmizations when running `SETUP.sh`.  
 
 Go to the `test_sig` folder, run `make`.  
 Run `./test_sig <algorithm-id>` to see some test results.  
