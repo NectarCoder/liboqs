@@ -134,14 +134,14 @@ int sig_perk_verify(const sig_perk_signature_t *signature, const digest_t mu, co
     uint8_t b_V = sig_perk_verify_check_pkp(&signature->a, (const perk_vole_data_t *)q, delta, signature->t,
                                             (const sig_perk_public_key_t *)pk, ch2_bar);
 
+    if (PERK_SUCCESS != b_V) {
+        return PERK_FAILURE;
+    }
+
     for (unsigned i = 0; i < sizeof(ch3_t); i++) {
         if (ch3_bar[i] != signature->ch3[i]) {
             return PERK_FAILURE;
         }
-    }
-
-    if (PERK_SUCCESS != b_V) {
-        return PERK_FAILURE;
     }
 
     return PERK_SUCCESS;

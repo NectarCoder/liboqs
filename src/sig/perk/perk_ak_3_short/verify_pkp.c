@@ -17,7 +17,7 @@ void sig_perk_expand_witness(uint8_t t_prime[2 * PERK_PARAM_L_ROW - 6], const ui
         t_prime[nb_shifts] = w_prime_i_3;
         nb_shifts++;
     }
-#if (PERK_CONFIG_PARAM_SEC_LEVEL == 3 || PERK_CONFIG_PARAM_SEC_LEVEL == 5)
+#if (PERK_CONFIG_SECURITY_BYTES == 24 || PERK_CONFIG_SECURITY_BYTES == 32)
     uint16_t w_3_0 = 0;
     w_3_0 = ((t >> 9) & 1);
     t_prime[nb_shifts] = w_3_0;
@@ -26,11 +26,11 @@ void sig_perk_expand_witness(uint8_t t_prime[2 * PERK_PARAM_L_ROW - 6], const ui
 #endif
 }
 
-// alg 3.41 step 2 (V.VOLE-ElementaryVector)
+// Alg. 4.24 (V.VOLE-EmbedMaskedWithness)
 void sig_perk_embed_masked_witness(gf2_q_poly q_prime_beta_prime[2 * PERK_PARAM_L_ROW - 6], const gf2_q_poly delta,
                                    const uint8_t t_prime[2 * PERK_PARAM_L_ROW - 6],
                                    const gf2_q_poly q[PERK_PARAM_L_ROW]) {
-    // alg 3.37 V.EmbedMaskedWitnessBlock
+    // Alg. 4.24 (V.EmbedMaskedWitnessBlock)
     for (unsigned i = 0; i < 3; i++) {
         for (unsigned j = 0; j < 3; j++) {
             //
@@ -45,7 +45,7 @@ void sig_perk_embed_masked_witness(gf2_q_poly q_prime_beta_prime[2 * PERK_PARAM_
             gf2_q_poly_add(q_prime_beta_prime[i * 4 + 3], q_prime_beta_prime[i * 4 + 3], delta);
         }
     }
-#if (PERK_CONFIG_PARAM_SEC_LEVEL == 3 || PERK_CONFIG_PARAM_SEC_LEVEL == 5)
+#if (PERK_CONFIG_SECURITY_BYTES == 24 || PERK_CONFIG_SECURITY_BYTES == 32)
     gf2_q_poly_copy(q_prime_beta_prime[3 * 4 + 0], q[3 * 3 + 0]);
     if (t_prime[3 * 4 + 0] != 0) {  // multiply by t' and add
         gf2_q_poly_add(q_prime_beta_prime[3 * 4 + 0], q_prime_beta_prime[3 * 4 + 0], delta);
@@ -65,9 +65,9 @@ void sig_perk_verify_compute_p_columns_check(gf2_q_poly col_check[PERK_PARAM_N],
 
     // Compute q_ColCheck
     for (unsigned j = 0; j < PERK_PARAM_N; ++j) {
-        gf2_q_poly_copy(col_check[j], q_z[j][0]);
+        gf2_q_poly_copy(col_check[j], q_z[0][j]);
         for (unsigned i = 1; i < PERK_PARAM_N; ++i) {
-            gf2_q_poly_add(col_check[j], col_check[j], q_z[j][i]);
+            gf2_q_poly_add(col_check[j], col_check[j], q_z[i][j]);
         }
         gf2_q_poly_add(col_check[j], col_check[j], delta_pow_d);
     }
@@ -95,7 +95,7 @@ void sig_perk_verify_compute_y(gf2_q_poly q_y[PERK_PARAM_M], gf2_q_poly q_x_prim
     }
 }
 
-// Alg 4.19 V.VOLE-ElementaryVector(∆, t, q)
+// Alg 4.27 (V.VOLE-ElementaryVector(∆, t, q))
 void sig_perk_verify_vole_ev(gf2_q_poly q_prime_beta_prime[2 * PERK_PARAM_L_ROW - 6], gf2_q_poly q_z[PERK_PARAM_N],
                              const gf2_q_poly delta, const uint16_t t, const gf2_q_poly q[PERK_PARAM_L_ROW]) {
     uint8_t t_prime[2 * PERK_PARAM_L_ROW - 6] = {0};
@@ -104,7 +104,7 @@ void sig_perk_verify_vole_ev(gf2_q_poly q_prime_beta_prime[2 * PERK_PARAM_L_ROW 
     sig_perk_v_tensor_product_to_ev(q_z, q_prime_beta_prime);
 }
 
-// Alg 4.20
+// Alg 4.28 (V.VOLE-Permutation)
 void sig_perk_verify_vole_permutation(gf2_q_poly q_beta[PERK_PARAM_N][2 * PERK_PARAM_L_ROW - 6],
                                       gf2_q_poly q_z[PERK_PARAM_N][PERK_PARAM_N], gf2_q_poly q_col_check[PERK_PARAM_N],
                                       const gf2_q_poly delta, const uint16_t t[PERK_PARAM_N],
@@ -142,7 +142,7 @@ static inline void sig_perk_verify_merge_polynomials(
     }
 }
 
-// Alg 4.23 V.CheckZero
+// Alg 4.31 (V.CheckZero)
 uint8_t sig_perk_verify_check_zero(const gf2_q_poly delta, gf2_q_poly q_f, const sig_perk_f_poly_t *a,
                                    const perk_vole_data_t q[]) {
     gf2_q_poly q_u_i[PERK_PARAM_D - 1] = {0};
@@ -188,7 +188,7 @@ uint8_t sig_perk_verify_check_zero(const gf2_q_poly delta, gf2_q_poly q_f, const
     return PERK_SUCCESS;
 }
 
-// Alg 4.24
+// Alg 4.32 (V.Check-PKP)
 uint8_t sig_perk_verify_check_pkp(const sig_perk_f_poly_t *a, const perk_vole_data_t q[], const gf2_q_poly delta,
                                   const uint16_t t[PERK_PARAM_N], const sig_perk_public_key_t *pk,
                                   const ch2_t ch2_bar) {

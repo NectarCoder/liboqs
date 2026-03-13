@@ -23,7 +23,7 @@ OQS_SIG *OQS_SIG_perk_ak_1_short_new(void) {
 	memset(sig, 0, sizeof(OQS_SIG));
 
 	sig->method_name = OQS_SIG_alg_perk_ak_1_short;
-	sig->alg_version = "v2.1.0";
+	sig->alg_version = "v2.2.0";
 
 	sig->claimed_nist_level = 1;
 	sig->euf_cma = true;

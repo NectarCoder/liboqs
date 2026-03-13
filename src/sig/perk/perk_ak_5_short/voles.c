@@ -26,8 +26,10 @@
 #define SIG_PERK_UNIVERSAL_HASH_B_BITS 16
 #define SIG_PERK_UNIVERSAL_HASH_B      (SIG_PERK_UNIVERSAL_HASH_B_BITS / 8)
 
+// Alg. 4.4 (ConvertToVOLE)
 unsigned sig_perk_convert_to_vole(perk_vole_data_t u, perk_vole_data_t v[], const unsigned subtree, const salt_t salt,
                                   const ggm_tree_t ggm_tree) {
+    //
     unsigned const k = ggm_tree_subtree_k(subtree);
     unsigned const N = 1 << k;
     unsigned const mu = (subtree < PERK_PARAM_TAU_PRIME ? PERK_PARAM_MU1 : PERK_PARAM_MU2);
@@ -58,6 +60,7 @@ unsigned sig_perk_convert_to_vole(perk_vole_data_t u, perk_vole_data_t v[], cons
     for (unsigned j = 1; j < k; j++) {
         unsigned const Ndiv2tothejplus1 = (N / (1 << (j + 1)));
         for (unsigned i = 0; i < Ndiv2tothejplus1; i++) {
+            //
             xor_vole(v[j], v[j], r[2 * i + 1]);
             xor_vole(r[i], r[2 * i], r[2 * i + 1]);
         }
@@ -72,7 +75,7 @@ unsigned sig_perk_convert_to_vole(perk_vole_data_t u, perk_vole_data_t v[], cons
     return result;
 }
 
-// alg. 3.16
+// Alg. 4.5 (VOLECommit)
 void sig_perk_vole_commit(cmt_t h_com, perk_vole_data_t c[PERK_PARAM_TAU - 1], perk_vole_data_t u,
                           perk_vole_data_t v[PERK_PARAM_RHO], const salt_t salt, ggm_tree_t const ggm_tree,
                           const cmt_array_t cmt_array) {
@@ -102,7 +105,7 @@ void sig_perk_vole_commit(cmt_t h_com, perk_vole_data_t c[PERK_PARAM_TAU - 1], p
 
 #elif FINAL_COMMITMENT_MODE == xkcp1x
 
-    // alg. 3.11 lines 5 to 9
+    // Alg. 4.1 lines 5 to 9
     sig_perk_hash_init(&h_com_state, salt, NULL, NULL);
     for (unsigned e = 0; e < PERK_PARAM_TAU; e++) {
         unsigned const N = 1 << ggm_tree_subtree_k(e);
@@ -128,9 +131,7 @@ void sig_perk_vole_commit(cmt_t h_com, perk_vole_data_t c[PERK_PARAM_TAU - 1], p
 
 /**
  * @brief permutes the seeds, zeroise r_0_0 and convert to voles
- *        implement Alg. 3.18 lines 2 and 3
  *
- * @param u
  * @param v
  * @param subtree
  * @param delta_e
@@ -138,7 +139,6 @@ void sig_perk_vole_commit(cmt_t h_com, perk_vole_data_t c[PERK_PARAM_TAU - 1], p
  * @param ggm_tree
  * @return unsigned number of computed elements in v array
  */
-#if 1
 unsigned sig_perk_permute_and_convert_to_vole(perk_vole_data_t v[], const unsigned subtree, uint32_t delta_e,
                                               const salt_t salt, const ggm_tree_t ggm_tree) {
     //
@@ -190,43 +190,8 @@ unsigned sig_perk_permute_and_convert_to_vole(perk_vole_data_t v[], const unsign
     OQS_MEM_insecure_free(r);
     return mu;
 }
-#else
-unsigned sig_perk_permute_and_convert_to_vole(perk_vole_data_t v[], const unsigned subtree, uint32_t delta_e,
-                                              const salt_t salt, const ggm_tree_t ggm_tree) {
-    //
-    //
-    unsigned const k = ggm_tree_subtree_k(subtree);
-    unsigned const N = 1 << k;
-    unsigned const mu = (subtree < PERK_PARAM_TAU_PRIME ? PERK_PARAM_MU1 : PERK_PARAM_MU2);
-    perk_vole_data_t u = {0};
 
-    sig_perk_prg_state_t state = {0};
-
-    // v0 := · · · := vd−1 := 0
-    memset(v, 0, sizeof(perk_vole_data_t) * mu);
-    memset(u, 0, sizeof(perk_vole_data_t));
-
-    for (unsigned i = 0; i < N; i++) {
-        perk_vole_data_t temp = {0};
-        unsigned permuted_i = i ^ delta_e;
-        if (i != 0) {
-            sig_perk_prg_init(&state, salt, ggm_tree[ggm_tree_leaf_index(subtree, permuted_i)]);
-            sig_perk_prg_final(&state, PRG2);
-            sig_perk_prg(&state, temp, sizeof(perk_vole_data_t));
-        }
-
-        for (unsigned j = 0; j < mu; j++) {
-            if ((i >> j) & 1U) {
-                xor_vole(v[j], v[j], temp);
-            }
-        }
-    }
-
-    return mu;
-}
-#endif
-
-// alg. 3.18
+// Alg. 4.7 (VOLEReconstruct)
 int vole_reconstuct(cmt_t h_com, perk_vole_data_t q_prime[PERK_PARAM_RHO], i_vect_t i_vect,
                     const node_seed_t pdecom[PERK_PARAM_T_OPEN], const cmt_t com_e_i[PERK_PARAM_TAU],
                     const salt_t salt) {
@@ -246,7 +211,7 @@ int vole_reconstuct(cmt_t h_com, perk_vole_data_t q_prime[PERK_PARAM_RHO], i_vec
         goto cleanup;
     }
 
-    // alg 3.13 VC.reconstruct
+    // Alg 4.3 (VC.Reconstruct)
     int ret = expand_partial_ggm_tree(*partial_ggm_tree, salt, pdecom, i_vect);
     if (ret < 0) {
         goto cleanup;  // wrong i_vec
@@ -304,6 +269,7 @@ int vole_reconstuct(cmt_t h_com, perk_vole_data_t q_prime[PERK_PARAM_RHO], i_vec
         idx += sig_perk_permute_and_convert_to_vole(q_prime + idx, e, delta_e, salt,
                                                     (const_ggm_tree_t)(*partial_ggm_tree));
     }
+
     result = PERK_SUCCESS;
 
 cleanup:
@@ -320,13 +286,12 @@ static void sig_perk_compute_h1(gf2_64_elt h1, uint8_t* t, uint8_t* x) {
     gf2_64_elt b_t = {0};
     sig_perk_gf2_64_from_bytes(b_t, t);
 
-    unsigned int lambdaBytes = PERK_SECURITY_BITS / 8;
     const uint16_t length_lambda = (PERK_PARAM_L + PERK_PARAM_L_BAR + (PERK_SECURITY_BITS - 1)) / PERK_SECURITY_BITS;
 
     uint8_t tmp[32] = {0};  // max security bytes
-    memcpy(tmp, x + (length_lambda - 1) * lambdaBytes,
+    memcpy(tmp, x + (length_lambda - 1) * PERK_SECURITY_BYTES,
            (PERK_PARAM_L + PERK_PARAM_L_BAR) % PERK_SECURITY_BITS == 0
-               ? lambdaBytes
+               ? PERK_SECURITY_BYTES
                : (PERK_PARAM_L + PERK_PARAM_L_BAR) % PERK_SECURITY_BITS / 8);
 
     memset(h1, 0, GF2_64_ELT_UINT8_SIZE);  // Set to zero
@@ -335,16 +300,16 @@ static void sig_perk_compute_h1(gf2_64_elt h1, uint8_t* t, uint8_t* x) {
     running_t[0] = 1;  // Set to one
 
     unsigned int i = 0;
-    for (; i < lambdaBytes; i += 8) {
+    for (; i < PERK_SECURITY_BYTES; i += 8) {
         gf2_64_elt tmp_elt = {0};
-        sig_perk_gf2_64_from_bytes(tmp_elt, tmp + (lambdaBytes - i - 8));
+        sig_perk_gf2_64_from_bytes(tmp_elt, tmp + (PERK_SECURITY_BYTES - i - 8));
         sig_perk_gf2_64_mul(tmp_elt, running_t, tmp_elt);
         sig_perk_gf2_64_add(h1, h1, tmp_elt);
         sig_perk_gf2_64_mul(running_t, running_t, b_t);
     }
-    for (; i < length_lambda * lambdaBytes; i += 8) {
+    for (; i < length_lambda * PERK_SECURITY_BYTES; i += 8) {
         gf2_64_elt tmp_elt = {0};
-        sig_perk_gf2_64_from_bytes(tmp_elt, x + (length_lambda * lambdaBytes - i - 8));
+        sig_perk_gf2_64_from_bytes(tmp_elt, x + (length_lambda * PERK_SECURITY_BYTES - i - 8));
         sig_perk_gf2_64_mul(tmp_elt, running_t, tmp_elt);
         sig_perk_gf2_64_add(h1, h1, tmp_elt);
         sig_perk_gf2_64_mul(running_t, running_t, b_t);
@@ -362,8 +327,7 @@ void sig_perk_vole_hash(uint8_t* h, uint8_t* sd, uint8_t* x) {
     uint8_t* x0 = x + (PERK_PARAM_L_VHM / 8);
 
     // compute length_lambda = l'/lambda, where l' = lambda*floor( (l+(d-1)rho)/lambda )
-    const uint16_t length_lambda =
-        (PERK_PARAM_L + PERK_PARAM_L_BAR + (PERK_SECURITY_BITS - 1)) / PERK_SECURITY_BITS;  // l'/lambda
+    const uint16_t length_lambda = (PERK_PARAM_L + PERK_PARAM_L_BAR + (PERK_SECURITY_BITS - 1)) / PERK_SECURITY_BITS;
 
     uint8_t tmp[GF2_LAMBDA_ELT_UINT8_SIZE] = {0};
     memcpy(tmp, x0 + (length_lambda - 1) * GF2_LAMBDA_ELT_UINT8_SIZE,

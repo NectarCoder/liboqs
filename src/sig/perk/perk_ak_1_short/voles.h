@@ -47,7 +47,6 @@ unsigned sig_perk_convert_to_vole(perk_vole_data_t u, perk_vole_data_t v[], cons
 
 /**
  * @brief permutes the seeds, zeroise r_0_0 and convert to voles
- *        implement Alg. 3.18 lines 2 and 3
  *
  * @param v[out]       array of at least mu elements
  *

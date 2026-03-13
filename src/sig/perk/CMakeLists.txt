@@ -39,7 +39,6 @@ if(OQS_ENABLE_SIG_perk_ak_1_short)
 		perk_ak_1_short/signature.c
 		perk_ak_1_short/symmetric.c
 		perk_ak_1_short/symmetric_times4.c
-		perk_ak_1_short/universal_hash.c
 		perk_ak_1_short/verbose.c
 		perk_ak_1_short/verify.c
 		perk_ak_1_short/verify_ev_expand.c
@@ -103,7 +102,6 @@ if(OQS_ENABLE_SIG_perk_ak_3_short)
 		perk_ak_3_short/signature.c
 		perk_ak_3_short/symmetric.c
 		perk_ak_3_short/symmetric_times4.c
-		perk_ak_3_short/universal_hash.c
 		perk_ak_3_short/verbose.c
 		perk_ak_3_short/verify.c
 		perk_ak_3_short/verify_ev_expand.c
@@ -167,7 +165,6 @@ if(OQS_ENABLE_SIG_perk_ak_5_short)
 		perk_ak_5_short/signature.c
 		perk_ak_5_short/symmetric.c
 		perk_ak_5_short/symmetric_times4.c
-		perk_ak_5_short/universal_hash.c
 		perk_ak_5_short/verbose.c
 		perk_ak_5_short/verify.c
 		perk_ak_5_short/verify_ev_expand.c

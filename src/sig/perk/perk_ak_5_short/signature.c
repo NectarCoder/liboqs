@@ -175,15 +175,15 @@ int sig_perk_sign(sig_perk_signature_t *signature, const digest_t mu, const sig_
                        (const_vole_data_p_t)v, ch2);
     SIG_PERK_VERBOSE_PRINT_f_poly_t_struct(&signature->a);
 
-    int tmp_ret = open_vector_commitments(signature->ch3, &signature->ctr, signature->pdecom, i_vect,
-                                          (const_ggm_tree_t)(*big_tree), ch2, &signature->a);
+    int ret = open_vector_commitments(signature->ch3, &signature->ctr, signature->pdecom, i_vect,
+                                      (const_ggm_tree_t)(*big_tree), ch2, &signature->a);
     SIG_PERK_VERBOSE_PRINT_uint8_t_array("ch3", signature->ch3, sizeof(signature->ch3));
     SIG_PERK_VERBOSE_PRINT_counter(signature->ctr);
     SIG_PERK_VERBOSE_PRINT_pdecom_seeds((const node_seed_t *)signature->pdecom);
     SIG_PERK_VERBOSE_PRINT_i_vect_t(i_vect);
 
-    if (tmp_ret != PERK_SUCCESS) {
-        result = tmp_ret;
+    if (ret != PERK_SUCCESS) {
+        result = ret;
         goto cleanup;
     }
     // copy commitments of the hidden leaves in the signature

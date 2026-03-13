@@ -137,6 +137,7 @@ void expand_ggm_tree(ggm_tree_t ggm_tree, const salt_t salt) {
 int open_ggm_tree(node_seed_t s_seeds[PERK_PARAM_T_OPEN], const ggm_tree_t ggm_tree, const i_vect_t i_vect) {
     uint32_t s_indexes[MAX_OPEN_NODES] = {0};
     const int n = compute_s_indexes(s_indexes, i_vect);
+    // (n < 0) should never happen given that MAX_OPEN_NODES is accurate
     if ((n < 0) || (n > PERK_PARAM_T_OPEN)) {
         return -1;
     }

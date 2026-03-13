@@ -81,7 +81,6 @@ int sig_perk_verify(const sig_perk_signature_t *signature, const digest_t mu, co
     sig_perk_gen_first_challenge(ch1_bar, mu, h_com, signature->c, signature->salt);
 
     // Check VOLE’s consistency
-
     // Compute Q
     for (unsigned i = 0; i < PERK_PARAM_MU1; i++) {
         memcpy(q[i], q_prime[i], sizeof(perk_vole_data_t));
@@ -163,14 +162,14 @@ int sig_perk_verify(const sig_perk_signature_t *signature, const digest_t mu, co
     uint8_t b_V = sig_perk_verify_check_pkp(&signature->a, (const perk_vole_data_t *)q, delta, signature->t,
                                             (const sig_perk_public_key_t *)pk, ch2_bar);
 
+    if (PERK_SUCCESS != b_V) {
+        goto cleanup;
+    }
+
     for (unsigned i = 0; i < sizeof(ch3_t); i++) {
         if (ch3_bar[i] != signature->ch3[i]) {
             goto cleanup;
         }
-    }
-
-    if (PERK_SUCCESS != b_V) {
-        goto cleanup;
     }
 
     result = PERK_SUCCESS;

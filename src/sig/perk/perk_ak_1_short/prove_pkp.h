@@ -46,9 +46,4 @@ void sig_perk_merge_polys(sig_perk_f_poly_t *f_w, sig_perk_check_t col_check_arr
 void sig_perk_check_zero(sig_perk_f_poly_t *a, sig_perk_f_poly_t *f_w, const perk_vole_data_t u,
                          const perk_vole_data_t v[]);
 
-void sig_perk_print_struct_share_z_t(sig_perk_share_z_t z);
-void sig_perk_print_struct_share_t(sig_perk_share_t s);
-void sig_perk_print_struct_check_t(sig_perk_check_t c);
-void sig_perk_print_struct_f_poly_t(sig_perk_f_poly_t f);
-
 #endif  // SIG_PERK_PROVE_PKP_H

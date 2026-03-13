@@ -6,7 +6,6 @@
 #include "parameters.h"
 #include "parsing.h"
 #include "randombytes.h"
-#include "signature.h"
 #include "symmetric.h"
 #include "symmetric_times4.h"
 
@@ -25,16 +24,16 @@ uint16_t sig_perk_extract_bits(const uint8_t *array, size_t bit_offset) {
     return (uint16_t)result;
 }
 
-// Alg 3.21 EncodeNum()
+// Alg 4.7 (EncodeNum)
 static inline void sig_perk_encode_num(sig_perk_sk_encodings_t *sk_encodings, const uint8_t pos) {
-#if (PERK_CONFIG_PARAM_SEC_LEVEL == 1)
+#if (PERK_CONFIG_SECURITY_BYTES == 16)
     sk_encodings->enc_pos_array[2] = pos >> 4;
     sk_encodings->enc_pos_array[1] = (pos - (sk_encodings->enc_pos_array[2] << 4)) >> 2;
     sk_encodings->enc_pos_array[0] =
         pos - (sk_encodings->enc_pos_array[2] << 4) - (sk_encodings->enc_pos_array[1] << 2);
 #endif
 
-#if (PERK_CONFIG_PARAM_SEC_LEVEL == 3 || PERK_CONFIG_PARAM_SEC_LEVEL == 5)
+#if (PERK_CONFIG_SECURITY_BYTES == 24 || PERK_CONFIG_SECURITY_BYTES == 32)
     sk_encodings->enc_pos_array[3] = pos >> 6;
     uint8_t pos_tmp = pos - (sk_encodings->enc_pos_array[3] << 6);
     sk_encodings->enc_pos_array[2] = pos_tmp >> 4;
@@ -44,31 +43,32 @@ static inline void sig_perk_encode_num(sig_perk_sk_encodings_t *sk_encodings, co
 #endif
 }
 
-// Alg 3.23 EncPosArrayToWitness()
+// Alg 4.11 (EncPosArrayToWitness)
 static inline void sig_perk_enc_pos_array_to_witness(sig_perk_sk_encodings_t *sk_encodings) {
     for (unsigned i = 0; i < PERK_PARAM_D; i++) {
         sk_encodings->w_prime[i] = 1 << sk_encodings->enc_pos_array[i];
     }
 }
 
-// Alg 3.26 PosToWitness()
+// Alg 4.12 (PosToWitness)
 static inline void sig_perk_pos_to_witness(sig_perk_sk_encodings_t *sk_encodings, const uint8_t pos) {
     sig_perk_encode_num(sk_encodings, pos);
     sig_perk_enc_pos_array_to_witness(sk_encodings);
 }
 
-// Alg 3.24 CompWit()
+// Alg 4.9 (CompWit)
 static inline void sig_perk_comp_wit(sig_perk_sk_encodings_t *sk_encodings) {
     uint8_t mask = 0x07;
     // Step 2
     sk_encodings->w = sk_encodings->w_prime[0] & mask;
     sk_encodings->w |= (sk_encodings->w_prime[1] & mask) << 3;
     sk_encodings->w |= (sk_encodings->w_prime[2] & mask) << 6;
-#if (PERK_CONFIG_PARAM_SEC_LEVEL == 3 || PERK_CONFIG_PARAM_SEC_LEVEL == 5)
+#if (PERK_CONFIG_SECURITY_BYTES == 24 || PERK_CONFIG_SECURITY_BYTES == 32)
     sk_encodings->w |= (sk_encodings->w_prime[3] & 0x01) << 9;
 #endif
 }
 
+// Alg. 4.17 steps 1-3 (P.VOLE-ElementaryVector)
 void sig_perk_compute_masked_secret(uint16_t *t, sig_perk_sk_encodings_t *sk_encodings, const uint8_t pos,
                                     const uint8_t pos_index, const perk_vole_data_t u) {
     // Step 1
@@ -81,12 +81,13 @@ void sig_perk_compute_masked_secret(uint16_t *t, sig_perk_sk_encodings_t *sk_enc
     *t = sk_encodings->w ^ u_bits;
 }
 
+// Alg 4.14 (P.EmbedWitness)
 void sig_perk_embed_witness(sig_perk_beta_prime_t beta_prime_row[PERK_PARAM_D][PERK_PARAM_BASIS - 1],
                             uint8_t w_prime[PERK_PARAM_D], unsigned uk_index,
                             const perk_vole_data_t v[PERK_PARAM_RHO]) {
     //
     for (unsigned i = 0; i < 3; i++) {
-        // alg. 3.27 P.EmbedWitnessBlock
+        // Alg. 4.13 (P.EmbedWitnessBlock)
         for (unsigned j = 0; j < 3; j++) {
             beta_prime_row[i][j].u = (w_prime[i] >> j) & 1U;
             sig_perk_v_to_tower_field(beta_prime_row[i][j].v, uk_index + PERK_PARAM_L_VHM, v);
@@ -100,11 +101,13 @@ void sig_perk_embed_witness(sig_perk_beta_prime_t beta_prime_row[PERK_PARAM_D][P
     for (unsigned j = 0; j < 2; j++) {
         beta_prime_row[3][j].u = (w_prime[3] >> j) & 1U;
         sig_perk_v_to_tower_field(beta_prime_row[3][j].v, uk_index + PERK_PARAM_L_VHM,
-                                  v);  // this use the same vole correlation see lines 9 and 10 in specs
+                                  v);  // this use the same vole correlation see lines 9 and 10 in Alg 4.14
+        // this feature is leveraged in the tensor product function
     }
 #endif
 }
 
+// Alg 4.17 (P.VOLE-ElementaryVector)
 static void sig_perk_vole_elementary_vect(sig_perk_share_z_t shares_row[PERK_PARAM_N],
                                           sig_perk_beta_prime_t beta_prime_row[PERK_PARAM_D][PERK_PARAM_BASIS - 1],
                                           uint16_t *t, const uint8_t pos, const uint8_t pos_index,
@@ -115,22 +118,23 @@ static void sig_perk_vole_elementary_vect(sig_perk_share_z_t shares_row[PERK_PAR
     sig_perk_tensor_product_to_ev(shares_row, beta_prime_row);
 }
 
+// Alg 4.18 (P.VOLE-Permutation)
 void sig_perk_vole_permutation(uint16_t t[PERK_PARAM_N],
                                sig_perk_beta_prime_t beta_array[PERK_PARAM_N][PERK_PARAM_D][PERK_PARAM_BASIS - 1],
                                sig_perk_share_z_t z_array[PERK_PARAM_N][PERK_PARAM_N],
                                sig_perk_check_t col_check_array[PERK_PARAM_N], const sig_perk_private_key_t *sk,
                                const perk_vole_data_t u, const perk_vole_data_t v[]) {
-    // Steps 1, 2 and 3 in Alg 3.32 P.VOLE-Permutation
+    // Steps 1, 2 and 3 in Alg 4.18 P.VOLE-Permutation
     for (unsigned i = 0; i < PERK_PARAM_N; ++i) {
         sig_perk_vole_elementary_vect(z_array[i], beta_array[i], &t[i], sk->p[i], i, u, v);
     }
 
-    // Steps 4 to 7 in Alg 3.32 P.VOLE-Permutation
+    // Steps 4 to 7 in Alg 4.18 P.VOLE-Permutation
     for (unsigned j = 0; j < PERK_PARAM_N; ++j) {
         for (unsigned i = 0; i < PERK_PARAM_N; ++i) {
-            col_check_array[j].u ^= z_array[j][i].u;
+            col_check_array[j].u ^= z_array[i][j].u;
             for (unsigned k = 0; k < PERK_PARAM_D; ++k) {
-                gf2_q_poly_add(col_check_array[j].v[k], col_check_array[j].v[k], z_array[j][i].v[k]);
+                gf2_q_poly_add(col_check_array[j].v[k], col_check_array[j].v[k], z_array[i][j].v[k]);
             }
         }
         col_check_array[j].u ^= 1;  // Step 6
@@ -307,6 +311,7 @@ void sig_perk_check_zero(sig_perk_f_poly_t *a, sig_perk_f_poly_t *f_w, const per
     sig_perk_f_poly_add(a, f_w, &f_mask);
 }
 
+// Alg 4.22 (P.Check-PKP)
 void sig_perk_check_pkp(sig_perk_f_poly_t *a, sig_perk_check_t col_check_array[PERK_PARAM_N],
                         sig_perk_beta_prime_t beta_array[PERK_PARAM_N][PERK_PARAM_D][PERK_PARAM_BASIS - 1],
                         sig_perk_share_z_t z_array[PERK_PARAM_N][PERK_PARAM_N], const sig_perk_public_key_t *pk,
@@ -328,43 +333,6 @@ void sig_perk_check_pkp(sig_perk_f_poly_t *a, sig_perk_check_t col_check_array[P
     // Merge polynomials
     sig_perk_merge_polys(&f_w, col_check_array, elt_vect_check, y, alpha);
     sig_perk_check_zero(a, &f_w, u, v);
-}
-
-void sig_perk_print_struct_f_poly_t(sig_perk_f_poly_t f) {
-    printf("\n u = ");
-    sig_perk_print_tower_field_element(f.u);
-    for (unsigned i = 0; i < PERK_PARAM_D; ++i) {
-        printf("\n v[%d] = ", i);
-        sig_perk_print_tower_field_element(f.v[i]);
-    }
-    printf("\n\n\n");
-}
-
-void sig_perk_print_struct_share_z_t(sig_perk_share_z_t z) {
-    printf("\n u = %d", z.u);
-    for (unsigned i = 0; i < PERK_PARAM_D; ++i) {
-        printf("\n v[%d] = ", i);
-        sig_perk_print_tower_field_element(z.v[i]);
-    }
-    printf("\n");
-}
-
-void sig_perk_print_struct_share_t(sig_perk_share_t s) {
-    printf("\nu = %" PRIx16 " ", s.u);
-    for (unsigned i = 0; i < PERK_PARAM_D; ++i) {
-        printf("\n v[%d] = ", i);
-        sig_perk_print_tower_field_element(s.v[i]);
-    }
-    printf("\n");
-}
-
-void sig_perk_print_struct_check_t(sig_perk_check_t c) {
-    printf("\n u = %d", c.u);
-    for (unsigned i = 0; i < PERK_PARAM_D; ++i) {
-        printf("\n v[%d] = ", i);
-        sig_perk_print_tower_field_element(c.v[i]);
-    }
-    printf("\n");
 }
 
 void challenge_decode(i_vect_t i_vect, const ch3_t ch3) {

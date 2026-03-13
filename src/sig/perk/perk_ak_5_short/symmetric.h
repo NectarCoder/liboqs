@@ -32,6 +32,13 @@ typedef uint8_t digest_t[PERK_HASH_BYTES];
  */
 typedef uint8_t seed_t[PERK_SEED_BYTES];
 
+/**
+ * @brief Commitment cmt_t
+ *
+ * This structure contains a commitment
+ */
+typedef uint8_t cmt_t[PERK_COMMITMENT_BYTES];
+
 #if (PERK_SECURITY_BYTES == 16)
 #define PRNG_BLOCK_SIZE 168  // SHAKE128 Block Size
 #elif (PERK_SECURITY_BYTES == 24)

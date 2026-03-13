@@ -30,7 +30,6 @@
 /**
  * @brief node_seed_t
  *
- *
  * This structure represent the node of the tree and
  * contains a seed of size PERK_SEED_BYTES bytes
  */
@@ -90,13 +89,6 @@ int open_ggm_tree(node_seed_t s_seeds[PERK_PARAM_T_OPEN], const ggm_tree_t ggm_t
  */
 int expand_partial_ggm_tree(ggm_tree_t partial_ggm_tree, const salt_t salt,
                             const node_seed_t s_seeds[PERK_PARAM_T_OPEN], const i_vect_t i_vect);
-
-/**
- * @brief Commitment cmt_t
- *
- * This structure contains a commitment
- */
-typedef uint8_t cmt_t[PERK_COMMITMENT_BYTES];
 
 /**
  * @brief commitment array

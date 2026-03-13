@@ -5,6 +5,7 @@
 
 #include "parsing.h"
 #include "keygen.h"
+#include "permutation.h"
 
 #include <stdint.h>
 
@@ -110,6 +111,8 @@ int sig_perk_public_key_from_bytes(sig_perk_public_key_t *pk_struct, uint8_t con
     memcpy(pk_struct->H_seed, p_pk_bytes, PERK_SEED_BYTES);
     p_pk_bytes += PERK_SEED_BYTES;
 
+    sig_perk_mat_set_random_rref(pk_struct->H, pk_struct->H_seed);
+
     uint16_t pos = 0, index = 0;
     for (int i = 0; i < PERK_PARAM_N; i++) {
         pk_struct->x[i] = sig_perk_read_n_bits_from_bytearray(p_pk_bytes, &pos, &index, PERK_PARAM_Q);
@@ -119,6 +122,8 @@ int sig_perk_public_key_from_bytes(sig_perk_public_key_t *pk_struct, uint8_t con
 
 void sig_perk_private_key_from_bytes(sig_perk_private_key_t *sk_struct, uint8_t const *sk_bytes) {
     memcpy(sk_struct->perm_seed, sk_bytes, PERK_SEED_BYTES);
+    // Sample permutation
+    sig_perk_perm_set_random(sk_struct->p, sk_struct->perm_seed);
 }
 
 void sig_perk_signature_to_bytes(uint8_t sb[PERK_SIGNATURE_BYTES], const sig_perk_signature_t *signature) {

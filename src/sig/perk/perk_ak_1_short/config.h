@@ -29,5 +29,4 @@
 #define PRG_LEAF_COMMIT_IMPL xkcp
 #define PRG_EXPAND_SEED_IMPL aes
 
-#define PERK_CONFIG_PARAM_SEC_LEVEL 1
 #endif  // SIG_PERK_CONFIG_H

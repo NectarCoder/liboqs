@@ -23,6 +23,15 @@
 typedef gf2_q_elt gf2_q_poly[PERK_TOWER_FIELD_EXT];
 typedef gf2_q_elt gf2_q_poly_ur[2 * PERK_TOWER_FIELD_EXT /*- 1*/];  // 1 more element for the use as temporary buffer
 
+/**
+ * @brief folds size coefficients in half_size
+ *        half_size must be >= size / 2
+ *
+ * @param[out] res       result poly
+ * @param[in]  src       source poly
+ * @param[in]  half_size coefficients in the folded poly
+ * @param[in]  remaining coefficients to be folded
+ */
 static inline void gf2_q_poly_kar_fold(gf2_q_poly res, const gf2_q_poly src, int32_t half_size, int32_t remaining) {
     int32_t i = 0;
     for (i = 0; i < remaining; ++i) {

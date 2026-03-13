@@ -120,5 +120,6 @@ void sig_perk_gf2_lambda_to_bytes(uint8_t bytes_array[GF2_LAMBDA_ELT_UINT8_SIZE]
 }
 
 void sig_perk_gf2_lambda_from_gf2_64(gf2_lambda_elt o, const gf2_64_elt e) {
+    memset(o, 0, sizeof(o[0]) * GF2_LAMBDA_ELT_SIZE);
     memcpy(o, e, sizeof(gf2_64_elt));
 }

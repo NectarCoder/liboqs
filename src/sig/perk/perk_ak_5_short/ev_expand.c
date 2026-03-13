@@ -126,46 +126,6 @@ static inline void add_deg1(sig_perk_beta_prime_t *sum, sig_perk_beta_prime_t *a
     sum->u = add1->u ^ add2->u;
 }
 
-#ifdef TEST_EXPAND_DEG2
-#include <stdlib.h>
-__attribute__((unused)) static inline void perk_ev_expand_deg2_ref(
-    sig_perk_share_z_t shares_deg2[PERK_SHARES_DEG2],
-    sig_perk_beta_prime_t voles_row[PERK_PARAM_D][PERK_PARAM_BASIS - 1]) {
-    //
-    sig_perk_beta_prime_t X = {1, {0}};
-
-    sig_perk_beta_prime_t V13;
-    add_deg1(&V13, &X, &voles_row[1][0]);
-    add_deg1(&V13, &V13, &voles_row[1][1]);
-    add_deg1(&V13, &V13, &voles_row[1][2]);
-
-    sig_perk_beta_prime_t V03;
-    add_deg1(&V03, &X, &voles_row[0][0]);
-    add_deg1(&V03, &V03, &voles_row[0][1]);
-    add_deg1(&V03, &V03, &voles_row[0][2]);
-
-    mul_deg1_by_deg1(&shares_deg2[0], &voles_row[1][0], &voles_row[0][0]);
-    mul_deg1_by_deg1(&shares_deg2[1], &voles_row[1][0], &voles_row[0][1]);
-    mul_deg1_by_deg1(&shares_deg2[2], &voles_row[1][0], &voles_row[0][2]);
-    mul_deg1_by_deg1(&shares_deg2[3], &voles_row[1][0], &V03);
-
-    mul_deg1_by_deg1(&shares_deg2[4], &voles_row[1][1], &voles_row[0][0]);
-    mul_deg1_by_deg1(&shares_deg2[5], &voles_row[1][1], &voles_row[0][1]);
-    mul_deg1_by_deg1(&shares_deg2[6], &voles_row[1][1], &voles_row[0][2]);
-    mul_deg1_by_deg1(&shares_deg2[7], &voles_row[1][1], &V03);
-
-    mul_deg1_by_deg1(&shares_deg2[8], &voles_row[1][2], &voles_row[0][0]);
-    mul_deg1_by_deg1(&shares_deg2[9], &voles_row[1][2], &voles_row[0][1]);
-    mul_deg1_by_deg1(&shares_deg2[10], &voles_row[1][2], &voles_row[0][2]);
-    mul_deg1_by_deg1(&shares_deg2[11], &voles_row[1][2], &V03);
-
-    mul_deg1_by_deg1(&shares_deg2[12], &V13, &voles_row[0][0]);
-    mul_deg1_by_deg1(&shares_deg2[13], &V13, &voles_row[0][1]);
-    mul_deg1_by_deg1(&shares_deg2[14], &V13, &voles_row[0][2]);
-    mul_deg1_by_deg1(&shares_deg2[15], &V13, &V03);
-}
-#endif
-
 static inline void perk_ev_expand_deg2(sig_perk_share_z_t shares_deg2[PERK_SHARES_DEG2],
                                        sig_perk_beta_prime_t voles_row[PERK_PARAM_D][PERK_PARAM_BASIS - 1]) {
     //
@@ -302,17 +262,24 @@ void sig_perk_tensor_product_to_ev(sig_perk_share_z_t shares_row[PERK_PARAM_N],
     }
 
 #if (PERK_PARAM_N > 64)
-    // voles_row[3][0] and voles_row[3][0] have the same v, we leverage this
+#if 0  // reference impl
+    for (int i = (PERK_PARAM_N - 1); i >= 0; i--) {
+        mul_deg3_by_deg1(&shares_row[i], &shares_row[i % 64], &voles_row[3][i / 64]);
+    }
+#else
     int i;
     for (i = (PERK_PARAM_N - 1); i >= 64; i--) {
-        // mul_deg3_by_deg1(&shares_row[i], &shares_row[i % 64], &voles_row[3][1]);
-        // mul_deg3_by_deg1(&shares_row[i - 64], &shares_row[i % 64], &voles_row[3][0]);
+        // voles_row[3][1] and voles_row[3][0] have the same v (see line 9 and 10 Alg 4.14), we leverage this
+        // the following two commented lines are equivalent to double_mul_deg3_by_deg1(...)
+        // mul_deg3_by_deg1(&shares_row[i], &shares_row[i % 64], &voles_row[3][1])
+        // mul_deg3_by_deg1(&shares_row[i - 64], &shares_row[i % 64], &voles_row[3][0])
         double_mul_deg3_by_deg1(&shares_row[i], &shares_row[i - 64], &shares_row[i % 64], &voles_row[3][1],
                                 voles_row[3][0].u);
     }
     for (; i > ((PERK_PARAM_N - 1) - 64); i--) {
         mul_deg3_by_deg1(&shares_row[i], &shares_row[i % 64], &voles_row[3][0]);
     }
+#endif
 #endif
 }
 

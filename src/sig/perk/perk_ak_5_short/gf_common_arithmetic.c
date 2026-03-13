@@ -227,3 +227,15 @@ uint8_t sig_perk_gf2_64_elt_get_coefficient(const gf2_64_elt e, uint32_t index) 
 void sig_perk_gf2_64_from_bytes(gf2_64_elt e, uint8_t bytes_array[GF2_64_ELT_UINT8_SIZE]) {
     memcpy(e, bytes_array, sizeof(uint64_t) * GF2_64_ELT_SIZE);
 }
+
+// void sig_perk_gf2_64_elt_print(const gf2_64_elt e) {
+//     printf("[");
+//     printf(" %16" PRIx64, e[0]);
+//     printf(" ]");
+// }
+//
+// void sig_perk_gf2_64_elt_ur_print(const gf2_64_elt_ur e) {
+//     printf("[");
+//     printf(" %16" PRIx64 " %16" PRIx64, e[0], e[1]);
+//     printf(" ]");
+// }
