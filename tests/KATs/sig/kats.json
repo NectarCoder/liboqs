@@ -43,6 +43,30 @@
     "all": "63068306163c9b65a2227cf808ca0cd60e5bf0f536f9c7119da325a2d3707bc7",
     "single": "9a2ede41913131ab479c2581a1a8e86b97222d800aeb16bf67f6163481f2d587"
   },
+  "PERK-AES-AES-1-short": {
+    "all": "72221e4d531edcc65b3a1d10aed7153ddf7a7e2a593af07d157462d328278ebe",
+    "single": "b9227ac37082f5dd30627e6cb0103683a90d9e327fe9f44718f2071475385c96"
+  },
+  "PERK-AES-AES-3-short": {
+    "all": "28aed8fb11b25134c0d074dc081bb7e541b6799349d8f4513e12fd85a77b0052",
+    "single": "e7c1127c4f43c046d7e06e23f50c6361e9912c04833f3536e9a457159fec37ba"
+  },
+  "PERK-AES-AES-5-short": {
+    "all": "22e5f7a20e16dbd74cb0b65dae315264af86351a16b522b967287e96cc7e3b2e",
+    "single": "3678e83b7744e6aa0771dd20e0c10465665cb02ada9283e3dc8bbe08c3c685d7"
+  },
+  "PERK-KECCAK-KECCAK-1-short": {
+    "all": "4ffe0de3fc3e534f9064b3b49a2646b71b2172bb2f86373f029f509220b7359d",
+    "single": "f5e647bd0699d157d10203f5511523d1e89a5d5b2a4c78acc5effb260ad5fca0"
+  },
+  "PERK-KECCAK-KECCAK-3-short": {
+    "all": "60b37eddb7dbeb5238f8c6a9f853085b2ec6d0b2bb937d637cb0a0de52389d86",
+    "single": "ff390ad76fe03895724bcc3d01b145f0d22ee9823784ef0da97ce94b4cd748f9"
+  },
+  "PERK-KECCAK-KECCAK-5-short": {
+    "all": "222d739e9a43cd60bfec2e9b964014ef7e7c1b8792b0d1386e27c457e1a22e11",
+    "single": "d05865159d79fcf5c9a3b7dab460db385bf3f0f47ff7ca233fc86bd61785d209"
+  },
   "ML-DSA-44": {
     "all": "54322d25c05b96941aec73eb3ee27a975d38a34bfb53ef4cb9fd4a8e9cab554c",
     "single": "9a196e7fb32fbc93757dc2d8dc1924460eab66303c0c08aeb8b798fb8d8f8cf3"
