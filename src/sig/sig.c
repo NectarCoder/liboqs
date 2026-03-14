@@ -96,6 +96,12 @@ OQS_API const char *OQS_SIG_alg_identifier(size_t i) {
 		OQS_SIG_alg_perk_ak_1_short,
 		OQS_SIG_alg_perk_ak_3_short,
 		OQS_SIG_alg_perk_ak_5_short,
+		OQS_SIG_alg_perk_aes_aes_1_short,
+		OQS_SIG_alg_perk_aes_aes_3_short,
+		OQS_SIG_alg_perk_aes_aes_5_short,
+		OQS_SIG_alg_perk_keccak_keccak_1_short,
+		OQS_SIG_alg_perk_keccak_keccak_3_short,
+		OQS_SIG_alg_perk_keccak_keccak_5_short,
 		OQS_SIG_alg_ryde_1s,
 		OQS_SIG_alg_ryde_3s,
 		OQS_SIG_alg_ryde_5s,
@@ -729,6 +735,48 @@ OQS_API int OQS_SIG_alg_is_enabled(const char *method_name) {
 
 	} else if (0 == strcasecmp(method_name, OQS_SIG_alg_perk_ak_5_short)) {
 #ifdef OQS_ENABLE_SIG_perk_ak_5_short
+		return 1;
+#else
+		return 0;
+#endif
+
+	} else if (0 == strcasecmp(method_name, OQS_SIG_alg_perk_aes_aes_1_short)) {
+#ifdef OQS_ENABLE_SIG_perk_aes_aes_1_short
+		return 1;
+#else
+		return 0;
+#endif
+
+	} else if (0 == strcasecmp(method_name, OQS_SIG_alg_perk_aes_aes_3_short)) {
+#ifdef OQS_ENABLE_SIG_perk_aes_aes_3_short
+		return 1;
+#else
+		return 0;
+#endif
+
+	} else if (0 == strcasecmp(method_name, OQS_SIG_alg_perk_aes_aes_5_short)) {
+#ifdef OQS_ENABLE_SIG_perk_aes_aes_5_short
+		return 1;
+#else
+		return 0;
+#endif
+
+	} else if (0 == strcasecmp(method_name, OQS_SIG_alg_perk_keccak_keccak_1_short)) {
+#ifdef OQS_ENABLE_SIG_perk_keccak_keccak_1_short
+		return 1;
+#else
+		return 0;
+#endif
+
+	} else if (0 == strcasecmp(method_name, OQS_SIG_alg_perk_keccak_keccak_3_short)) {
+#ifdef OQS_ENABLE_SIG_perk_keccak_keccak_3_short
+		return 1;
+#else
+		return 0;
+#endif
+
+	} else if (0 == strcasecmp(method_name, OQS_SIG_alg_perk_keccak_keccak_5_short)) {
+#ifdef OQS_ENABLE_SIG_perk_keccak_keccak_5_short
 		return 1;
 #else
 		return 0;
@@ -1673,6 +1721,48 @@ OQS_API OQS_SIG *OQS_SIG_new(const char *method_name) {
 	} else if (0 == strcasecmp(method_name, OQS_SIG_alg_perk_ak_5_short)) {
 #ifdef OQS_ENABLE_SIG_perk_ak_5_short
 		return OQS_SIG_perk_ak_5_short_new();
+#else
+		return NULL;
+#endif
+
+	} else if (0 == strcasecmp(method_name, OQS_SIG_alg_perk_aes_aes_1_short)) {
+#ifdef OQS_ENABLE_SIG_perk_aes_aes_1_short
+		return OQS_SIG_perk_aes_aes_1_short_new();
+#else
+		return NULL;
+#endif
+
+	} else if (0 == strcasecmp(method_name, OQS_SIG_alg_perk_aes_aes_3_short)) {
+#ifdef OQS_ENABLE_SIG_perk_aes_aes_3_short
+		return OQS_SIG_perk_aes_aes_3_short_new();
+#else
+		return NULL;
+#endif
+
+	} else if (0 == strcasecmp(method_name, OQS_SIG_alg_perk_aes_aes_5_short)) {
+#ifdef OQS_ENABLE_SIG_perk_aes_aes_5_short
+		return OQS_SIG_perk_aes_aes_5_short_new();
+#else
+		return NULL;
+#endif
+
+	} else if (0 == strcasecmp(method_name, OQS_SIG_alg_perk_keccak_keccak_1_short)) {
+#ifdef OQS_ENABLE_SIG_perk_keccak_keccak_1_short
+		return OQS_SIG_perk_keccak_keccak_1_short_new();
+#else
+		return NULL;
+#endif
+
+	} else if (0 == strcasecmp(method_name, OQS_SIG_alg_perk_keccak_keccak_3_short)) {
+#ifdef OQS_ENABLE_SIG_perk_keccak_keccak_3_short
+		return OQS_SIG_perk_keccak_keccak_3_short_new();
+#else
+		return NULL;
+#endif
+
+	} else if (0 == strcasecmp(method_name, OQS_SIG_alg_perk_keccak_keccak_5_short)) {
+#ifdef OQS_ENABLE_SIG_perk_keccak_keccak_5_short
+		return OQS_SIG_perk_keccak_keccak_5_short_new();
 #else
 		return NULL;
 #endif

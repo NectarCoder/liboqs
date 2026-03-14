@@ -985,6 +985,12 @@ OQS_STATUS combine_message_signature(uint8_t **signed_msg, size_t *signed_msg_le
 			   0 == strcmp(sig->method_name, "PERK-AK-1-short") ||
 			   0 == strcmp(sig->method_name, "PERK-AK-3-short") ||
 			   0 == strcmp(sig->method_name, "PERK-AK-5-short") ||
+			   0 == strcmp(sig->method_name, "PERK-AES-AES-1-short") ||
+			   0 == strcmp(sig->method_name, "PERK-AES-AES-3-short") ||
+			   0 == strcmp(sig->method_name, "PERK-AES-AES-5-short") ||
+			   0 == strcmp(sig->method_name, "PERK-KECCAK-KECCAK-1-short") ||
+			   0 == strcmp(sig->method_name, "PERK-KECCAK-KECCAK-3-short") ||
+			   0 == strcmp(sig->method_name, "PERK-KECCAK-KECCAK-5-short") ||
 			   0 == strcmp(sig->method_name, "RYDE-1S") ||
 			   0 == strcmp(sig->method_name, "RYDE-3S") ||
 			   0 == strcmp(sig->method_name, "RYDE-5S")) {

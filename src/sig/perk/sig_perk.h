@@ -24,6 +24,18 @@ extern "C" {
 #define OQS_SIG_alg_perk_ak_3_short "PERK-AK-3-short"
 /** Algorithm identifier for PERK-AK-5-short */
 #define OQS_SIG_alg_perk_ak_5_short "PERK-AK-5-short"
+/** Algorithm identifier for PERK-AES-AES-1-short */
+#define OQS_SIG_alg_perk_aes_aes_1_short "PERK-AES-AES-1-short"
+/** Algorithm identifier for PERK-AES-AES-3-short */
+#define OQS_SIG_alg_perk_aes_aes_3_short "PERK-AES-AES-3-short"
+/** Algorithm identifier for PERK-AES-AES-5-short */
+#define OQS_SIG_alg_perk_aes_aes_5_short "PERK-AES-AES-5-short"
+/** Algorithm identifier for PERK-KECCAK-KECCAK-1-short */
+#define OQS_SIG_alg_perk_keccak_keccak_1_short "PERK-KECCAK-KECCAK-1-short"
+/** Algorithm identifier for PERK-KECCAK-KECCAK-3-short */
+#define OQS_SIG_alg_perk_keccak_keccak_3_short "PERK-KECCAK-KECCAK-3-short"
+/** Algorithm identifier for PERK-KECCAK-KECCAK-5-short */
+#define OQS_SIG_alg_perk_keccak_keccak_5_short "PERK-KECCAK-KECCAK-5-short"
 
 /** PERK-AK-1-short public key length, in bytes */
 #define OQS_SIG_perk_ak_1_short_length_public_key 104
@@ -31,6 +43,18 @@ extern "C" {
 #define OQS_SIG_perk_ak_3_short_length_public_key 151
 /** PERK-AK-5-short public key length, in bytes */
 #define OQS_SIG_perk_ak_5_short_length_public_key 195
+/** PERK-AES-AES-1-short public key length, in bytes */
+#define OQS_SIG_perk_aes_aes_1_short_length_public_key 104
+/** PERK-AES-AES-3-short public key length, in bytes */
+#define OQS_SIG_perk_aes_aes_3_short_length_public_key 151
+/** PERK-AES-AES-5-short public key length, in bytes */
+#define OQS_SIG_perk_aes_aes_5_short_length_public_key 195
+/** PERK-KECCAK-KECCAK-1-short public key length, in bytes */
+#define OQS_SIG_perk_keccak_keccak_1_short_length_public_key 104
+/** PERK-KECCAK-KECCAK-3-short public key length, in bytes */
+#define OQS_SIG_perk_keccak_keccak_3_short_length_public_key 151
+/** PERK-KECCAK-KECCAK-5-short public key length, in bytes */
+#define OQS_SIG_perk_keccak_keccak_5_short_length_public_key 195
 
 /** PERK-AK-1-short secret key length, in bytes */
 #define OQS_SIG_perk_ak_1_short_length_secret_key 120
@@ -38,6 +62,18 @@ extern "C" {
 #define OQS_SIG_perk_ak_3_short_length_secret_key 175
 /** PERK-AK-5-short secret key length, in bytes */
 #define OQS_SIG_perk_ak_5_short_length_secret_key 227
+/** PERK-AES-AES-1-short secret key length, in bytes */
+#define OQS_SIG_perk_aes_aes_1_short_length_secret_key 120
+/** PERK-AES-AES-3-short secret key length, in bytes */
+#define OQS_SIG_perk_aes_aes_3_short_length_secret_key 175
+/** PERK-AES-AES-5-short secret key length, in bytes */
+#define OQS_SIG_perk_aes_aes_5_short_length_secret_key 227
+/** PERK-KECCAK-KECCAK-1-short secret key length, in bytes */
+#define OQS_SIG_perk_keccak_keccak_1_short_length_secret_key 120
+/** PERK-KECCAK-KECCAK-3-short secret key length, in bytes */
+#define OQS_SIG_perk_keccak_keccak_3_short_length_secret_key 175
+/** PERK-KECCAK-KECCAK-5-short secret key length, in bytes */
+#define OQS_SIG_perk_keccak_keccak_5_short_length_secret_key 227
 
 /** PERK-AK-1-short signature length, in bytes */
 #define OQS_SIG_perk_ak_1_short_length_signature 3473
@@ -45,6 +81,18 @@ extern "C" {
 #define OQS_SIG_perk_ak_3_short_length_signature 8311
 /** PERK-AK-5-short signature length, in bytes */
 #define OQS_SIG_perk_ak_5_short_length_signature 14830
+/** PERK-AES-AES-1-short signature length, in bytes */
+#define OQS_SIG_perk_aes_aes_1_short_length_signature 3473
+/** PERK-AES-AES-3-short signature length, in bytes */
+#define OQS_SIG_perk_aes_aes_3_short_length_signature 8311
+/** PERK-AES-AES-5-short signature length, in bytes */
+#define OQS_SIG_perk_aes_aes_5_short_length_signature 14830
+/** PERK-KECCAK-KECCAK-1-short signature length, in bytes */
+#define OQS_SIG_perk_keccak_keccak_1_short_length_signature 3473
+/** PERK-KECCAK-KECCAK-3-short signature length, in bytes */
+#define OQS_SIG_perk_keccak_keccak_3_short_length_signature 8311
+/** PERK-KECCAK-KECCAK-5-short signature length, in bytes */
+#define OQS_SIG_perk_keccak_keccak_5_short_length_signature 14830
 
 #if defined(OQS_ENABLE_SIG_perk_ak_1_short)
 OQS_API OQS_SIG *OQS_SIG_perk_ak_1_short_new(void);
@@ -74,6 +122,66 @@ OQS_API OQS_STATUS OQS_SIG_perk_ak_5_short_sign(uint8_t *signature, size_t *sign
 OQS_API OQS_STATUS OQS_SIG_perk_ak_5_short_verify(const uint8_t *message, size_t message_len, const uint8_t *signature, size_t signature_len, const uint8_t *public_key);
 OQS_API OQS_STATUS OQS_SIG_perk_ak_5_short_sign_with_ctx_str(uint8_t *signature, size_t *signature_len, const uint8_t *message, size_t message_len, const uint8_t *ctx_str, size_t ctx_str_len, const uint8_t *secret_key);
 OQS_API OQS_STATUS OQS_SIG_perk_ak_5_short_verify_with_ctx_str(const uint8_t *message, size_t message_len, const uint8_t *signature, size_t signature_len, const uint8_t *ctx_str, size_t ctx_str_len, const uint8_t *public_key);
+#endif
+
+#if defined(OQS_ENABLE_SIG_perk_aes_aes_1_short)
+OQS_API OQS_SIG *OQS_SIG_perk_aes_aes_1_short_new(void);
+
+OQS_API OQS_STATUS OQS_SIG_perk_aes_aes_1_short_keypair(uint8_t *public_key, uint8_t *secret_key);
+OQS_API OQS_STATUS OQS_SIG_perk_aes_aes_1_short_sign(uint8_t *signature, size_t *signature_len, const uint8_t *message, size_t message_len, const uint8_t *secret_key);
+OQS_API OQS_STATUS OQS_SIG_perk_aes_aes_1_short_verify(const uint8_t *message, size_t message_len, const uint8_t *signature, size_t signature_len, const uint8_t *public_key);
+OQS_API OQS_STATUS OQS_SIG_perk_aes_aes_1_short_sign_with_ctx_str(uint8_t *signature, size_t *signature_len, const uint8_t *message, size_t message_len, const uint8_t *ctx_str, size_t ctx_str_len, const uint8_t *secret_key);
+OQS_API OQS_STATUS OQS_SIG_perk_aes_aes_1_short_verify_with_ctx_str(const uint8_t *message, size_t message_len, const uint8_t *signature, size_t signature_len, const uint8_t *ctx_str, size_t ctx_str_len, const uint8_t *public_key);
+#endif
+
+#if defined(OQS_ENABLE_SIG_perk_aes_aes_3_short)
+OQS_API OQS_SIG *OQS_SIG_perk_aes_aes_3_short_new(void);
+
+OQS_API OQS_STATUS OQS_SIG_perk_aes_aes_3_short_keypair(uint8_t *public_key, uint8_t *secret_key);
+OQS_API OQS_STATUS OQS_SIG_perk_aes_aes_3_short_sign(uint8_t *signature, size_t *signature_len, const uint8_t *message, size_t message_len, const uint8_t *secret_key);
+OQS_API OQS_STATUS OQS_SIG_perk_aes_aes_3_short_verify(const uint8_t *message, size_t message_len, const uint8_t *signature, size_t signature_len, const uint8_t *public_key);
+OQS_API OQS_STATUS OQS_SIG_perk_aes_aes_3_short_sign_with_ctx_str(uint8_t *signature, size_t *signature_len, const uint8_t *message, size_t message_len, const uint8_t *ctx_str, size_t ctx_str_len, const uint8_t *secret_key);
+OQS_API OQS_STATUS OQS_SIG_perk_aes_aes_3_short_verify_with_ctx_str(const uint8_t *message, size_t message_len, const uint8_t *signature, size_t signature_len, const uint8_t *ctx_str, size_t ctx_str_len, const uint8_t *public_key);
+#endif
+
+#if defined(OQS_ENABLE_SIG_perk_aes_aes_5_short)
+OQS_API OQS_SIG *OQS_SIG_perk_aes_aes_5_short_new(void);
+
+OQS_API OQS_STATUS OQS_SIG_perk_aes_aes_5_short_keypair(uint8_t *public_key, uint8_t *secret_key);
+OQS_API OQS_STATUS OQS_SIG_perk_aes_aes_5_short_sign(uint8_t *signature, size_t *signature_len, const uint8_t *message, size_t message_len, const uint8_t *secret_key);
+OQS_API OQS_STATUS OQS_SIG_perk_aes_aes_5_short_verify(const uint8_t *message, size_t message_len, const uint8_t *signature, size_t signature_len, const uint8_t *public_key);
+OQS_API OQS_STATUS OQS_SIG_perk_aes_aes_5_short_sign_with_ctx_str(uint8_t *signature, size_t *signature_len, const uint8_t *message, size_t message_len, const uint8_t *ctx_str, size_t ctx_str_len, const uint8_t *secret_key);
+OQS_API OQS_STATUS OQS_SIG_perk_aes_aes_5_short_verify_with_ctx_str(const uint8_t *message, size_t message_len, const uint8_t *signature, size_t signature_len, const uint8_t *ctx_str, size_t ctx_str_len, const uint8_t *public_key);
+#endif
+
+#if defined(OQS_ENABLE_SIG_perk_keccak_keccak_1_short)
+OQS_API OQS_SIG *OQS_SIG_perk_keccak_keccak_1_short_new(void);
+
+OQS_API OQS_STATUS OQS_SIG_perk_keccak_keccak_1_short_keypair(uint8_t *public_key, uint8_t *secret_key);
+OQS_API OQS_STATUS OQS_SIG_perk_keccak_keccak_1_short_sign(uint8_t *signature, size_t *signature_len, const uint8_t *message, size_t message_len, const uint8_t *secret_key);
+OQS_API OQS_STATUS OQS_SIG_perk_keccak_keccak_1_short_verify(const uint8_t *message, size_t message_len, const uint8_t *signature, size_t signature_len, const uint8_t *public_key);
+OQS_API OQS_STATUS OQS_SIG_perk_keccak_keccak_1_short_sign_with_ctx_str(uint8_t *signature, size_t *signature_len, const uint8_t *message, size_t message_len, const uint8_t *ctx_str, size_t ctx_str_len, const uint8_t *secret_key);
+OQS_API OQS_STATUS OQS_SIG_perk_keccak_keccak_1_short_verify_with_ctx_str(const uint8_t *message, size_t message_len, const uint8_t *signature, size_t signature_len, const uint8_t *ctx_str, size_t ctx_str_len, const uint8_t *public_key);
+#endif
+
+#if defined(OQS_ENABLE_SIG_perk_keccak_keccak_3_short)
+OQS_API OQS_SIG *OQS_SIG_perk_keccak_keccak_3_short_new(void);
+
+OQS_API OQS_STATUS OQS_SIG_perk_keccak_keccak_3_short_keypair(uint8_t *public_key, uint8_t *secret_key);
+OQS_API OQS_STATUS OQS_SIG_perk_keccak_keccak_3_short_sign(uint8_t *signature, size_t *signature_len, const uint8_t *message, size_t message_len, const uint8_t *secret_key);
+OQS_API OQS_STATUS OQS_SIG_perk_keccak_keccak_3_short_verify(const uint8_t *message, size_t message_len, const uint8_t *signature, size_t signature_len, const uint8_t *public_key);
+OQS_API OQS_STATUS OQS_SIG_perk_keccak_keccak_3_short_sign_with_ctx_str(uint8_t *signature, size_t *signature_len, const uint8_t *message, size_t message_len, const uint8_t *ctx_str, size_t ctx_str_len, const uint8_t *secret_key);
+OQS_API OQS_STATUS OQS_SIG_perk_keccak_keccak_3_short_verify_with_ctx_str(const uint8_t *message, size_t message_len, const uint8_t *signature, size_t signature_len, const uint8_t *ctx_str, size_t ctx_str_len, const uint8_t *public_key);
+#endif
+
+#if defined(OQS_ENABLE_SIG_perk_keccak_keccak_5_short)
+OQS_API OQS_SIG *OQS_SIG_perk_keccak_keccak_5_short_new(void);
+
+OQS_API OQS_STATUS OQS_SIG_perk_keccak_keccak_5_short_keypair(uint8_t *public_key, uint8_t *secret_key);
+OQS_API OQS_STATUS OQS_SIG_perk_keccak_keccak_5_short_sign(uint8_t *signature, size_t *signature_len, const uint8_t *message, size_t message_len, const uint8_t *secret_key);
+OQS_API OQS_STATUS OQS_SIG_perk_keccak_keccak_5_short_verify(const uint8_t *message, size_t message_len, const uint8_t *signature, size_t signature_len, const uint8_t *public_key);
+OQS_API OQS_STATUS OQS_SIG_perk_keccak_keccak_5_short_sign_with_ctx_str(uint8_t *signature, size_t *signature_len, const uint8_t *message, size_t message_len, const uint8_t *ctx_str, size_t ctx_str_len, const uint8_t *secret_key);
+OQS_API OQS_STATUS OQS_SIG_perk_keccak_keccak_5_short_verify_with_ctx_str(const uint8_t *message, size_t message_len, const uint8_t *signature, size_t signature_len, const uint8_t *ctx_str, size_t ctx_str_len, const uint8_t *public_key);
 #endif
 
 #ifdef __cplusplus

@@ -194,6 +194,18 @@ extern "C" {
 #define OQS_SIG_alg_perk_ak_3_short "PERK-AK-3-short"
 /** Algorithm identifier for PERK-AK-5-short */
 #define OQS_SIG_alg_perk_ak_5_short "PERK-AK-5-short"
+/** Algorithm identifier for PERK-AES-AES-1-short */
+#define OQS_SIG_alg_perk_aes_aes_1_short "PERK-AES-AES-1-short"
+/** Algorithm identifier for PERK-AES-AES-3-short */
+#define OQS_SIG_alg_perk_aes_aes_3_short "PERK-AES-AES-3-short"
+/** Algorithm identifier for PERK-AES-AES-5-short */
+#define OQS_SIG_alg_perk_aes_aes_5_short "PERK-AES-AES-5-short"
+/** Algorithm identifier for PERK-KECCAK-KECCAK-1-short */
+#define OQS_SIG_alg_perk_keccak_keccak_1_short "PERK-KECCAK-KECCAK-1-short"
+/** Algorithm identifier for PERK-KECCAK-KECCAK-3-short */
+#define OQS_SIG_alg_perk_keccak_keccak_3_short "PERK-KECCAK-KECCAK-3-short"
+/** Algorithm identifier for PERK-KECCAK-KECCAK-5-short */
+#define OQS_SIG_alg_perk_keccak_keccak_5_short "PERK-KECCAK-KECCAK-5-short"
 /** Algorithm identifier for RYDE-1S */
 #define OQS_SIG_alg_ryde_1s "RYDE-1S"
 /** Algorithm identifier for RYDE-3S */
@@ -303,7 +315,7 @@ extern "C" {
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALGS_LENGTH_START
 
 /** Number of algorithm identifiers above. */
-#define OQS_SIG_algs_length 145
+#define OQS_SIG_algs_length 151
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALGS_LENGTH_END
 
 /**
